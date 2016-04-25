@@ -1,0 +1,10 @@
+
+> autoreconf -i
+> ./configure
+> make
+> sudo make install
+
+for debug build:
+
+> ./configure CFLAGS="-g -O0"
+> make clean check
