@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "lumemory.h"
+#include "luptr.h"
 #include "lustatus.h"
 #include "lulog.h"
 

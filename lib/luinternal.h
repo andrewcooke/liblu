@@ -9,7 +9,7 @@
 #define LU_INTERNAL_H
 
 #include "luexternal.h"
-#include "lumemory.h"
+#include "lumem.h"
 #include "lustatus.h"
 
 #endif
