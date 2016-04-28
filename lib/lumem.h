@@ -15,9 +15,29 @@ typedef struct lumem {
 	size_t available;
 } lumem;
 
-#define LU_MKMEM(type) (lumem){ sizeof(type), 0, 0 }
+#define LUMEM_ZERO(type) (lumem){ sizeof(type), 0, 0 }
 
-int lumem_reset(lulog *log, void **ptr, lumem *mem);
-int lumem_reserve(lulog *log, void **ptr, lumem *mem, size_t n);
+#define LUMEM_MKFREE(name, type)\
+int name(lulog *log, type **ptr, lumem *mem, int prev_status) {\
+    free(*ptr); *ptr = NULL;\
+    *mem = LUMEM_ZERO(type);\
+    return prev_status;\
+}
+
+#define LUMEM_MKRESERVE(name, type)\
+int name(lulog *log, type **ptr, lumem *mem, size_t n) {\
+	LU_STATUS\
+	if (mem->available >= n) goto exit;\
+	int required = mem->available > 0 ? mem->available : 1;\
+	while (required - mem->used < n) required *= 2;\
+	if (!(*ptr = realloc(*ptr, mem->unit * required))) {\
+		luerror(log, "Cannot allocate %zu bytes", mem->unit * required);\
+		status = LU_ERR_MEM;\
+		goto exit;\
+	}\
+	mem->available = required;\
+	memset(*ptr + mem->unit * mem->used, 0, mem->unit * required);\
+	LU_NO_CLEANUP\
+}
 
 #endif

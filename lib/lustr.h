@@ -11,12 +11,16 @@ typedef struct lustr {
 	lumem mem;
 } lustr;
 
-int lustr_mk(lulog *log, lustr *str);
-int lustr_mkstr(lulog *log, lustr *str, const char *c);
+int lustr_init(lulog *log, lustr *str);
+int lustr_initstr(lulog *log, lustr *str, const char *c);
 int lustr_free(lulog *log, lustr *str, int status);
+int lustr_reserve(lulog *log, lustr *str, int n);
+int lustr_clear(lulog *log, lustr *str);
 
 int lustr_printf(lulog *log, lustr *str, const char *format, ...);
 int lustr_nprintf(lulog *log, lustr *str, int max_size, const char *format, ...);
+int lustr_printfv(lulog *log, lustr *str, const char *format, va_list ap);
+int lustr_nprintfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap);
 int lustr_appendf(lulog *log, lustr *str, const char *format, ...);
 int lustr_nappendf(lulog *log, lustr *str, int max_size, const char *format, ...);
 int lustr_appendfv(lulog *log, lustr *str, const char *format, va_list ap);
