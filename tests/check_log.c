@@ -45,7 +45,7 @@ int main(void) {
 	SRunner *r;
 
 	c = tcase_create("case");
-//	tcase_add_test(c, test_stderr);
+	tcase_add_test(c, test_stderr);
 	tcase_add_test(c, test_output);
 	s = suite_create("suite");
 	suite_add_tcase(s, c);
