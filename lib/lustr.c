@@ -7,7 +7,7 @@
 #include "lustatus.h"
 #include "lustr.h"
 
-LUMEM_MKFREE(interal_free, char)
+LUMEM_MKFREE(internal_free, char)
 LUMEM_MKRESERVE(internal_reserve, char)
 
 int lustr_free(lulog *log, lustr *str, int prev_status) {
@@ -30,17 +30,17 @@ int lustr_initstr(lulog *log, lustr *str, const char *c) {
 	LU_STATUS
 	*str = (lustr){NULL, .mem = LUMEM_ZERO(char)};
 	int len = strlen(c);
-	LU_CHECK(lumem_reserve(log, (void**)&str->c, &str->mem, len + 1));
+	LU_CHECK(lustr_reserve(log, str, len + 1));
 	memcpy(str->c, c, str->mem.unit);
 	LU_NO_CLEANUP
 }
 
 int lustr_clear(lulog *log, lustr *str) {
 	LU_STATUS
-	if (!str->mem.available) LU_CHECK(lustr_mk(log, str));
+	if (!str->mem.available) LU_CHECK(lustr_init(log, str));
 	str->c[0] = '\0';
 	str->mem.used = 1;
-	LU_RETURN
+	LU_NO_CLEANUP
 }
 
 int lustr_printf(lulog *log, lustr *str, const char *format, ...) {

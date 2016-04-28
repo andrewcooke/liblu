@@ -49,7 +49,7 @@ int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) 
 	stream_state *state = (stream_state*)(*log)->state;
 	state->close = close;
 	state->stream = stream;
-	LU_CHECK(lustr_mknew(NULL, &state->line));
+	LU_CHECK(lustr_init(NULL, &state->line));
 	(*log)->threshold = threshold;
 	(*log)->max_line_length = LULOG_DEFAULT_MAX_LINE_LENGTH;
 	(*log)->print = stream_printfv;
@@ -67,14 +67,14 @@ int lulog_mkstdout(lulog **log, lulog_level threshold) {
 
 // TODO - check log is not null
 #define MKPRINT(level)\
-int lu ## level(lulog *log, const char *format, ...) { \
-	LU_STATUS;                                         \
-	va_list ap;                                        \
-	va_start(ap, format);                              \
-	LU_CHECK(stream_format(log, #level, format, ap));  \
-	LU_CLEANUP                                         \
-	va_end(ap);                                        \
-	LU_RETURN;                                         \
+int lu ## level(lulog *log, const char *format, ...) {\
+	LU_STATUS\
+	va_list ap;\
+	va_start(ap, format);\
+	LU_CHECK(stream_printfv(log, lulog_level_ ## level, format, ap));\
+	LU_CLEANUP\
+	va_end(ap);\
+	LU_RETURN\
 }
 
 MKPRINT(debug)

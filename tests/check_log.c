@@ -10,8 +10,8 @@ START_TEST(test_stderr) {
 
 	lulog *log;
 	ck_assert(!lulog_mkstderr(&log, lulog_level_info));
-	ck_assert(!log->debug(log, "this should not be displayed"));
-	ck_assert(!log->info(log, "this should be displayed"));
+	ck_assert(!ludebug(log, "this should not be displayed"));
+	ck_assert(!luinfo(log, "this should be displayed"));
 	ck_assert(!log->free(&log, LU_OK));
 	ck_assert(!log);
 
@@ -21,9 +21,9 @@ START_TEST(test_output) {
 
 	lulog *log;
 	FILE *stream = tmpfile();
-	ck_assert(!lulog_mkstream(&log, stream, lulog_level_info));
-	ck_assert(!log->debug(log, "this should not be displayed"));
-	ck_assert(!log->info(log, "this should be displayed"));
+	ck_assert(!lulog_mkstream(&log, stream, lulog_level_info, 0));
+	ck_assert(!ludebug(log, "this should not be displayed"));
+	ck_assert(!luinfo(log, "this should be displayed"));
 	ck_assert(!log->free(&log, LU_OK));
 	ck_assert(!log);
 	rewind(stream);
