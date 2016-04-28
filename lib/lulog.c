@@ -35,8 +35,9 @@ int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap
 	LU_STATUS
 	if (level <= log->threshold) {
 		stream_state *state = (stream_state*)log->state;
-		LU_CHECK(lustr_printf(log, &state->line, "%s: ", prefixes[level]));
+		LU_CHECK(lustr_nprintf(log, &state->line, log->max_line_length, "%s: ", prefixes[level]));
 		LU_CHECK(lustr_nappendfv(log, &state->line, log->max_line_length - state->line.mem.used, format, ap));
+		LU_CHECK(lustr_nappendf(log, &state->line, log->max_line_length - state->line.mem.used, "\n"));
 		fprintf(state->stream, "%s", state->line.c);
 	}
 	LU_NO_CLEANUP
@@ -65,15 +66,16 @@ int lulog_mkstdout(lulog **log, lulog_level threshold) {
 	return lulog_mkstream(log, stdout, threshold, 0);
 }
 
-// TODO - check log is not null
 #define MKPRINT(level)\
 int lu ## level(lulog *log, const char *format, ...) {\
 	LU_STATUS\
-	va_list ap;\
-	va_start(ap, format);\
-	LU_CHECK(stream_printfv(log, lulog_level_ ## level, format, ap));\
-	LU_CLEANUP\
-	va_end(ap);\
+	if (log) {\
+		va_list ap;\
+		va_start(ap, format);\
+		LU_CHECK(stream_printfv(log, lulog_level_ ## level, format, ap));\
+		LU_CLEANUP\
+		va_end(ap);\
+	}\
 	LU_RETURN\
 }
 

@@ -30,7 +30,7 @@ START_TEST(test_output) {
 	char *line = NULL;
 	size_t n = 0;
 	getline(&line, &n, stream);
-	ck_assert(!strcmp(line, "info: this should be displayed\n"));
+	ck_assert_msg(!strcmp(line, "info: this should be displayed\n"), "bad output: '%s'", line);
 	close(stream);
 	free(line);
 
@@ -45,7 +45,7 @@ int main(void) {
 	SRunner *r;
 
 	c = tcase_create("case");
-	tcase_add_test(c, test_stderr);
+//	tcase_add_test(c, test_stderr);
 	tcase_add_test(c, test_output);
 	s = suite_create("suite");
 	suite_add_tcase(s, c);

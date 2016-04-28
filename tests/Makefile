@@ -77,8 +77,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-suse-linux-gnu
 host_triplet = x86_64-suse-linux-gnu
-TESTS = check_log$(EXEEXT)
-check_PROGRAMS = check_log$(EXEEXT)
+TESTS = check_str$(EXEEXT) check_log$(EXEEXT)
+check_PROGRAMS = check_str$(EXEEXT) check_log$(EXEEXT)
 subdir = tests
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
@@ -102,6 +102,12 @@ am__v_lt_0 = --silent
 am__v_lt_1 = 
 check_log_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(check_log_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_check_str_OBJECTS = check_str-check_str.$(OBJEXT)
+check_str_OBJECTS = $(am_check_str_OBJECTS)
+check_str_DEPENDENCIES = $(top_builddir)/lib/liblu.la
+check_str_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(check_str_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
@@ -137,8 +143,8 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(check_log_SOURCES)
-DIST_SOURCES = $(check_log_SOURCES)
+SOURCES = $(check_log_SOURCES) $(check_str_SOURCES)
+DIST_SOURCES = $(check_log_SOURCES) $(check_str_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -487,6 +493,9 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
+check_str_SOURCES = check_str.c $(top_builddir)/lib/luinternal.h
+check_str_CFLAGS = -pthread 
+check_str_LDADD = $(top_builddir)/lib/liblu.la -lcheck 
 check_log_SOURCES = check_log.c $(top_builddir)/lib/luinternal.h
 check_log_CFLAGS = -pthread 
 check_log_LDADD = $(top_builddir)/lib/liblu.la -lcheck 
@@ -538,6 +547,10 @@ check_log$(EXEEXT): $(check_log_OBJECTS) $(check_log_DEPENDENCIES) $(EXTRA_check
 	@rm -f check_log$(EXEEXT)
 	$(AM_V_CCLD)$(check_log_LINK) $(check_log_OBJECTS) $(check_log_LDADD) $(LIBS)
 
+check_str$(EXEEXT): $(check_str_OBJECTS) $(check_str_DEPENDENCIES) $(EXTRA_check_str_DEPENDENCIES) 
+	@rm -f check_str$(EXEEXT)
+	$(AM_V_CCLD)$(check_str_LINK) $(check_str_OBJECTS) $(check_str_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -545,6 +558,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/check_log-check_log.Po
+include ./$(DEPDIR)/check_str-check_str.Po
 
 .c.o:
 	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -580,6 +594,20 @@ check_log-check_log.obj: check_log.c
 #	$(AM_V_CC)source='check_log.c' object='check_log-check_log.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_log_CFLAGS) $(CFLAGS) -c -o check_log-check_log.obj `if test -f 'check_log.c'; then $(CYGPATH_W) 'check_log.c'; else $(CYGPATH_W) '$(srcdir)/check_log.c'; fi`
+
+check_str-check_str.o: check_str.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_str_CFLAGS) $(CFLAGS) -MT check_str-check_str.o -MD -MP -MF $(DEPDIR)/check_str-check_str.Tpo -c -o check_str-check_str.o `test -f 'check_str.c' || echo '$(srcdir)/'`check_str.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/check_str-check_str.Tpo $(DEPDIR)/check_str-check_str.Po
+#	$(AM_V_CC)source='check_str.c' object='check_str-check_str.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_str_CFLAGS) $(CFLAGS) -c -o check_str-check_str.o `test -f 'check_str.c' || echo '$(srcdir)/'`check_str.c
+
+check_str-check_str.obj: check_str.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_str_CFLAGS) $(CFLAGS) -MT check_str-check_str.obj -MD -MP -MF $(DEPDIR)/check_str-check_str.Tpo -c -o check_str-check_str.obj `if test -f 'check_str.c'; then $(CYGPATH_W) 'check_str.c'; else $(CYGPATH_W) '$(srcdir)/check_str.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/check_str-check_str.Tpo $(DEPDIR)/check_str-check_str.Po
+#	$(AM_V_CC)source='check_str.c' object='check_str-check_str.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_str_CFLAGS) $(CFLAGS) -c -o check_str-check_str.obj `if test -f 'check_str.c'; then $(CYGPATH_W) 'check_str.c'; else $(CYGPATH_W) '$(srcdir)/check_str.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -780,6 +808,13 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+check_str.log: check_str$(EXEEXT)
+	@p='check_str$(EXEEXT)'; \
+	b='check_str'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 check_log.log: check_log$(EXEEXT)
 	@p='check_log$(EXEEXT)'; \
 	b='check_log'; \
