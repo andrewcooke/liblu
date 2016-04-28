@@ -73,8 +73,7 @@ int lustr_printfv(lulog *log, lustr *str, const char *format, va_list ap) {
     LU_NO_CLEANUP
 }
 
-int lustr_nprintfv(lulog *log, lustr *str, int max_size, const char *format,
-        va_list ap) {
+int lustr_nprintfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
     LU_STATUS
     LU_CHECK(lustr_clear(log, str));
     LU_CHECK(lustr_nappendfv(log, str, max_size, format, ap));
@@ -91,8 +90,7 @@ int lustr_appendf(lulog *log, lustr *str, const char *format, ...) {
     LU_RETURN
 }
 
-int lustr_nappendf(lulog *log, lustr *str, int max_size, const char *format,
-        ...) {
+int lustr_nappendf(lulog *log, lustr *str, int max_size, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
@@ -108,8 +106,7 @@ int lustr_appendfv(lulog *log, lustr *str, const char *format, va_list ap) {
     LU_NO_CLEANUP
 }
 
-int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format,
-        va_list ap) {
+int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
     LU_STATUS
     va_list working;
     while (1) {

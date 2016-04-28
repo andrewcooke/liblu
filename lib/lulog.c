@@ -33,8 +33,7 @@ int stream_free(lulog **log, int prev_status) {
     return prev_status;
 }
 
-int stream_printfv(lulog *log, lulog_level level, const char *format,
-        va_list ap) {
+int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap) {
     LU_STATUS
     if (level <= log->threshold) {
         stream_state *state = (stream_state*) log->state;
