@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -7,12 +8,13 @@
 #include "lustr.h"
 #include "lulog.h"
 
+
 static const char* const prefixes[] = {
-        "fatal",
-        "error",
-        "warn",
-        "info",
-        "debug"
+    "fatal",
+    "error",
+    "warn",
+    "info",
+    "debug"
 };
 
 typedef struct stream_state {
@@ -21,10 +23,10 @@ typedef struct stream_state {
     lustr line;
 } stream_state;
 
+
 int stream_free(lulog **log, int prev_status) {
     stream_state *state = (stream_state*) (*log)->state;
-    if (state->close)
-        fflush(state->stream);
+    if (state->close) fflush(state->stream);
     free(state);
     free(*log);
     *log = NULL;
@@ -47,6 +49,7 @@ int stream_printfv(lulog *log, lulog_level level, const char *format,
     LU_NO_CLEANUP
 }
 
+
 int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) {
     LU_STATUS
     LU_ALLOC(*log, 1);
@@ -68,6 +71,7 @@ int lulog_mkstderr(lulog **log, lulog_level threshold) {
 int lulog_mkstdout(lulog **log, lulog_level threshold) {
     return lulog_mkstream(log, stdout, threshold, 0);
 }
+
 
 #define MKPRINT(level)\
 int lu ## level(lulog *log, const char *format, ...) {\

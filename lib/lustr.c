@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -6,8 +7,10 @@
 #include "lustatus.h"
 #include "lustr.h"
 
+
 LUMEM_MKFREE(internal_free, char)
 LUMEM_MKRESERVE(internal_reserve, char)
+
 
 int lustr_free(lulog *log, lustr *str, int prev_status) {
     return internal_free(log, &str->c, &str->mem, prev_status);
@@ -43,12 +46,14 @@ int lustr_clear(lulog *log, lustr *str) {
     LU_NO_CLEANUP
 }
 
+
 int lustr_printf(lulog *log, lustr *str, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
     LU_CHECK(lustr_printfv(log, str, format, ap));
-    LU_CLEANUPva_end(ap);
+    LU_CLEANUP
+    va_end(ap);
     LU_RETURN
 }
 
@@ -57,7 +62,8 @@ int lustr_nprintf(lulog *log, lustr *str, int max_size, const char *format, ...)
     va_list ap;
     va_start(ap, format);
     LU_CHECK(lustr_nprintfv(log, str, max_size, format, ap));
-    LU_CLEANUPva_end(ap);
+    LU_CLEANUP
+    va_end(ap);
     LU_RETURN
 }
 
@@ -80,7 +86,8 @@ int lustr_appendf(lulog *log, lustr *str, const char *format, ...) {
     va_list ap;
     va_start(ap, format);
     LU_CHECK(lustr_appendfv(log, str, format, ap));
-    LU_CLEANUPva_end(ap);
+    LU_CLEANUP
+    va_end(ap);
     LU_RETURN
 }
 
@@ -90,7 +97,8 @@ int lustr_nappendf(lulog *log, lustr *str, int max_size, const char *format,
     va_list ap;
     va_start(ap, format);
     LU_CHECK(lustr_nappendfv(log, str, max_size, format, ap));
-    LU_CLEANUPva_end(ap);
+    LU_CLEANUP
+    va_end(ap);
     LU_RETURN
 }
 

@@ -5,6 +5,7 @@
 #define LU_EXTERNAL_H
 
 #include "lu.h"
+#include "lustr.h"
 #include "lulog.h"
 
 #endif
