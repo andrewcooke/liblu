@@ -3,31 +3,38 @@
 #define LU_LOG_H
 
 #include <stdio.h>
+#include <stdarg.h>
 
 typedef enum lulog_level {
-	lulog_level_debug,
-	lulog_level_info,
-	lulog_level_warn,
+	lulog_level_fatal,
 	lulog_level_error,
-	lulog_level_fatal
+	lulog_level_warn,
+	lulog_level_info,
+	lulog_level_debug
 } lulog_level;
 
+#define LULOG_DEFAULT_MAX_LINE_LENGTH 1000
+
 struct lulog;
-typedef lulog_print(struct lulog *log, const char *format, ...);
+typedef lulog_print(struct lulog *log, lulog_level level, const char *format, va_list ap);
 typedef lulog_free(struct lulog **log, int status);
 
 typedef struct lulog {
-	lulog_print *debug;
-	lulog_print *info;
-	lulog_print *warn;
-	lulog_print *error;
-	lulog_print *fatal;
+	lulog_level threshold;
+	size_t max_line_length;
+	lulog_print *print;
 	lulog_free *free;
 	void *state;
 } lulog;
 
-int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold);
+int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close);
 int lulog_mkstderr(lulog **log, lulog_level threshold);
 int lulog_mkstdout(lulog **log, lulog_level threshold);
+
+int ludebug(lulog *log, const char *format, ...);
+int luinfo(lulog *log, const char *format, ...);
+int luwarn(lulog *log, const char *format, ...);
+int luerror(lulog *log, const char *format, ...);
+int lufatal(lulog *log, const char *format, ...);
 
 #endif

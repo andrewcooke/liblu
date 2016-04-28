@@ -3,28 +3,78 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "luptr.h"
 #include "lustatus.h"
+#include "lumem.h"
+#include "lustr.h"
 #include "lulog.h"
+
+static const char* const prefixes[] = {
+		"fatal",
+		"error",
+		"warn",
+		"info",
+		"debug"
+};
 
 typedef struct stream_state {
 	FILE *stream;
-	lulog_level threshold;
+	int close;
+	lustr line;
 } stream_state;
 
+int stream_free(lulog **log, int prev_status) {
+	stream_state *state = (stream_state*)(*log)->state;
+	if (state->close) fflush(state->stream);
+	free(state);
+	free(*log);
+	*log = NULL;
+	return prev_status;
+}
+
+int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap) {
+	LU_STATUS
+	if (level <= log->threshold) {
+		stream_state *state = (stream_state*)log->state;
+		LU_CHECK(lustr_printf(log, &state->line, "%s: ", prefixes[level]));
+		LU_CHECK(lustr_nappendfv(log, &state->line, log->max_line_length - state->line.mem.used, format, ap));
+		fprintf(state->stream, "%s", state->line.c);
+	}
+	LU_NO_CLEANUP
+}
+
+int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) {
+	LU_STATUS
+	LU_ALLOC(*log, 1);
+	LU_ALLOC_TYPE((*log)->state, 1, stream_state);
+	stream_state *state = (stream_state*)(*log)->state;
+	state->close = close;
+	state->stream = stream;
+	LU_CHECK(lustr_mknew(NULL, &state->line));
+	(*log)->threshold = threshold;
+	(*log)->max_line_length = LULOG_DEFAULT_MAX_LINE_LENGTH;
+	(*log)->print = stream_printfv;
+	(*log)->free = stream_free;
+	LU_NO_CLEANUP
+}
+
+int lulog_mkstderr(lulog **log, lulog_level threshold) {
+	return lulog_mkstream(log, stderr, threshold, 0);
+}
+
+int lulog_mkstdout(lulog **log, lulog_level threshold) {
+	return lulog_mkstream(log, stdout, threshold, 0);
+}
+
+// TODO - check log is not null
 #define MKPRINT(level)\
-int stream_ ## level(lulog *log, const char *format, ...) { \
-	LU_STATUS                                               \
-	va_list ap;                                             \
-	stream_state *state = (stream_state*)log->state;        \
-	if (state->threshold <= lulog_level_ ## level) {        \
-		va_start(ap, format);                               \
-		fprintf(state->stream, "%s: ", #level);             \
-		vfprintf(state->stream, format, ap);                \
-		fprintf(state->stream, "\n");                       \
-		va_end(ap);                                         \
-	}                                                       \
-	LU_RETURN                                               \
+int lu ## level(lulog *log, const char *format, ...) { \
+	LU_STATUS;                                         \
+	va_list ap;                                        \
+	va_start(ap, format);                              \
+	LU_CHECK(stream_format(log, #level, format, ap));  \
+	LU_CLEANUP                                         \
+	va_end(ap);                                        \
+	LU_RETURN;                                         \
 }
 
 MKPRINT(debug)
@@ -32,36 +82,3 @@ MKPRINT(info)
 MKPRINT(warn)
 MKPRINT(error)
 MKPRINT(fatal)
-
-int stream_free(lulog **log, int prev_status) {
-	stream_state *state = (stream_state*)(*log)->state;
-	free(state);
-	free(*log);
-	*log = NULL;
-	return prev_status;
-}
-
-int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold) {
-	LU_STATUS
-	LU_ALLOC(*log, 1);
-	LU_ALLOC_TYPE((*log)->state, 1, stream_state);
-	stream_state *state = (stream_state*)(*log)->state;
-	state->threshold = threshold;
-	state->stream = stream;
-	(*log)->debug = stream_debug;
-	(*log)->info = stream_info;
-	(*log)->warn = stream_warn;
-	(*log)->error = stream_error;
-	(*log)->fatal = stream_fatal;
-	(*log)->free = stream_free;
-	LU_RETURN
-}
-
-int lulog_mkstderr(lulog **log, lulog_level threshold) {
-	return lulog_mkstream(log, stderr, threshold);
-}
-
-int lulog_mkstdout(lulog **log, lulog_level threshold) {
-	return lulog_mkstream(log, stdout, threshold);
-}
-
