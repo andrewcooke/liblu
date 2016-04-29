@@ -23,19 +23,21 @@ int name(lulog *log, type **ptr, lumem *mem, int prev_status) {\
     return prev_status;\
 }
 
+// this provides ADDITIONAL (unused) space
 #define LUMEM_MKRESERVE(name, type)\
 int name(lulog *log, type **ptr, lumem *mem, size_t n) {\
 	LU_STATUS\
-	if (mem->capacity - mem->used >= n) goto exit;\
-	int required = mem->capacity > 0 ? mem->capacity : 1;\
-	while (required - mem->used < n) required *= 2;\
-	if (!(*ptr = realloc(*ptr, mem->unit * required))) {\
-		luerror(log, "Cannot allocate %zu bytes", mem->unit * required);\
-		status = LU_ERR_MEM;\
-		goto exit;\
+	if (mem->capacity - mem->used < n) {\
+        int required = mem->capacity > 0 ? mem->capacity : 1;\
+        while (required - mem->used < n) required *= 2;\
+        if (!(*ptr = realloc(*ptr, mem->unit * required))) {\
+            luerror(log, "Cannot realloc %zu bytes", mem->unit * required);\
+            status = LU_ERR_MEM;\
+            goto exit;\
+        }\
+        mem->capacity = required;\
+        memset(*ptr + mem->unit * mem->used, 0, mem->unit * (required - mem->used));\
 	}\
-	mem->capacity = required;\
-	memset(*ptr + mem->unit * mem->used, 0, mem->unit * (required - mem->used));\
 	LU_NO_CLEANUP\
 }
 
