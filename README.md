@@ -28,6 +28,7 @@ The `lulog` structure can log to a stream:
 #include "luexternal.h"
 lulog *log;
 lulog_mkstderr(&log, lulog_level_info);  // don't display debug
+luinfo(log, "So far all OK");
 luerror(log, "Bad thing: %d != %d", 2, 37);
 ...
 lulog_free(&log, 0);  // or status = lulog_free(&log, status);
