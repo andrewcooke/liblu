@@ -4,7 +4,8 @@
 ## String Buffer
 
 The `lustr` structure is intended to be used as a buffer where complex
-strings can be assembled:
+strings can be assembled (it's a `char*` plus a couple of values needed for
+bookkeeping memory):
 
 ```c
 #include "luexternal.h"
