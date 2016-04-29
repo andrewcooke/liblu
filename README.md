@@ -13,12 +13,12 @@ lustr_init(log, &str);
 lustr_print(log, &str, "hello");
 lustr_appendf(log, &str, " world %d", 42);
 ...
-lustr_appendf(log, &str, format, ap);  // varags
+lustr_appendf(log, &str, format, ap);  // stdarg
 fprintf(stdout, "%s", str.c);  // hello world 42 ...
 lustr_free(log, &str, 0); 
 ```
 
-The `log` above can be null, or an instance of the log below.
+The `log` above can be `NULL`, or an instance of the log below.
 
 ## Log
 
