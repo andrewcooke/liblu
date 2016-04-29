@@ -29,6 +29,5 @@ int lustr_appendf(lulog *log, lustr *str, const char *format, ...);
 int lustr_nappendf(lulog *log, lustr *str, int max_size, const char *format, ...);
 int lustr_appendfv(lulog *log, lustr *str, const char *format, va_list ap);
 int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap);
-int lustr_truncate(lulog *log, lustr *str, int max_size);
 
 #endif
