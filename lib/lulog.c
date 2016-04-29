@@ -25,12 +25,15 @@ typedef struct stream_state {
 
 
 int stream_free(lulog **log, int prev_status) {
+    LU_STATUS
     stream_state *state = (stream_state*) (*log)->state;
-    if (state->close) fflush(state->stream);
+    fflush(state->stream);
+    if (state->close) fclose(state->stream);
+    status = lustr_free(NULL, &state->line, status);
     free(state);
     free(*log);
     *log = NULL;
-    return prev_status;
+    LU_NO_CLEANUP2(prev_status)
 }
 
 int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap) {

@@ -117,8 +117,8 @@ int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va
         size_t max_space = max_size < 0 ? space : min(max_size, space);
         int total = vsnprintf(c, max_space + null_fix, format, working);
         va_end(working);
-        ludebug(log, "Want to write %zu, have space for %zu, max is %zu", total,
-                space, max_size);
+        ludebug(log, "Want to write %zu, have space for %zu, max is %zu",
+                total, space, max_size);
         if (total < 0) {
             luerror(log, "Error formatting '%s': %s", format, strerror(errno));
             status = LU_ERR_IO;

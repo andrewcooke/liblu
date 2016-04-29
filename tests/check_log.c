@@ -30,7 +30,7 @@ START_TEST(test_output) {
     getline(&line, &n, stream);
     ck_assert_msg(!strcmp(line, "info: this should be displayed\n"),
             "bad output: '%s'", line);
-    close(stream);
+    fclose(stream);
     free(line);
 
 } END_TEST

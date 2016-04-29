@@ -35,7 +35,7 @@ int name(lulog *log, type **ptr, lumem *mem, size_t n) {\
 		goto exit;\
 	}\
 	mem->capacity = required;\
-	memset(*ptr + mem->unit * mem->used, 0, mem->unit * required);\
+	memset(*ptr + mem->unit * mem->used, 0, mem->unit * (required - mem->used));\
 	LU_NO_CLEANUP\
 }
 
