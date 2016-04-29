@@ -35,6 +35,24 @@ START_TEST(test_output) {
 
 } END_TEST
 
+START_TEST(test_string) {
+    lulog *log;
+    lustr *str;
+    ck_assert(!lulog_mkstring(&log, &str, lulog_level_debug));
+    ck_assert(!ludebug(log, "hello world"));
+    ck_assert(!strcmp(str->c, "debug: hello world\n"));
+    ck_assert(!log->free(&log, 0));
+} END_TEST
+
+START_TEST(test_syslog) {
+    lulog *log;
+    ck_assert(!lulog_mksyslog(&log, "lulib", lulog_level_debug));
+    ck_assert(!ludebug(log, "test message"));
+    // check that message appears in system log
+    ck_assert(!log->free(&log, 0));
+} END_TEST
+
+
 int main(void) {
 
     int failed = 0;
@@ -45,6 +63,8 @@ int main(void) {
     c = tcase_create("case");
     tcase_add_test(c, test_stderr);
     tcase_add_test(c, test_output);
+    tcase_add_test(c, test_string);
+    tcase_add_test(c, test_syslog);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);

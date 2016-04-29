@@ -22,7 +22,8 @@ The `log` above can be `NULL`, or an instance of the log below.
 
 ## Log
 
-The `lulog` structure can log to a stream:
+The `lulog` structure can log to a stream, file, syslog, or an in-memory
+string:
 
 ```c
 #include "luexternal.h"
