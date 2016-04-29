@@ -77,15 +77,15 @@ int lulog_mkstdout(lulog **log, lulog_level threshold) {
 
 #define MKPRINT(level)\
 int lu ## level(lulog *log, const char *format, ...) {\
-	LU_STATUS\
-	if (log) {\
-		va_list ap;\
-		va_start(ap, format);\
-		LU_CHECK(stream_printfv(log, lulog_level_ ## level, format, ap));\
-		LU_CLEANUP\
-		va_end(ap);\
-	}\
-	LU_RETURN\
+    LU_STATUS\
+    if (log) {\
+        va_list ap;\
+        va_start(ap, format);\
+        LU_CHECK(stream_printfv(log, lulog_level_ ## level, format, ap));\
+        LU_CLEANUP\
+        va_end(ap);\
+    }\
+    LU_RETURN\
 }
 
 MKPRINT(debug)
