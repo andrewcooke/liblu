@@ -10,7 +10,6 @@
 
 
 static const char* const prefixes[] = {
-    "fatal",
     "error",
     "warn",
     "info",
@@ -64,7 +63,8 @@ int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) 
     (*log)->max_line_length = LULOG_DEFAULT_MAX_LINE_LENGTH;
     (*log)->print = stream_printfv;
     (*log)->free = stream_free;
-    LU_NO_CLEANUP}
+    LU_NO_CLEANUP
+}
 
 int lulog_mkstderr(lulog **log, lulog_level threshold) {
     return lulog_mkstream(log, stderr, threshold, 0);
@@ -88,8 +88,7 @@ int lu ## level(lulog *log, const char *format, ...) {\
     LU_RETURN\
 }
 
-MKPRINT(debug)
-MKPRINT(info)
-MKPRINT(warn)
 MKPRINT(error)
-MKPRINT(fatal)
+MKPRINT(warn)
+MKPRINT(info)
+MKPRINT(debug)

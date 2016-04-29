@@ -39,13 +39,20 @@ int lustr_initstr(lulog *log, lustr *str, const char *c) {
 
 int lustr_clear(lulog *log, lustr *str) {
     LU_STATUS
-    if (!str->mem.capacity)
-        LU_CHECK(lustr_init(log, str));
+    if (!str->mem.capacity) LU_CHECK(lustr_init(log, str));
     str->c[0] = '\0';
     str->mem.used = 1;
     LU_NO_CLEANUP
 }
 
+
+int lustr_print(lulog *log, lustr *str, const char *text) {
+    return lustr_nprint(log, str, -1, text);
+}
+
+int lustr_nprint(lulog *log, lustr *str, int max_size, const char *text) {
+    return lustr_nprintf(log, str, max_size, "%s", text);
+}
 
 int lustr_printf(lulog *log, lustr *str, const char *format, ...) {
     LU_STATUS
@@ -68,9 +75,7 @@ int lustr_nprintf(lulog *log, lustr *str, int max_size, const char *format, ...)
 }
 
 int lustr_printfv(lulog *log, lustr *str, const char *format, va_list ap) {
-    LU_STATUS
-    LU_CHECK(lustr_nprintfv(log, str, -1, format, ap));
-    LU_NO_CLEANUP
+    return lustr_nprintfv(log, str, -1, format, ap);
 }
 
 int lustr_nprintfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
@@ -78,6 +83,14 @@ int lustr_nprintfv(lulog *log, lustr *str, int max_size, const char *format, va_
     LU_CHECK(lustr_clear(log, str));
     LU_CHECK(lustr_nappendfv(log, str, max_size, format, ap));
     LU_NO_CLEANUP
+}
+
+int lustr_append(lulog *log, lustr *str, const char *text) {
+    return lustr_nappend(log, str, -1, text);
+}
+
+int lustr_nappend(lulog *log, lustr *str, int max_size, const char *text) {
+    return lustr_nappendf(log, str, max_size, "%s", text);
 }
 
 int lustr_appendf(lulog *log, lustr *str, const char *format, ...) {
@@ -101,9 +114,7 @@ int lustr_nappendf(lulog *log, lustr *str, int max_size, const char *format, ...
 }
 
 int lustr_appendfv(lulog *log, lustr *str, const char *format, va_list ap) {
-    LU_STATUS
-    LU_CHECK(lustr_nappendfv(log, str, -1, format, ap));
-    LU_NO_CLEANUP
+    return lustr_nappendfv(log, str, -1, format, ap);
 }
 
 int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {

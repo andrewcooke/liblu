@@ -6,7 +6,6 @@
 #include <stdarg.h>
 
 typedef enum lulog_level {
-	lulog_level_fatal,
 	lulog_level_error,
 	lulog_level_warn,
 	lulog_level_info,
@@ -35,6 +34,5 @@ int ludebug(lulog *log, const char *format, ...);
 int luinfo(lulog *log, const char *format, ...);
 int luwarn(lulog *log, const char *format, ...);
 int luerror(lulog *log, const char *format, ...);
-int lufatal(lulog *log, const char *format, ...);
 
 #endif
