@@ -3,6 +3,8 @@
 
 #include "../lib/lu.h"
 #include "../lib/lustr.h"
+#include "../lib/luminmax.h"
+
 
 void assert_str(lustr str, const char *target) {
     ck_assert_msg(!strcmp(str.c, target), "'%s' != '%s'", str.c, target);
@@ -16,7 +18,6 @@ START_TEST(test_print) {
 
     ck_assert(!lustr_init(NULL, &str));
     assert_str(str, "");
-    ck_assert(str.mem.unit == 1);
     ck_assert(!lustr_print(NULL, &str, "abc"));
     assert_str(str, "abc");
     ck_assert(!lustr_print(NULL, &str, "def"));

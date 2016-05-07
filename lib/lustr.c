@@ -6,6 +6,7 @@
 #include "lumem.h"
 #include "lustatus.h"
 #include "lustr.h"
+#include "luminmax.h"
 
 
 LUMEM_MKFREE(internal_free, char)

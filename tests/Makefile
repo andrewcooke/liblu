@@ -384,7 +384,7 @@ AUTOMAKE = ${SHELL} /home/andrew/project/liblu/missing automake-1.13
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O0
+CFLAGS = -g -O2
 CHECK_CFLAGS = -pthread 
 CHECK_LIBS = -lcheck 
 CPP = gcc -E
