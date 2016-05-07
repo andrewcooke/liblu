@@ -4,6 +4,6 @@
 
 double lusimplex_noise2(double xin, double yin);
 double lusimplex_noise3(double xin, double yin, double zin);
-double lusimplex_noise4(double x, double y, double z, double w);
+double lusimplex_noise4(double xin, double yin, double zin, double win);
 
 #endif
