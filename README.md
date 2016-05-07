@@ -46,4 +46,4 @@ Most routines take a `lulog*` pointer as the first argument.  This can
 be NULL if no logging is required.
 
 Most names have the form `luLIB_NAME` (eg. `lustr_printf`), but the most
-widely used are simply `luXXX` (eg. `lustr`, `ludebug`).
+widely used are simply `luNAME` (eg. `lustr`, `ludebug`).
