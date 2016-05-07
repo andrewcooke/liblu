@@ -9,8 +9,8 @@
 // (stegu@itn.liu.se) and Peter Eastman (peastman@drizzle.stanford.edu).
 // http://webstaff.itn.liu.se/~stegu/simplexnoise/SimplexNoise.java
 
-// this file (and associated header placed in the public domain
-// by Andrew Cooke (andrew@acooke.org))
+// this file (and associated header placed) in the public domain
+// by Andrew Cooke (andrew@acooke.org)
 
 
 typedef struct xyz {
