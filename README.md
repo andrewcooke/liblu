@@ -49,7 +49,7 @@ noise = lusimplex_noise2(x, y);
 ## Greyscale
 
 Support for greyscale images (output from 
-[check_simplex](../blob/master/tests/check_simplex.c)):
+[check_simplex](../master/tests/check_simplex.c)):
 
 ```
  :++:.:...:++++:::+:***+:..:++*oOO#@@OOo
