@@ -25,5 +25,4 @@ libtool
 tests/*
 !tests/*.h
 !tests/*.c
-!tests/*.in
-!tests/Makefile
+!tests/*.am
