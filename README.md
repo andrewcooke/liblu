@@ -46,9 +46,10 @@ Peter Eastman.
 noise = lusimplex_noise2(x, y);
 ```
 
-## Grey Scale
+## Greyscale
 
-Support for grey scale images (output from [check_simplex](../blob/tests/check_simplex.c):
+Support for greyscale images (output from 
+[check_simplex](../blob/master/tests/check_simplex.c)):
 
 ```
  :++:.:...:++++:::+:***+:..:++*oOO#@@OOo
