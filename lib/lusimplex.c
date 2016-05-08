@@ -380,3 +380,13 @@ double lusimplex_noise4(double xin, double yin, double zin, double win) {
     // sum up and scale the result to cover the range [-1,1]
     return 27.0 * (n0 + n1 + n2 + n3 + n4);
 }
+
+void lusimplex_constants(int *n_p, uint8_t ** const p,
+        double *f2, double *g2, double *f4, double *g4) {
+    *n_p = sizeof(perm);
+    *p = perm;
+    *f2 = F2;
+    *g2 = G2;
+    *f4 = F4;
+    *g4 = G4;
+}
