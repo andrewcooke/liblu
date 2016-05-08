@@ -1,19 +1,31 @@
 
 #include <check.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <float.h>
+#include <math.h>
 
 #include "../lib/lu.h"
 #include "../lib/lusimplex.h"
 
 
+static void assert_double(const char *name, const char *expr, double value, double target) {
+    printf("%s = %s = %.*f\n", name, expr, DECIMAL_DIG, target);
+    ck_assert(value == target);
+}
+
 START_TEST(test_constants) {
     int n_p, i, count[256] = {0};
-    uint8_t *p = NULL;
+    const uint8_t *p = NULL;
     double f2, g2, f4, g4;
     lusimplex_constants(&n_p, &p, &f2, &g2, &f4, &g4);
     ck_assert(n_p == 512);
     for (i = 0; i < n_p; ++i) count[p[i]] += 1;
     for (i = 0; i < 256; ++i) ck_assert_msg(count[i] == 2, "count at %d is %d", i, count[i]);
+    assert_double("F2", "0.5*(sqrt(3.0)-1.0)", f2, 0.5*(sqrt(3.0)-1.0));
+    assert_double("G2", "(3.0-sqrt(3.0))/6.0", g2, (3.0-sqrt(3.0))/6.0);
+    assert_double("F4", "(sqrt(5.0)-1.0)/4.0", f4, (sqrt(5.0)-1.0)/4.0);
+    assert_double("G4", "(5.0-sqrt(5.0))/20.0", g4, (5.0-sqrt(5.0))/20.0);
 } END_TEST
 
 
