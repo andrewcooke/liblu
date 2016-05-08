@@ -36,6 +36,43 @@ luerror(log, "Bad thing: %d != %d", 2, 37);
 lulog_free(&log, 0);  // or status = lulog_free(&log, status);
 ```
 
+## Simplex Noise
+
+An efficient implementation based on code from Stefan Gustavson and
+Peter Eastman.
+
+```c
+#include "lusimplex.h"
+noise = lusimplex_noise2(x, y);
+```
+
+## Grey Scale
+
+Support for grey scale images (output from [check_simplex](../blob/tests/check_simplex.c):
+
+```
+ :++:.:...:++++:::+:***+:..:++*oOO#@@OOo
+ .+*+::...:::+::.:+***+::..::+:+oooO#OOo
+ .::+*::..::+:+:::*o**::+:::++:+**oOOOo*
+.:+*++:.:::****++*ooo*++++++::::::+*oo*:
+*+***+:.+**o**oooo*o****oo++:::.::++**++
+Ooo**:.::**ooo**oooo**o*Ooo*+:.:++:+*o*+
+OOo***+++***oo**oOOOooOOOo**+:.:::++*Oo+
+oOO*+**+ooooO***O#@#OO#@@Oo*++:::+++oOO*
+*ooo****ooOOo**oO###OO@@###oo****:++oO#o
+oo*oOoooooOoo**ooo####@@#@@O*+***++oO#@O
+oo*oOOOoooOo*++**oOoOO#@@@#O*+++***oO##O
+*ooOOOOOOOOo+::::*ooOOO#@@#o+:+****OOOOO
++O##@###Ooo+:....+ooooOO@@Oo+:+****oooO#
+*O@@@@#OOo*+::. .+*oooOOO#oo+:+****oOO##
+oO@@@@OOoo*+::..:+**oOO#@#OO*++****oOO##
+O#@@###OOoo*+:++**oooo#@@#Oo*++**o*oO#O#
+oO#####OOOOo*+*ooooOOo###Ooo+++++*ooOOOO
+**oOO###OOo**+ooOOO##OOOOO++:++:+*ooOo**
++++oOOO#OOo*++oO#@@##OOo**::++++*oOOOo+*
+::+**ooOOO****oO#@@##Oo*+::+*o*ooO@#O*++
+```
+
 ## Conventions
 
 Most routines return an `int` status that is non-zero on error.  Free
