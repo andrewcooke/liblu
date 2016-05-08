@@ -15,6 +15,7 @@ typedef struct lustr {
 } lustr;
 
 int lustr_init(lulog *log, lustr *str);
+int lustr_initn(lulog *log, lustr *str, size_t n);
 int lustr_initstr(lulog *log, lustr *str, const char *c);
 int lustr_free(lulog *log, lustr *str, int status);
 int lustr_reserve(lulog *log, lustr *str, int n);

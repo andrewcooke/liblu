@@ -6,6 +6,9 @@
 #include <math.h>
 
 #include "../lib/lu.h"
+#include "../lib/lustr.h"
+#include "../lib/lulog.h"
+#include "../lib/lugrey.h"
 #include "../lib/lusimplex.h"
 
 
@@ -29,6 +32,33 @@ START_TEST(test_constants) {
 } END_TEST
 
 
+START_TEST(print_octave) {
+    lustr s;
+    lulog *log;
+    int i, j, k, nx = 40, ny = 20, *grey = NULL;
+    ck_assert(!lustr_initn(NULL, &s, (nx+1)*ny+1));
+    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    double x, y, data[nx*ny];
+    memset(data, 0, sizeof(data));
+    for (i = 0; i < nx; ++i) {
+        for (j = 0; j < ny; ++j) {
+            for (k = 0; k < 5; ++k) {
+                x = (i + (100*k)) / pow(2, k);
+                y = (j + (100*k)) / pow(2, k);
+                data[i+j*nx] += lusimplex_noise2(x, y) * pow(2, k);
+            }
+        }
+    }
+    ck_assert(!lugrey_scale(log, data, nx*ny, 9, &grey));
+    ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
+    ck_assert_msg(strlen(s.c) == (nx+1) * ny, "length %zu != %d", strlen(s.c), (nx+1) * ny);
+    printf(s.c);
+    ck_assert(!lustr_free(log, &s, 0));
+    ck_assert(!log->free(&log, 0));
+    free(grey);
+} END_TEST
+
+
 int main(void) {
 
     int failed = 0;
@@ -38,6 +68,7 @@ int main(void) {
 
     c = tcase_create("case");
     tcase_add_test(c, test_constants);
+    tcase_add_test(c, print_octave);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);

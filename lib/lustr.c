@@ -3,10 +3,11 @@
 #include <string.h>
 #include <errno.h>
 
-#include "lumem.h"
 #include "lustatus.h"
-#include "lustr.h"
+#include "lumem.h"
+#include "lulog.h"
 #include "luminmax.h"
+#include "lustr.h"
 
 
 LUMEM_MKFREE(internal_free, char)
@@ -21,12 +22,17 @@ int lustr_reserve(lulog *log, lustr *str, int n) {
     return internal_reserve(log, &str->c, &str->mem, n);
 }
 
-int lustr_init(lulog *log, lustr *str) {
+int lustr_initn(lulog *log, lustr *str, size_t n) {
     LU_STATUS
+    LU_ASSERT(n > 0, "Cannot alloc zero-length string", LU_ERR_ARG)
     *str = (lustr ) {NULL, .mem = LUMEM_ZERO(char)};
-    LU_CHECK(lustr_reserve(log, str, 1));
+    LU_CHECK(lustr_reserve(log, str, n));
     str->mem.used = 1;  // no need to set value as reserved is zeroed
     LU_NO_CLEANUP
+}
+
+int lustr_init(lulog *log, lustr *str) {
+    return lustr_initn(log, str, 1);
 }
 
 int lustr_initstr(lulog *log, lustr *str, const char *c) {
@@ -129,8 +135,8 @@ int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va
         size_t max_space = max_size < 0 ? space : min(max_size, space);
         int total = vsnprintf(c, max_space + null_fix, format, working);
         va_end(working);
-        ludebug(log, "Want to write %zu, have space for %zu, max is %zu",
-                total, space, max_size);
+//        ludebug(log, "Want to write %zu, have space for %zu, max is %d",
+//                total, space, max_size);
         if (total < 0) {
             luerror(log, "Error formatting '%s': %s", format, strerror(errno));
             status = LU_ERR_IO;
@@ -140,8 +146,9 @@ int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va
             break;
         } else {
             size_t max_total = max_size < 0 ? total : min(max_size, total);
-            ludebug(log, "Reserving %zu", max_total);
             LU_CHECK(lustr_reserve(log, str, max_total));
+            ludebug(log, "Requested %zu; received %zu (used %zu)",
+                    max_total, str->mem.capacity - str->mem.used, str->mem.used);
         }
     }
     LU_NO_CLEANUP

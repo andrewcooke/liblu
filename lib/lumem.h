@@ -2,6 +2,8 @@
 #ifndef LU_MEM_H
 #define LU_MEM_H
 
+#include <stdlib.h>
+
 #include "lu.h"
 
 typedef struct lulog lulog;  // avoid dependency loops
