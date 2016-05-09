@@ -147,3 +147,20 @@ int64_t lurand_int64_range(lurand *rand, int64_t lo, int64_t hi) {
             lurand_uint64_range(rand,
                     lurand_remove_sign(lo), lurand_remove_sign(hi)));
 }
+
+
+// https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+int lurand_shuffle(lulog *log, lurand *rand, void *data, size_t size, size_t n) {
+    LU_STATUS
+    uint64_t i, j, k;
+    char *cdata = (char*)data;
+    for (i = n-1; i > 0; --i) {
+        j = lurand_uint64_range(rand, 0, i);
+        for (k = 0; k < size; ++k) {
+            char tmp = cdata[i*size+k];
+            cdata[i*size+k] = cdata[j*size+k];
+            cdata[j*size+k] = tmp;
+        }
+    }
+    LU_NO_CLEANUP
+}

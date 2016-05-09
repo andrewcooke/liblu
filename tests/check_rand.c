@@ -117,6 +117,29 @@ START_TEST(test_rangen) {
 } END_TEST
 
 
+START_TEST(test_shuffle) {
+    int data1[] = {1,2,3}, target1[] = {2,3,1}, i;
+    char data2[] = "hello world", target2[] = "dol roewllh";
+    lulog *log;
+    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    lurand *rand;
+    ck_assert(!lurand_mkxoroshiro128plus(log, &rand, 0));
+
+    ck_assert(!lurand_shuffle(log, rand, data1, sizeof(int), 3));
+//    for (i = 0; i < 3; ++i) printf("%d\n", data1[i]);
+    ck_assert(!memcmp(data1, target1, sizeof(target1)));
+
+    ck_assert(!lurand_shuffle(log, rand, data2, 1, strlen(data2)));
+//    for (i = 0; i < strlen(data2); ++i) printf("%c\n", data2[i]);
+    ck_assert(!memcmp(data2, target2, strlen(target2)));
+
+    ck_assert(!rand->free(&rand, 0));
+    ck_assert(!rand);
+    ck_assert(!log->free(&log, 0));
+    ck_assert(!log);
+} END_TEST
+
+
 int main(void) {
 
     int failed = 0;
@@ -129,6 +152,7 @@ int main(void) {
     tcase_add_test(c, test_rangeu);
     tcase_add_test(c, test_sign);
     tcase_add_test(c, test_rangen);
+    tcase_add_test(c, test_shuffle);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);
