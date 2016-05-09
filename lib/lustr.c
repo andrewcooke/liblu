@@ -14,8 +14,8 @@ LUMEM_MKFREE(internal_free, char)
 LUMEM_MKRESERVE(internal_reserve, char)
 
 
-int lustr_free(lulog *log, lustr *str, int prev_status) {
-    return internal_free(log, &str->c, &str->mem, prev_status);
+int lustr_free(lustr *str, int prev_status) {
+    return internal_free(&str->c, &str->mem, prev_status);
 }
 
 int lustr_reserve(lulog *log, lustr *str, int n) {

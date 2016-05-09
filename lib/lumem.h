@@ -28,7 +28,7 @@ typedef struct lumem {
 #define LUMEM_ZERO(type) (lumem){ 0, 0 }
 
 #define LUMEM_MKFREE(name, type)\
-int name(lulog *log, type **ptr, lumem *mem, int prev_status) {\
+int name(type **ptr, lumem *mem, int prev_status) {\
     free(*ptr); *ptr = NULL;\
     *mem = LUMEM_ZERO(type);\
     return prev_status;\

@@ -23,7 +23,7 @@ START_TEST(test_print) {
     assert_str(str, "abc");
     ck_assert(!lustr_print(NULL, &str, "def"));
     assert_str(str, "def");
-    ck_assert(!lustr_free(NULL, &str, 0));
+    ck_assert(!lustr_free(&str, 0));
 
 } END_TEST
 
@@ -42,7 +42,7 @@ START_TEST(test_scaling) {
     ck_assert_msg(str.mem.capacity == 4, "%d != %zu", 4, str.mem.capacity);
     ck_assert(!lustr_print(NULL, &str, "aaaa"));
     ck_assert_msg(str.mem.capacity == 8, "%d != %zu", 8, str.mem.capacity);
-    ck_assert(!lustr_free(NULL, &str, 0));
+    ck_assert(!lustr_free(&str, 0));
 
 } END_TEST
 
@@ -63,8 +63,8 @@ void max_size_test(size_t max_size, size_t chars) {
             str2.c, max_size, str1.c);
     ck_assert(str1.mem.used * 2 >= str1.mem.capacity);
 
-    ck_assert(!lustr_free(NULL, &str1, 0));
-    ck_assert(!lustr_free(NULL, &str2, 0));
+    ck_assert(!lustr_free(&str1, 0));
+    ck_assert(!lustr_free(&str2, 0));
 }
 
 START_TEST(test_max_size) {
@@ -89,7 +89,7 @@ START_TEST(test_append) {
     assert_str(str, "abc");
     ck_assert(!lustr_append(NULL, &str, "def"));
     assert_str(str, "abcdef");
-    ck_assert(!lustr_free(NULL, &str, 0));
+    ck_assert(!lustr_free(&str, 0));
 
 } END_TEST
 
@@ -103,7 +103,7 @@ START_TEST(test_format) {
     assert_str(str, "abc");
     ck_assert(!lustr_appendf(NULL, &str, "%d", 123));
     assert_str(str, "abc123");
-    ck_assert(!lustr_free(NULL, &str, 0));
+    ck_assert(!lustr_free(&str, 0));
 
 } END_TEST
 

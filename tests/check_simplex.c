@@ -49,7 +49,8 @@ START_TEST(test_values) {
 START_TEST(print_octave) {
     lustr s;
     lulog *log;
-    int i, j, k, nx = 40, ny = 20, *grey = NULL;
+    int k, *grey = NULL;
+    size_t i, j, nx = 40, ny = 20;
     ck_assert(!lustr_initn(NULL, &s, (nx+1)*ny+1));
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     double x, y, data[nx*ny];
@@ -67,7 +68,7 @@ START_TEST(print_octave) {
     ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
     ck_assert_msg(strlen(s.c) == (nx+1) * ny, "length %zu != %d", strlen(s.c), (nx+1) * ny);
     printf(s.c);
-    ck_assert(!lustr_free(log, &s, 0));
+    ck_assert(!lustr_free(&s, 0));
     ck_assert(!log->free(&log, 0));
     free(grey);
 } END_TEST

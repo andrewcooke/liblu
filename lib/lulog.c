@@ -29,7 +29,7 @@ int stream_free(lulog **log, int prev_status) {
     stream_state *state = (stream_state*) (*log)->state;
     fflush(state->stream);
     if (state->close) fclose(state->stream);
-    status = lustr_free(NULL, &state->line, status);
+    status = lustr_free(&state->line, status);
     free(state);
     free(*log); *log = NULL;
     LU_NO_CLEANUP2(prev_status)
@@ -104,7 +104,7 @@ int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold) {
 int string_free(lulog **log, int prev_status) {
     LU_STATUS
     lustr *string = (lustr*)(*log)->state;
-    status = lustr_free(NULL, string, status);
+    status = lustr_free(string, status);
     free(string);
     free(*log); *log = NULL;
     LU_NO_CLEANUP2(prev_status)

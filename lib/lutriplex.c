@@ -1,4 +1,6 @@
 
+#include <math.h>
+
 #include "lustatus.h"
 #include "lutriplex.h"
 
@@ -20,24 +22,34 @@
 // - q is rotated 60 degrees anti-clock from p
 
 
-int lutriplex_free_perm(lulog *log, lutriplex_perm **perm, int prev_status) {
-    if (*perm) free((*perm)->perm);
-    free(perm);
+int lutriplex_free_config2(lulog *log, lutriplex_config2 **config, int prev_status) {
+    if (*config) {
+        free((*config)->grad);
+        free((*config)->perm);
+    }
+    free(config);
     return prev_status;
 }
 
-int lutriplex_mkperm(lulog *log, lutriplex_perm **perm, int modulus, int length) {
+int lutriplex_mkconfig2(lulog *log, lutriplex_config2 **config,
+        int n_grad, double phase, int n_perm) {
+    int i;
     LU_STATUS
-    LU_ALLOC(log, *perm, 1)
-    LU_ALLOC(log, (*perm)->perm, length*2)
-    (*perm)->modulus = modulus;
-    (*perm)->length = length;
-
+    LU_ALLOC(log, *config, 1)
+    LU_ALLOC(log, (*config)->grad, n_grad)
+    LU_ALLOC(log, (*config)->perm, n_perm * 2)
+    (*config)->n_grad = n_grad;
+    (*config)->n_perm = n_perm;
+    for (i = 0; i < n_grad; ++i) {
+        double theta = phase + 2*M_PI / n_grad;
+        lutriplex_grad2 grad = {cos(theta), sin(theta)};
+        (*config)->grad[i] = grad;
+    }
     LU_NO_CLEANUP
 }
 
-int lutriplex_default_perm(lulog *log, lutriplex_perm **perm) {
-    return lutriplex_mkperm(log, perm, 8, 256);
+int lutriplex_default_config2(lulog *log, lutriplex_config2 **config) {
+    return lutriplex_mkconfig2(log, config, 0, 9, 256);
 }
 
 double lutriplex_noise2(double pin, double qin) {
