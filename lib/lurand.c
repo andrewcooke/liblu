@@ -133,14 +133,9 @@ uint64_t lurand_remove_sign(int64_t n) {
 }
 
 int64_t lurand_add_sign(uint64_t u) {
-    uint64_t zero = lurand_remove_sign(0);
-    if (u >= zero) {
-        return u - zero;
-    } else {
         int64_t n = INT64_MIN;
         n += u;
         return n;
-    }
 }
 
 int64_t lurand_int64_range(lurand *rand, int64_t lo, int64_t hi) {
