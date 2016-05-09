@@ -124,7 +124,6 @@ double lusimplex_noise2(double xin, double yin) {
     // for the 2D case, the simplex shape is an equilateral triangle.
     // determine which simplex we are in.
     int i1, j1; // offsets for second (middle) corner of simplex in (i,j) coords
-
     if (x0>y0) {
         i1=1; j1=0; // lower triangle, XY order: (0,0)->(1,0)->(1,1)
     } else {
@@ -286,12 +285,12 @@ double lusimplex_noise4(double xin, double yin, double zin, double win) {
     int ranky = 0;
     int rankz = 0;
     int rankw = 0;
-    if(x0 > y0) rankx++; else ranky++;
-    if(x0 > z0) rankx++; else rankz++;
-    if(x0 > w0) rankx++; else rankw++;
-    if(y0 > z0) ranky++; else rankz++;
-    if(y0 > w0) ranky++; else rankw++;
-    if(z0 > w0) rankz++; else rankw++;
+    if (x0 > y0) rankx++; else ranky++;
+    if (x0 > z0) rankx++; else rankz++;
+    if (x0 > w0) rankx++; else rankw++;
+    if (y0 > z0) ranky++; else rankz++;
+    if (y0 > w0) ranky++; else rankw++;
+    if (z0 > w0) rankz++; else rankw++;
     int i1, j1, k1, l1; // the integer offsets for the simplex corner 2
     int i2, j2, k2, l2; // the integer offsets for the simplex corner 3
     int i3, j3, k3, l3; // the integer offsets for the simplex corner 4
