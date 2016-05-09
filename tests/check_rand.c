@@ -38,7 +38,7 @@ START_TEST(test_xoroshiro128plus) {
 } END_TEST
 
 
-void assert_range(lurand *rand, uint64_t lo, uint64_t hi, int n) {
+void assert_rangeu(lurand *rand, uint64_t lo, uint64_t hi, int n) {
     int i, hit_lo = 0, hit_hi = 0;
     for (i = 0; i < n; ++i) {
         uint64_t value = lurand_uint64_range(rand, lo, hi);
@@ -50,12 +50,12 @@ void assert_range(lurand *rand, uint64_t lo, uint64_t hi, int n) {
     ck_assert(hit_hi);
 }
 
-START_TEST(test_range) {
+START_TEST(test_rangeu) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lurand *rand;
     ck_assert(!lurand_mkxoroshiro128plus(log, &rand, 0));
-    assert_range(rand, 1234, 5678, 10000);
+    assert_rangeu(rand, 1234, 5678, 10000);
     ck_assert(!rand->free(&rand, 0));
     ck_assert(!rand);
     ck_assert(!log->free(&log, 0));
@@ -92,6 +92,31 @@ START_TEST(test_sign) {
 } END_TEST
 
 
+void assert_rangen(lurand *rand, int64_t lo, int64_t hi, int n) {
+    int i, hit_lo = 0, hit_hi = 0;
+    for (i = 0; i < n; ++i) {
+        int64_t value = lurand_int64_range(rand, lo, hi);
+        ck_assert_msg(lo <= value && hi >= value, "%" PRId64, value);
+        hit_lo |= lo == value;
+        hit_hi |= hi == value;
+    }
+    ck_assert(hit_lo);
+    ck_assert(hit_hi);
+}
+
+START_TEST(test_rangen) {
+    lulog *log;
+    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    lurand *rand;
+    ck_assert(!lurand_mkxoroshiro128plus(log, &rand, 0));
+    assert_rangen(rand, -5678, -1234, 10000);
+    ck_assert(!rand->free(&rand, 0));
+    ck_assert(!rand);
+    ck_assert(!log->free(&log, 0));
+    ck_assert(!log);
+} END_TEST
+
+
 int main(void) {
 
     int failed = 0;
@@ -101,8 +126,9 @@ int main(void) {
 
     c = tcase_create("case");
     tcase_add_test(c, test_xoroshiro128plus);
-    tcase_add_test(c, test_range);
+    tcase_add_test(c, test_rangeu);
     tcase_add_test(c, test_sign);
+    tcase_add_test(c, test_rangen);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);

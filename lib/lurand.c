@@ -143,11 +143,7 @@ int64_t lurand_add_sign(uint64_t u) {
 }
 
 int64_t lurand_int64_range(lurand *rand, int64_t lo, int64_t hi) {
-    int64_t tmp;
-    if (lo > hi) {
-        tmp = hi; hi = lo; lo = tmp;
-    } else if (lo == hi) {
-        return lo;
-    }
+    return lurand_add_sign(
+            lurand_uint64_range(rand,
+                    lurand_remove_sign(lo), lurand_remove_sign(hi)));
 }
-

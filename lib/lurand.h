@@ -31,7 +31,7 @@ int64_t lurand_add_sign(uint64_t u);
 
 double lurand_double(lurand *rand);
 uint64_t lurand_uint64_range(lurand *rand, uint64_t lo, uint64_t hi);
-int lurand_int_range(lurand *rand, int lo, int hi);
+int64_t lurand_int64_range(lurand *rand, int64_t lo, int64_t hi);
 
 int lurand_shuffle(lulog *log, lurand *rand, void *data, size_t size, size_t n);
 
