@@ -6,5 +6,5 @@
 
 for debug build:
 
-> ./configure CFLAGS="-g -O0"
+> ./configure CFLAGS="-g -O0 -Wextra"
 > make clean check

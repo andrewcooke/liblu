@@ -9,8 +9,9 @@
 // (stegu@itn.liu.se) and Peter Eastman (peastman@drizzle.stanford.edu).
 // http://webstaff.itn.liu.se/~stegu/simplexnoise/SimplexNoise.java
 
-// this file (and associated header placed) in the public domain
-// by Andrew Cooke (andrew@acooke.org)
+// note that in 2d this code has some issues
+// http://stackoverflow.com/a/21568753/181772
+// lutriplex provides an alternative implementation
 
 
 typedef struct xyz {

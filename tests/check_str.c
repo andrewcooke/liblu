@@ -46,10 +46,10 @@ START_TEST(test_scaling) {
 
 } END_TEST
 
-void max_size_test(int max_size, int chars) {
+void max_size_test(size_t max_size, size_t chars) {
 
     lustr str1, str2;
-    int i;
+    size_t i;
 
     ck_assert(!lustr_init(NULL, &str1));
     ck_assert(!lustr_init(NULL, &str2));
