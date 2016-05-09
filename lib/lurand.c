@@ -138,7 +138,8 @@ int64_t lurand_add_sign(uint64_t u) {
         return n1 + n2;
     } else {
         uint64_t zero = lurand_remove_sign(0);
-        return u - zero;
+        int64_t n = u - zero;
+        return n;
     }
 }
 
