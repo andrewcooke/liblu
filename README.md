@@ -1,6 +1,30 @@
 
 # Light Utility Library
 
+## Table of Contents
+
+  * [Log](#log)
+  * [String Buffer](#string-buffer)
+  * [Random](#random)
+  * [Simplex Noise](#simplex-noise)
+  * [Greyscale](#greyscale)
+  * [Conventions](#conventions)
+
+## Log
+
+The `lulog` structure can log to a stream, file, syslog, or an in-memory
+string:
+
+```c
+#include "lulog.h"
+lulog *log;
+lulog_mkstderr(&log, lulog_level_info);  // don't display debug
+luinfo(log, "So far all OK");
+luerror(log, "Bad thing: %d != %d", 2, 37);
+...
+lulog_free(&log, 0);  // or status = lulog_free(&log, status);
+```
+
 ## String Buffer
 
 The `lustr` structure is intended to be used as a buffer where complex
@@ -19,21 +43,19 @@ fprintf(stdout, "%s", str.c);  // hello world 42 ...
 lustr_free(log, &str, 0); 
 ```
 
-The `log` above can be `NULL`, or an instance of the log below.
+The `log` above can be `NULL`, or an instance of the log above.
 
-## Log
+## Random
 
-The `lulog` structure can log to a stream, file, syslog, or an in-memory
-string:
+The `lurand` structure is a source of randomg integers:
 
 ```c
-#include "lulog.h"
-lulog *log;
-lulog_mkstderr(&log, lulog_level_info);  // don't display debug
-luinfo(log, "So far all OK");
-luerror(log, "Bad thing: %d != %d", 2, 37);
-...
-lulog_free(&log, 0);  // or status = lulog_free(&log, status);
+#include "lurand.h"
+lurand *rand;
+urand_mkxoroshiro128plus(log, &rand, 0);
+int n = lurand_int64_range(rand, lo, hi);
+lurand_shuffle(log, rand, anagram, 1, strlen(anagram));
+rand->free(rand, 0);
 ```
 
 ## Simplex Noise
