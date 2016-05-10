@@ -62,6 +62,43 @@ LU_CLEANUP
     LU_RETURN
 }
 
-double lutriplex_noise2(double pin, double qin) {
-    return LU_OK;
+
+#define COS60 0.5
+#define SIN60 (sqrt(3)/2)
+
+static inline double dot2(lutriplex_grad2 g, double x, double y) {
+    return g.x * x + g.y * y;
 }
+
+static inline double scale2(double dx, double dy, lutriplex_grad2 g) {
+    double t = 0.5 - dx*dx - dy*dy;
+    if (t < 0) {
+        return 0;
+    } else {
+        t *= t;
+        return t * t * dot2(g, dx, dy);
+    }
+}
+
+int lutriplex_noise2(lulog *log, lutriplex_config2 *conf,
+        double pin, double qin, double *noise) {
+    LU_STATUS
+    int pi = floor(pin), qi = floor(qin);
+    double p = pin - pi, q = qin - qi;
+    // near or far triangle in the rhombus
+    int far = (p + q) > 1;
+    double x = p + q * COS60, y = q * SIN60;
+    double x0 = 1, y0 = 0;
+    double x1 = COS60, y1 = SIN60;
+    double x2 = far ? 1 + COS60 : 0, y2 = far ? SIN60 : 0;
+    double dx0 = x - x0, dy0 = y - y0;
+    double dx1 = x - x1, dy1 = y - y1;
+    double dx2 = x - x2, dy1 = y - y2;
+    int pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
+    lutriplex_grad2 g0 = conf->grad[conf->perm[pmod + conf->perm[pmod]]];
+    lutriplex_grad2 g1 = conf->grad[conf->perm[qmod + conf->perm[qmod]]];
+    lutriplex_grad2 g2 = conf->grad[conf->perm[far + pmod + conf->perm[far + qmod]]];
+    *noise = (scale2(g0, dx0, dy0) + scale2(g1, dx1, dy1) + scale2(g1, dx1, dy1));
+    LU_NO_CLEANUP
+}
+

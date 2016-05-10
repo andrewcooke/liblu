@@ -107,3 +107,6 @@ be NULL if no logging is required.
 
 Most names have the form `luLIB_NAME` (eg. `lustr_printf`), but the most
 widely used are simply `luNAME` (eg. `lustr`, `ludebug`).
+
+Most argument lists are ordered: log, library structs, other input parameters,
+other output parameters.

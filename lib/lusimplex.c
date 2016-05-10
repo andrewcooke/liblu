@@ -99,18 +99,19 @@ static const double G3 = 1.0 / 6.0;
 static const double F4 = 0.309016994374947451263; // (Math.sqrt(5.0)-1.0)/4.0;
 static const double G4 = 0.138196601125010504196; // (5.0-Math.sqrt(5.0))/20.0;
 
-static double dot2(xyz g, double x, double y) {
+static inline double dot2(xyz g, double x, double y) {
     return g.x*x + g.y*y;
 }
 
-static double dot3(xyz g, double x, double y, double z) {
+static inline double dot3(xyz g, double x, double y, double z) {
     return g.x*x + g.y*y + g.z*z;
 }
 
-static double dot4(xyzw g, double x, double y, double z, double w) {
+static inline double dot4(xyzw g, double x, double y, double z, double w) {
     return g.x*x + g.y*y + g.z*z + g.w*w;
 }
 
+// see warning above about problems with this code
 double lusimplex_noise2(double xin, double yin) {
     double n0, n1, n2; // noise contributions from the three corners
     // skew the input space to determine which simplex cell we're in
