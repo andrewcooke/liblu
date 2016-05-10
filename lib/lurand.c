@@ -17,6 +17,8 @@ static int generic_free(lurand **rand, int prev_status) {
     LU_NO_CLEANUP2(prev_status)
 }
 
+// code from http://xoroshiro.di.unimi.it/splitmix64.c
+// (Sebastiano Vigna (vigna@acm.org), public domain)
 
 typedef struct splitmix64_state {
     uint64_t x;
