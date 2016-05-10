@@ -63,9 +63,6 @@ LU_CLEANUP
 }
 
 
-#define COS60 0.5
-#define SIN60 (sqrt(3)/2)
-
 static inline double dot2(lutriplex_grad2 g, double x, double y) {
     return g.x * x + g.y * y;
 }
@@ -83,14 +80,15 @@ static inline double scale2(double dx, double dy, lutriplex_grad2 g) {
 int lutriplex_noise2(lulog *log, lutriplex_config2 *conf,
         double pin, double qin, double *noise) {
     LU_STATUS
+    double cos60 = 0.5, sin60 = sqrt(3)/2;
     int pi = floor(pin), qi = floor(qin);
     double p = pin - pi, q = qin - qi;
     // near or far triangle in the rhombus
     int far = (p + q) > 1;
-    double x = p + q * COS60, y = q * SIN60;
+    double x = p + q * cos60, y = q * sin60;
     double x0 = 1, y0 = 0;
-    double x1 = COS60, y1 = SIN60;
-    double x2 = far ? 1 + COS60 : 0, y2 = far ? SIN60 : 0;
+    double x1 = cos60, y1 = sin60;
+    double x2 = far ? 1 + cos60 : 0, y2 = far ? sin60 : 0;
     double dx0 = x - x0, dy0 = y - y0;
     double dx1 = x - x1, dy1 = y - y1;
     double dx2 = x - x2, dy1 = y - y2;
