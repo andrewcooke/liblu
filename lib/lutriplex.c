@@ -91,12 +91,12 @@ int lutriplex_noise2(lulog *log, lutriplex_config2 *conf,
     double x2 = far ? 1 + cos60 : 0, y2 = far ? sin60 : 0;
     double dx0 = x - x0, dy0 = y - y0;
     double dx1 = x - x1, dy1 = y - y1;
-    double dx2 = x - x2, dy1 = y - y2;
+    double dx2 = x - x2, dy2 = y - y2;
     int pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
     lutriplex_grad2 g0 = conf->grad[conf->perm[pmod + conf->perm[pmod]]];
     lutriplex_grad2 g1 = conf->grad[conf->perm[qmod + conf->perm[qmod]]];
     lutriplex_grad2 g2 = conf->grad[conf->perm[far + pmod + conf->perm[far + qmod]]];
-    *noise = (scale2(g0, dx0, dy0) + scale2(g1, dx1, dy1) + scale2(g1, dx1, dy1));
+    *noise = (scale2(g0, dx0, dy0) + scale2(g1, dx1, dy1) + scale2(g2, dx2, dy2));
     LU_NO_CLEANUP
 }
 
