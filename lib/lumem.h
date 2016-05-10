@@ -24,12 +24,12 @@ typedef struct lumem {
 	size_t capacity;
 } lumem;
 
-#define LUMEM_ZERO(type) (lumem){ 0, 0 }
+#define LUMEM_ZERO (lumem){0, 0}
 
 #define LUMEM_MKFREE(name, type)\
 int name(type **ptr, lumem *mem, int prev_status) {\
     free(*ptr); *ptr = NULL;\
-    *mem = LUMEM_ZERO(type);\
+    *mem = LUMEM_ZERO;\
     return prev_status;\
 }
 
@@ -47,7 +47,8 @@ int name(lulog *log, type **ptr, lumem *mem, size_t n) {\
             goto exit;\
         }\
         mem->capacity = required;\
-        memset(*ptr + unit * mem->used, 0, unit * (required - mem->used));\
+        /* no need for unit on left as ptr typed!!! */\
+        memset(*ptr + mem->used, 0, unit * (required - mem->used));\
 	}\
 	LU_NO_CLEANUP\
 }

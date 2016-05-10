@@ -51,7 +51,7 @@ START_TEST(print_octave) {
     lulog *log;
     int k, *grey = NULL;
     size_t i, j, nx = 40, ny = 20;
-    ck_assert(!lustr_initn(NULL, &s, (nx+1)*ny+1));
+    ck_assert(!lustr_mkn(NULL, &s, (nx+1)*ny+1));
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     double x, y, data[nx*ny];
     memset(data, 0, sizeof(data));

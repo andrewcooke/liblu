@@ -10,8 +10,8 @@
 #include "lustr.h"
 
 
-LUMEM_MKFREE(internal_free, char)
-LUMEM_MKRESERVE(internal_reserve, char)
+static LUMEM_MKFREE(internal_free, char)
+static LUMEM_MKRESERVE(internal_reserve, char)
 
 
 int lustr_free(lustr *str, int prev_status) {
@@ -22,22 +22,22 @@ int lustr_reserve(lulog *log, lustr *str, int n) {
     return internal_reserve(log, &str->c, &str->mem, n);
 }
 
-int lustr_initn(lulog *log, lustr *str, size_t n) {
+int lustr_mkn(lulog *log, lustr *str, size_t n) {
     LU_STATUS
     LU_ASSERT(n > 0, "Cannot alloc zero-length string", LU_ERR_ARG)
-    *str = (lustr ) {NULL, .mem = LUMEM_ZERO(char)};
+    *str = (lustr){NULL, .mem = LUMEM_ZERO};
     LU_CHECK(lustr_reserve(log, str, n));
     str->mem.used = 1;  // no need to set value as reserved is zeroed
     LU_NO_CLEANUP
 }
 
-int lustr_init(lulog *log, lustr *str) {
-    return lustr_initn(log, str, 1);
+int lustr_mk(lulog *log, lustr *str) {
+    return lustr_mkn(log, str, 1);
 }
 
-int lustr_initstr(lulog *log, lustr *str, const char *c) {
+int lustr_mkstr(lulog *log, lustr *str, const char *c) {
     LU_STATUS
-    *str = (lustr ) {NULL, .mem = LUMEM_ZERO(char)};
+    *str = (lustr){NULL, .mem = LUMEM_ZERO};
     int len = strlen(c);
     LU_CHECK(lustr_reserve(log, str, len + 1));
     memcpy(str->c, c, len);
@@ -46,7 +46,7 @@ int lustr_initstr(lulog *log, lustr *str, const char *c) {
 
 int lustr_clear(lulog *log, lustr *str) {
     LU_STATUS
-    if (!str->mem.capacity) LU_CHECK(lustr_init(log, str));
+    if (!str->mem.capacity) LU_CHECK(lustr_mk(log, str));
     str->c[0] = '\0';
     str->mem.used = 1;
     LU_NO_CLEANUP
@@ -132,7 +132,7 @@ int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va
         int null_fix = str->mem.used ? 1 : 0;
         char *c = str->c + str->mem.used - null_fix;
         size_t space = str->mem.capacity - str->mem.used;
-        size_t max_space = max_size < 0 ? space : min(max_size, space);
+        size_t max_space = max_size < 0 ? space : min((size_t)max_size, space);
         int total = vsnprintf(c, max_space + null_fix, format, working);
         va_end(working);
 //        ludebug(log, "Want to write %zu, have space for %zu, max is %d",
@@ -141,7 +141,7 @@ int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va
             luerror(log, "Error formatting '%s': %s", format, strerror(errno));
             status = LU_ERR_IO;
             goto exit;
-        } else if (total <= max_space || (max_size >= 0 && space >= max_size)) {
+        } else if ((size_t)total <= max_space || (max_size >= 0 && space >= (size_t)max_size)) {
             str->mem.used += total;
             break;
         } else {

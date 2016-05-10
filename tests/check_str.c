@@ -17,7 +17,7 @@ START_TEST(test_print) {
 
     lustr str;
 
-    ck_assert(!lustr_init(NULL, &str));
+    ck_assert(!lustr_mk(NULL, &str));
     assert_str(str, "");
     ck_assert(!lustr_print(NULL, &str, "abc"));
     assert_str(str, "abc");
@@ -31,7 +31,7 @@ START_TEST(test_scaling) {
 
     lustr str;
 
-    ck_assert(!lustr_init(NULL, &str));
+    ck_assert(!lustr_mk(NULL, &str));
     ck_assert(!lustr_print(NULL, &str, ""));
     ck_assert_msg(str.mem.capacity == 1, "%d != %zu", 1, str.mem.capacity);
     ck_assert(!lustr_print(NULL, &str, "a"));
@@ -51,8 +51,8 @@ void max_size_test(size_t max_size, size_t chars) {
     lustr str1, str2;
     size_t i;
 
-    ck_assert(!lustr_init(NULL, &str1));
-    ck_assert(!lustr_init(NULL, &str2));
+    ck_assert(!lustr_mk(NULL, &str1));
+    ck_assert(!lustr_mk(NULL, &str2));
     for (i = 0; i < chars; ++i) {
         ck_assert(!lustr_append(NULL, &str2, "x"));
     }
@@ -83,7 +83,7 @@ START_TEST(test_append) {
 
     lustr str;
 
-    ck_assert(!lustr_init(NULL, &str));
+    ck_assert(!lustr_mk(NULL, &str));
     assert_str(str, "");
     ck_assert(!lustr_append(NULL, &str, "abc"));
     assert_str(str, "abc");
@@ -97,7 +97,7 @@ START_TEST(test_format) {
 
     lustr str;
 
-    ck_assert(!lustr_init(NULL, &str));
+    ck_assert(!lustr_mk(NULL, &str));
     assert_str(str, "");
     ck_assert(!lustr_appendf(NULL, &str, "%s", "abc"));
     assert_str(str, "abc");

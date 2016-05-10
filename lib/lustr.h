@@ -13,9 +13,9 @@ typedef struct lustr {
 	lumem mem;
 } lustr;
 
-int lustr_init(lulog *log, lustr *str);
-int lustr_initn(lulog *log, lustr *str, size_t n);
-int lustr_initstr(lulog *log, lustr *str, const char *c);
+int lustr_mk(lulog *log, lustr *str);
+int lustr_mkn(lulog *log, lustr *str, size_t n);
+int lustr_mkstr(lulog *log, lustr *str, const char *c);
 int lustr_free(lustr *str, int status);
 int lustr_reserve(lulog *log, lustr *str, int n);
 int lustr_clear(lulog *log, lustr *str);

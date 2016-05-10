@@ -56,7 +56,7 @@ int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) 
     stream_state *state = (stream_state*) (*log)->state;
     state->close = close;
     state->stream = stream;
-    LU_CHECK(lustr_init(NULL, &state->line));
+    LU_CHECK(lustr_mk(NULL, &state->line));
     (*log)->threshold = threshold;
     (*log)->max_line_length = LULOG_DEFAULT_MAX_LINE_LENGTH;
     (*log)->printfv = stream_printfv;
@@ -127,7 +127,7 @@ int string_printfv(lulog *log, lulog_level level, const char *format, va_list ap
 int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
     LU_STATUS
     LU_ALLOC_TYPE(NULL, *string, 1, lustr);
-    LU_CHECK(lustr_init(NULL, *string));
+    LU_CHECK(lustr_mk(NULL, *string));
     LU_ALLOC(NULL, *log, 1);
     (*log)->state = *string;
     (*log)->threshold = threshold;
