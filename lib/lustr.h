@@ -6,7 +6,6 @@
 
 #include "lumem.h"
 
-
 typedef struct lulog lulog;  // avoid dependency loops
 
 typedef struct lustr {

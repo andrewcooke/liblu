@@ -8,7 +8,6 @@
 
 typedef struct lulog lulog;  // avoid dependency loops
 
-
 #define LU_ALLOC(log, ptr, n)\
 if (!(ptr = calloc(n, sizeof(*ptr)))) {\
     luerror(log, "Cannot allocate %zu bytes", n * sizeof(*ptr));\

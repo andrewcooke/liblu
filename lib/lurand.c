@@ -107,7 +107,7 @@ double lurand_double(lurand *rand) {
 
 // http://stackoverflow.com/a/17554531
 uint64_t lurand_uint64_range(lurand *rand, uint64_t lo, uint64_t hi) {
-    uint64_t tmp, range, buckets, limit;
+    uint64_t tmp;
     if (lo > hi) {
         tmp = hi; hi = lo; lo = tmp;
     } else if (lo == hi) {
@@ -116,12 +116,13 @@ uint64_t lurand_uint64_range(lurand *rand, uint64_t lo, uint64_t hi) {
     uint64_t value = rand->next(rand);
     if (lo == 0 && hi == LURAND_MAX) {
         return value;
+    } else {
+        uint64_t range = hi - lo + 1;
+        uint64_t buckets = LURAND_MAX / range;
+        uint64_t limit = buckets * range;
+        while (value >= limit) value = rand->next(rand);
+        return lo + value / buckets;
     }
-    range = hi - lo + 1;
-    buckets = LURAND_MAX / range;
-    limit = buckets * range;
-    while (value >= limit) value = rand->next(rand);
-    return lo + value / buckets;
 }
 
 

@@ -9,7 +9,6 @@ struct lulog;
 
 #include "lustr.h"
 
-
 typedef enum lulog_level {
 	lulog_level_error,
 	lulog_level_warn,
