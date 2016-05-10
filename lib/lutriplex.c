@@ -22,16 +22,17 @@
 // - q is rotated 60 degrees anti-clock from p
 
 
-int lutriplex_free_config2(lulog *log, lutriplex_config2 **config, int prev_status) {
+int lutriplex_free_config2(lutriplex_config2 **config, int prev_status) {
     if (*config) {
         free((*config)->grad);
         free((*config)->perm);
     }
-    free(config);
+    free(*config);
+    *config = NULL;
     return prev_status;
 }
 
-int lutriplex_mkconfig2(lulog *log, lutriplex_config2 **config,
+int lutriplex_mkconfig2(lulog *log, lurand *rand, lutriplex_config2 **config,
         int n_grad, double phase, int n_perm) {
     int i;
     LU_STATUS
@@ -41,15 +42,24 @@ int lutriplex_mkconfig2(lulog *log, lutriplex_config2 **config,
     (*config)->n_grad = n_grad;
     (*config)->n_perm = n_perm;
     for (i = 0; i < n_grad; ++i) {
-        double theta = phase + 2*M_PI / n_grad;
+        double theta = phase + i*2*M_PI / n_grad;
         lutriplex_grad2 grad = {cos(theta), sin(theta)};
         (*config)->grad[i] = grad;
     }
+    for (i = 0; i < n_perm; ++i) (*config)->perm[i] = i;
+    LU_CHECK(lurand_shuffle(log, rand, (*config)->perm, sizeof(*(*config)->perm), n_perm))
+    for (i = 0; i < n_perm; ++i) (*config)->perm[i+n_perm] = (*config)->perm[i];
     LU_NO_CLEANUP
 }
 
 int lutriplex_default_config2(lulog *log, lutriplex_config2 **config) {
-    return lutriplex_mkconfig2(log, config, 0, 9, 256);
+    lurand *rand = NULL;
+    LU_STATUS
+    LU_CHECK(lurand_mkxoroshiro128plus(log, &rand, 0));
+    LU_CHECK(lutriplex_mkconfig2(log, rand, config, 9, 0, 256))
+LU_CLEANUP
+    if (rand) status = rand->free(&rand, status);
+    LU_RETURN
 }
 
 double lutriplex_noise2(double pin, double qin) {
