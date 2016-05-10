@@ -52,7 +52,7 @@ The `lurand` structure is a source of randomg integers:
 ```c
 #include "lurand.h"
 lurand *rand;
-urand_mkxoroshiro128plus(log, &rand, 0);
+lurand_mkxoroshiro128plus(log, &rand, 0);
 int n = lurand_int64_range(rand, lo, hi);
 lurand_shuffle(log, rand, anagram, 1, strlen(anagram));
 rand->free(rand, 0);
