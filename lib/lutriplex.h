@@ -5,7 +5,6 @@
 #include "lulog.h"
 #include "lurand.h"
 
-
 typedef struct lutriplex_grad2 {
     double x;
     double y;
