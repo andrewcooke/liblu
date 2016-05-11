@@ -78,6 +78,7 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
     double dx2 = x - x2, dy2 = y - y2;
     if (tile) tile->wrap(tile, log, &pi, &qi, &far);
     size_t pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
+    // lookup below depends on the (p,q) coordinate of the corner
     // g0 is at (pi+1,qi)
     ludata_xy g0 = conf->grad[conf->perm[pmod+1+conf->perm[qmod]] % conf->n_grad];
     // g1 is at (pi,qi+1)
@@ -89,15 +90,16 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
 }
 
 
-typedef struct tri_state {
-    int warn;
-} tri_state;
-
-int tri_free(lutriplex_tile **tile, size_t prev_status) {
+int generic_free(lutriplex_tile **tile, size_t prev_status) {
     if (*tile) free((*tile)->state);
     free(*tile); *tile = NULL;
     return prev_status;
 }
+
+
+typedef struct tri_state {
+    int warn;
+} tri_state;
 
 int tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
     LU_STATUS
@@ -112,8 +114,9 @@ int tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
 int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
         ludata_ij corner0, uint edges, luarray_ijz **ijz) {
     LU_STATUS
-    size_t i, j, points = 1 + tile->side * tile->subsamples;
-    double z;
+    size_t i, j, k;
+    size_t points = 1 + tile->side * tile->subsamples;
+    size_t octaves = 1 + log2(tile->subsamples);
     LU_CHECK(luarray_mkijzn(log, ijz, points * (points - 1)))
     for (j = 0; j < points; ++j) {
         if ((j == 0 && (edges & 1)) || (j > 0)) {
@@ -121,8 +124,12 @@ int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
             for (i = 0; i < points - j; ++i) {
                 if ((i == points - j && (edges & 2)) || (i > 0 && i < points - j - 1) || (i == 0 && (edges & 4))) {
                     double p = ((double)i) / tile->subsamples;
-//                    ludebug(log, "(%d, %d) -> (%f, %f)", i, j, p, q);
-                    LU_CHECK(lutriplex_noise(log, config, tile, p, q, &z))
+                    double z = 0, dz;
+                    for (k = 0; k < octaves; ++k) {
+                        double a = k * points, m = pow(2, k);
+                        LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
+                        z += dz / m;
+                    }
                     LU_CHECK(luarray_pushijz(log, *ijz, i + corner0.i, j + corner0.j, z))
                 }
             }
@@ -141,15 +148,10 @@ int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t 
     (*tile)->subsamples = subsamples;
     (*tile)->enumerate = tri_enumerate;
     (*tile)->wrap = tri_wrap;
-    (*tile)->free = tri_free;
+    (*tile)->free = generic_free;
     LU_NO_CLEANUP
 }
 
-
-int hex_free(struct lutriplex_tile **tile, size_t prev_status) {
-    if (*tile) free((*tile)->state);
-    return prev_status;
-}
 
 int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
     LU_STATUS
@@ -159,7 +161,7 @@ int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t s
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
     (*tile)->enumerate = NULL;
-    (*tile)->free = hex_free;
+    (*tile)->free = generic_free;
     LU_NO_CLEANUP
 }
 
