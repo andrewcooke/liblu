@@ -43,7 +43,7 @@ START_TEST(test_triangle) {
     lutriplex_config *config;
     ck_assert(!lutriplex_defaultconfig(log, &config));
     lutriplex_tile *triangle;
-    ck_assert(!lutriplex_mktriangle(log, &triangle, 4, 10));
+    ck_assert(!lutriplex_mktriangle(log, &triangle, 4, 9));
     luarray_ijz *ijz = NULL;
     ck_assert(!triangle->enumerate(triangle, log, config, (ludata_ij){0, 0}, -1, &ijz));
     size_t nx, ny; int *grey; double *data;

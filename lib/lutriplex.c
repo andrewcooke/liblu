@@ -122,7 +122,7 @@ int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
         if ((j == 0 && (edges & 1)) || (j > 0)) {
             double q = ((double)j) / tile->subsamples;
             for (i = 0; i < points - j; ++i) {
-                if ((i == points - j && (edges & 2)) || (i > 0 && i < points - j - 1) || (i == 0 && (edges & 4))) {
+                if ((i == points - j - 1 && (edges & 2)) || (i > 0 && i < points - j - 1) || (i == 0 && (edges & 4))) {
                     double p = ((double)i) / tile->subsamples;
                     double z = 0, dz;
                     for (k = 0; k < octaves; ++k) {
@@ -176,20 +176,23 @@ int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, do
     *nx = 0; *ny = 0; *data = NULL;
     if (!ijz->mem.used) goto exit;
     ludata_ij bl = tri2raster(ijz->ijz[0]), tr = bl;
+    double zero = ijz->ijz[0].z;
     for (size_t i = 1; i < ijz->mem.used; ++i) {
         ludata_ij ij = tri2raster(ijz->ijz[i]);
         bl.i = min(bl.i, ij.i); bl.j = min(bl.j, ij.j);
         tr.i = max(tr.i, ij.i); tr.j = max(tr.j, ij.j);
+        zero = min(zero, ijz->ijz[i].z);
     }
     ludebug(log, "Raster extends from (%d, %d) bottom left to (%d, %d) top right",
             bl.i, bl.j, tr.i, tr.j);
+    ludebug(log, "Zero level is %.2g", zero);
     *nx = tr.i - bl.i + 1; *ny = tr.j - bl.j + 1;
-    ludebug(log, "Allocating raster area %zu x %zu", *nx, *ny);
+    luinfo(log, "Allocating raster area %zu x %zu", *nx, *ny);
     LU_ALLOC(log, *data, *nx * *ny)
     for (size_t i = 0; i < ijz->mem.used; ++i) {
         ludata_ij ij = tri2raster(ijz->ijz[i]);
         ij.i -= bl.i; ij.j -= bl.j;
-        (*data)[ij.i + ij.j * *nx] = ijz->ijz[i].z;
+        (*data)[ij.i + ij.j * *nx] = ijz->ijz[i].z - zero;
     }
     int even = (ijz->ijz[0].i + ijz->ijz[0].j) % 2;
     for (size_t j = 0; j < *ny; ++j) {
