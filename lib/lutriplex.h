@@ -33,10 +33,10 @@ typedef struct lutriplex_config {
     size_t *perm;
 } lutriplex_config;
 
-int lutriplex_free_config(lutriplex_config **config, int prev_status);
+int lutriplex_freeconfig(lutriplex_config **config, int prev_status);
 int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
         size_t n_grad, double phase, size_t n_perm);
-int lutriplex_default_config(lulog *log, lutriplex_config **config);
+int lutriplex_defaultconfig(lulog *log, lutriplex_config **config);
 
 
 // tiles are (convex?) shapes that fit within the triangular (p,q) grid of the
@@ -53,6 +53,7 @@ int lutriplex_default_config(lulog *log, lutriplex_config **config);
 
 struct lutriplex_tile;
 
+// if *ijz is NULL it will be allocated, otherwise it will be appended to
 typedef int lutriplex_enumerate(struct lutriplex_tile *tile, lulog *log,
         lutriplex_config *config, ludata_ij corner0, uint edges,
         luarray_ijz **ijz);
@@ -67,7 +68,12 @@ typedef struct lutriplex_tile {
 } lutriplex_tile;
 
 int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples);
-
 int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples);
+
+// this is not geometrically correct.  instead, it uses a pattern like
+//     x x x
+//    x x x x
+// and linearly interpolates the gaps horizontally
+int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data);
 
 #endif

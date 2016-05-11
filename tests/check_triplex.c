@@ -5,6 +5,8 @@
 #include <math.h>
 
 #include "../lib/lu.h"
+#include "../lib/luarray.h"
+#include "../lib/lugrey.h"
 #include "../lib/lutriplex.h"
 
 
@@ -12,7 +14,7 @@ START_TEST(test_config) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lutriplex_config *config;
-    ck_assert(!lutriplex_default_config(log, &config));
+    ck_assert(!lutriplex_defaultconfig(log, &config));
     ck_assert(config->n_perm == 256);
     for (int i = 0; i < 256; ++i) {
         ck_assert(config->perm[i] < 256);
@@ -30,7 +32,32 @@ START_TEST(test_config) {
     ck_assert_msg(config->grad[0].y == 0.0, "%.*f", DECIMAL_DIG, config->grad[0].y);
     ck_assert_msg(config->grad[1].x == 0.766044443118978013452, "%.*f", DECIMAL_DIG, config->grad[1].x);
     ck_assert_msg(config->grad[1].y == 0.642787609686539251896, "%.*f", DECIMAL_DIG, config->grad[1].y);
-    ck_assert(!lutriplex_free_config(&config, 0));
+    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!log->free(&log, 0));
+} END_TEST
+
+
+START_TEST(test_triangle) {
+    lulog *log;
+    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    lutriplex_config *config;
+    ck_assert(!lutriplex_defaultconfig(log, &config));
+    lutriplex_tile *triangle;
+    ck_assert(!lutriplex_mktriangle(log, &triangle, 4, 10));
+    luarray_ijz *ijz = NULL;
+    ck_assert(!triangle->enumerate(triangle, log, config, (ludata_ij){0, 0}, -1, &ijz));
+    size_t nx, ny; int *grey; double *data;
+    ck_assert(!lutriplex_rasterize(log, ijz, &nx, &ny, &data));
+    ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
+    lustr s;
+    ck_assert(!lustr_mkn(NULL, &s, (nx+1)*ny+1));
+    ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
+    printf(s.c);
+    ck_assert(!lustr_free(&s, 0));
+    free(grey); free(data);
+    ck_assert(!luarray_freeijz(&ijz, 0));
+    ck_assert(!triangle->free(&triangle, 0));
+    ck_assert(!lutriplex_freeconfig(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
@@ -44,6 +71,7 @@ int main(void) {
 
     c = tcase_create("case");
     tcase_add_test(c, test_config);
+    tcase_add_test(c, test_triangle);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);

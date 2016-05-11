@@ -64,7 +64,7 @@ START_TEST(print_octave) {
             }
         }
     }
-    ck_assert(!lugrey_scale(log, data, nx*ny, 9, &grey));
+    ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
     ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
     ck_assert_msg(strlen(s.c) == (nx+1) * ny, "length %zu != %d", strlen(s.c), (nx+1) * ny);
     printf(s.c);

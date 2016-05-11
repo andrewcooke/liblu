@@ -10,9 +10,9 @@
 #include "lugrey.h"
 
 
-int lugrey_str(lulog *log, int *data, int nx, int ny, const char *scale, lustr *out) {
+int lugrey_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, lustr *out) {
     LU_STATUS
-    int i, j, warn = 0;
+    size_t i, j, warn = 0;
     int n = strlen(scale) - 1;
     for (j = 0; j < ny; ++j) {
         for (i = 0; i < nx; ++i) {
@@ -22,15 +22,15 @@ int lugrey_str(lulog *log, int *data, int nx, int ny, const char *scale, lustr *
                     warn = 1;
                 }
             }
-            LU_CHECK(lustr_appendf(log, out, "%c", *(scale + min(n, max(0, *data)))));
+            LU_CHECK(lustr_appendf(log, out, "%c", scale[min(n, max(0, *data))]))
             data++;
         }
-        LU_CHECK(lustr_append(log, out, "\n"));
+        LU_CHECK(lustr_append(log, out, "\n"))
     }
     LU_NO_CLEANUP
 }
 
-int lugrey_scale(lulog *log, double *data, int n, int levels, int **out) {
+int lugrey_quantize(lulog *log, double *data, int n, int levels, int **out) {
     LU_STATUS;
     int i;
     double lo = *data, hi = *data, delta;

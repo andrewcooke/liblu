@@ -3,10 +3,11 @@
 #include <math.h>
 
 #include "lustatus.h"
+#include "luminmax.h"
 #include "lutriplex.h"
 
 
-int lutriplex_free_config(lutriplex_config **config, int prev_status) {
+int lutriplex_freeconfig(lutriplex_config **config, int prev_status) {
     if (*config) {
         free((*config)->grad);
         free((*config)->perm);
@@ -36,7 +37,7 @@ int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
     LU_NO_CLEANUP
 }
 
-int lutriplex_default_config(lulog *log, lutriplex_config **config) {
+int lutriplex_defaultconfig(lulog *log, lutriplex_config **config) {
     lurand *rand = NULL;
     LU_STATUS
     LU_CHECK(lurand_mkxoroshiro128plus(log, &rand, 0));
@@ -76,17 +77,16 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf,
     double dx1 = x - x1, dy1 = y - y1;
     double dx2 = x - x2, dy2 = y - y2;
     size_t pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
-    ludata_xy g0 = conf->grad[conf->perm[pmod + conf->perm[pmod]]];
-    ludata_xy g1 = conf->grad[conf->perm[qmod + conf->perm[qmod]]];
-    ludata_xy g2 = conf->grad[conf->perm[far + pmod + conf->perm[far + qmod]]];
+    ludata_xy g0 = conf->grad[conf->perm[pmod + conf->perm[pmod]] % conf->n_grad];
+    ludata_xy g1 = conf->grad[conf->perm[qmod + conf->perm[qmod]] % conf->n_grad];
+    ludata_xy g2 = conf->grad[conf->perm[far + pmod + conf->perm[far + qmod]] % conf->n_grad];
     *noise = (scale(g0, dx0, dy0) + scale(g1, dx1, dy1) + scale(g2, dx2, dy2));
     LU_NO_CLEANUP
 }
 
 
-
 int tri_free(struct lutriplex_tile **tile, size_t prev_status) {
-    if (*tile) free((*tile)->state);
+    free(*tile); *tile = NULL;
     return prev_status;
 }
 
@@ -98,14 +98,15 @@ int tri_enumerate(struct lutriplex_tile *tile, lulog *log, lutriplex_config *con
     if (!*ijz) {
         LU_CHECK(luarray_mkijzn(log, ijz, points * (points - 1)))
     }
-    for (i = 0; i < points; ++i) {
-        if ((i == 0 && (edges & 1)) || i) {
-            double q = ((double)i) / tile->subsamples;
-            for (j = 0; j < points - i; ++j) {
-                if ((j == points - 1 && (edges & 2)) || (j > 0 && j < i-1) || (j == 0 && (edges & 4))) {
-                    double p = ((double)j) / tile->subsamples;
-                    LU_CHECK(lutriplex_noise(log, config, p, q, &z));
-                    LU_CHECK(luarray_pushijz(log, *ijz, i, j, z));
+    for (j = 0; j < points; ++j) {
+        if ((j == 0 && (edges & 1)) || (j > 0)) {
+            double q = ((double)j) / tile->subsamples;
+            for (i = 0; i < points - j; ++i) {
+                if ((i == points - j && (edges & 2)) || (i > 0 && i < points - j - 1) || (i == 0 && (edges & 4))) {
+                    double p = ((double)i) / tile->subsamples;
+                    ludebug(log, "(%d, %d) -> (%f, %f)", i, j, p, q);
+                    LU_CHECK(lutriplex_noise(log, config, p, q, &z))
+                    LU_CHECK(luarray_pushijz(log, *ijz, i + corner0.i, j + corner0.j, z))
                 }
             }
         }
@@ -115,8 +116,8 @@ int tri_enumerate(struct lutriplex_tile *tile, lulog *log, lutriplex_config *con
 
 int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
     LU_STATUS
-    LU_ASSERT(side > 0, "Side must be non-zero", LU_ERR_ARG);
-    LU_ASSERT(subsamples > 0, "Subsamples must be non-zero", LU_ERR_ARG);
+    LU_ASSERT(side > 0, "Side must be non-zero", LU_ERR_ARG)
+    LU_ASSERT(subsamples > 0, "Subsamples must be non-zero", LU_ERR_ARG)
     LU_ALLOC(log, *tile, 1)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
@@ -133,8 +134,8 @@ int hex_free(struct lutriplex_tile **tile, size_t prev_status) {
 
 int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
     LU_STATUS
-    LU_ASSERT(side > 0, "Side must be non-zero", LU_ERR_ARG);
-    LU_ASSERT(subsamples > 0, "Subsamples must be non-zero", LU_ERR_ARG);
+    LU_ASSERT(side > 0, "Side must be non-zero", LU_ERR_ARG)
+    LU_ASSERT(subsamples > 0, "Subsamples must be non-zero", LU_ERR_ARG)
     LU_ALLOC(log, *tile, 1)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
@@ -143,4 +144,38 @@ int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t s
     LU_NO_CLEANUP
 }
 
+
+// y is inverted here as we're going from (p,q) to raster (top down)
+static inline ludata_ij tri2raster(ludata_ijz tri) {
+    return (ludata_ij){2 * tri.i + tri.j, -tri.j};
+}
+
+int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data) {
+    LU_STATUS
+    *nx = 0; *ny = 0; *data = NULL;
+    if (!ijz->mem.used) goto exit;
+    ludata_ij bl = tri2raster(ijz->ijz[0]), tr = bl;
+    for (size_t i = 1; i < ijz->mem.used; ++i) {
+        ludata_ij ij = tri2raster(ijz->ijz[i]);
+        bl.i = min(bl.i, ij.i); bl.j = min(bl.j, ij.j);
+        tr.i = max(tr.i, ij.i); tr.j = max(tr.j, ij.j);
+    }
+    ludebug(log, "Raster extends from (%d, %d) bottom left to (%d, %d) top right",
+            bl.i, bl.j, tr.i, tr.j);
+    *nx = tr.i - bl.i + 1; *ny = tr.j - bl.j + 1;
+    ludebug(log, "Allocating raster area %zu x %zu", *nx, *ny);
+    LU_ALLOC(log, *data, *nx * *ny)
+    for (size_t i = 0; i < ijz->mem.used; ++i) {
+        ludata_ij ij = tri2raster(ijz->ijz[i]);
+        ij.i -= bl.i; ij.j -= bl.j;
+        (*data)[ij.i + ij.j * *nx] = ijz->ijz[i].z;
+    }
+    int even = (bl.i + bl.j) % 2;
+    for (size_t j = 0; j < *ny; ++j) {
+        for (size_t i = (j % 2) + even; i < *nx - 2; i += 2) {
+            (*data)[i + 1 + j * *nx] = 0.5 * ((*data)[i + 0 + j * *nx] + (*data)[i + 2 + j * *nx]);
+        }
+    }
+    LU_NO_CLEANUP
+}
 
