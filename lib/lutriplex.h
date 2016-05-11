@@ -25,6 +25,7 @@
 // - q is rotated 60 degrees anti-clock from p
 
 struct lutriplex_xy;
+struct lutriplex_tile;
 
 typedef struct lutriplex_config {
     size_t n_grad;
@@ -38,10 +39,13 @@ int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
         size_t n_grad, double phase, size_t n_perm);
 int lutriplex_defaultconfig(lulog *log, lutriplex_config **config);
 
+int lutriplex_noise(lulog *log, lutriplex_config *conf,
+        struct lutriplex_tile *tile, double pin, double qin, double *noise);
 
 // tiles are (convex?) shapes that fit within the triangular (p,q) grid of the
-// triplex and can be tiled.  corner 0 is the leftmost of the lowest corners.
-// further corners (and edges) are numbered anti-clock.
+// triplex and can be tiled without rotation.  corner 0 of the tile is the
+// leftmost of the lowest corners. further corners (and edges) are numbered
+// anti-clockwise.
 
 // the "side" of a tile is the number of triplex triangle edges that fit
 // on a (typical?) side.  the "subsamples" is the number of samples within
@@ -58,10 +62,16 @@ typedef int lutriplex_enumerate(struct lutriplex_tile *tile, lulog *log,
         luarray_ijz **ijz);
 typedef int lutriplex_freetile(struct lutriplex_tile **tile, size_t prev_status);
 
+// this function can modify its input to generate the appropriate gradients
+// for tiling.
+typedef int lutriplex_wrap(struct lutriplex_tile *tile, lulog *log,
+        int *p, int *q, int *far);
+
 typedef struct lutriplex_tile {
     size_t side;
     size_t subsamples;
     lutriplex_enumerate *enumerate;
+    lutriplex_wrap *wrap;
     lutriplex_freetile *free;
     void *state;
 } lutriplex_tile;

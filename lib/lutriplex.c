@@ -61,14 +61,14 @@ static inline double scale(ludata_xy g, double dx, double dy) {
     }
 }
 
-int lutriplex_noise(lulog *log, lutriplex_config *conf,
+int lutriplex_noise(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
         double pin, double qin, double *noise) {
     LU_STATUS
     double cos60 = 0.5, sin60 = sqrt(3)/2;
-    size_t pi = floor(pin), qi = floor(qin);
+    int pi = floor(pin), qi = floor(qin);
     double p = pin - pi, q = qin - qi;
     // near or far triangle in the rhombus
-    size_t far = (p + q) > 1;
+    int far = (p + q) > 1;
     double x = p + q * cos60, y = q * sin60;
     double x0 = 1, y0 = 0;
     double x1 = cos60, y1 = sin60;
@@ -76,6 +76,7 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf,
     double dx0 = x - x0, dy0 = y - y0;
     double dx1 = x - x1, dy1 = y - y1;
     double dx2 = x - x2, dy2 = y - y2;
+    if (tile) tile->wrap(tile, log, &pi, &qi, &far);
     size_t pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
     // g0 is at (pi+1,qi)
     ludata_xy g0 = conf->grad[conf->perm[pmod+1+conf->perm[qmod]] % conf->n_grad];
@@ -88,12 +89,27 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf,
 }
 
 
-int tri_free(struct lutriplex_tile **tile, size_t prev_status) {
+typedef struct tri_state {
+    int warn;
+} tri_state;
+
+int tri_free(lutriplex_tile **tile, size_t prev_status) {
+    if (*tile) free((*tile)->state);
     free(*tile); *tile = NULL;
     return prev_status;
 }
 
-int tri_enumerate(struct lutriplex_tile *tile, lulog *log, lutriplex_config *config,
+int tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
+    LU_STATUS
+    tri_state *state = (tri_state*)(tile->state);
+    if (!state->warn) {
+        luwarn(log, "Triangle cannot be tiled - passing coords through");
+        state->warn = 1;
+    }
+    LU_NO_CLEANUP
+}
+
+int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
         ludata_ij corner0, uint edges, luarray_ijz **ijz) {
     LU_STATUS
     size_t i, j, points = 1 + tile->side * tile->subsamples;
@@ -106,7 +122,7 @@ int tri_enumerate(struct lutriplex_tile *tile, lulog *log, lutriplex_config *con
                 if ((i == points - j && (edges & 2)) || (i > 0 && i < points - j - 1) || (i == 0 && (edges & 4))) {
                     double p = ((double)i) / tile->subsamples;
 //                    ludebug(log, "(%d, %d) -> (%f, %f)", i, j, p, q);
-                    LU_CHECK(lutriplex_noise(log, config, p, q, &z))
+                    LU_CHECK(lutriplex_noise(log, config, tile, p, q, &z))
                     LU_CHECK(luarray_pushijz(log, *ijz, i + corner0.i, j + corner0.j, z))
                 }
             }
@@ -117,12 +133,14 @@ int tri_enumerate(struct lutriplex_tile *tile, lulog *log, lutriplex_config *con
 
 int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
     LU_STATUS
-    LU_ASSERT(side > 0, "Side must be non-zero", LU_ERR_ARG)
-    LU_ASSERT(subsamples > 0, "Subsamples must be non-zero", LU_ERR_ARG)
+    LU_ASSERT(side > 0, log, "Side must be non-zero", LU_ERR_ARG)
+    LU_ASSERT(subsamples > 0, log, "Subsamples must be non-zero", LU_ERR_ARG)
     LU_ALLOC(log, *tile, 1)
+    LU_ALLOC_TYPE(log, (*tile)->state, 1, tri_state);
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
     (*tile)->enumerate = tri_enumerate;
+    (*tile)->wrap = tri_wrap;
     (*tile)->free = tri_free;
     LU_NO_CLEANUP
 }
@@ -135,8 +153,8 @@ int hex_free(struct lutriplex_tile **tile, size_t prev_status) {
 
 int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
     LU_STATUS
-    LU_ASSERT(side > 0, "Side must be non-zero", LU_ERR_ARG)
-    LU_ASSERT(subsamples > 0, "Subsamples must be non-zero", LU_ERR_ARG)
+    LU_ASSERT(side > 0, log, "Side must be non-zero", LU_ERR_ARG)
+    LU_ASSERT(subsamples > 0, log, "Subsamples must be non-zero", LU_ERR_ARG)
     LU_ALLOC(log, *tile, 1)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
