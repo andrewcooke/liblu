@@ -15,7 +15,6 @@ START_TEST(test_config) {
     ck_assert(!lutriplex_default_config(log, &config));
     ck_assert(config->n_perm == 256);
     for (int i = 0; i < 256; ++i) {
-        ck_assert(config->perm[i] >= 0);
         ck_assert(config->perm[i] < 256);
         ck_assert(config->perm[i] == config->perm[i+256]);
     }

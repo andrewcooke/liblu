@@ -17,8 +17,8 @@ int lutriplex_free_config(lutriplex_config **config, int prev_status) {
 }
 
 int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
-        int n_grad, double phase, int n_perm) {
-    int i;
+        size_t n_grad, double phase, size_t n_perm) {
+    size_t i;
     LU_STATUS
     LU_ALLOC(log, *config, 1)
     LU_ALLOC(log, (*config)->grad, n_grad)
@@ -46,45 +46,28 @@ LU_CLEANUP
     LU_RETURN
 }
 
-static inline double dot2(ludata_xy g, double x, double y) {
+static inline double dot(ludata_xy g, double x, double y) {
     return g.x * x + g.y * y;
 }
 
-static inline double scale2(ludata_xy g, double dx, double dy) {
+static inline double scale(ludata_xy g, double dx, double dy) {
     double t = 0.5 - dx*dx - dy*dy;
     if (t < 0) {
         return 0;
     } else {
         t *= t;
-        return t * t * dot2(g, dx, dy);
+        return t * t * dot(g, dx, dy);
     }
 }
 
-// a re-implementation of perlin's simplex noise that:
-// - uses coordinates on a triangular grid (NOT aligned with the triangular
-//   grid implicit in the lusimplex 2D code)
-// - supports patterns that tile (on whole triangles)
-// - has configurable noise (permutation)
-// - supports only 2D
-// - has configurable noise vectors
-//   see http://stackoverflow.com/a/21568753/181772
-// - is not intended to be as efficient as lusimplex
-
-// this code is based on the code in lusimplex (see credits there)
-
-// the triangular mesh coordinates are not orthogonal.
-// i arbitrarily pick the following two (of three) coordinates:
-// - p is along the x axis
-// - q is rotated 60 degrees anti-clock from p
-
-int lutriplex_noise2(lulog *log, lutriplex_config *conf,
+int lutriplex_noise(lulog *log, lutriplex_config *conf,
         double pin, double qin, double *noise) {
     LU_STATUS
     double cos60 = 0.5, sin60 = sqrt(3)/2;
-    int pi = floor(pin), qi = floor(qin);
+    size_t pi = floor(pin), qi = floor(qin);
     double p = pin - pi, q = qin - qi;
     // near or far triangle in the rhombus
-    int far = (p + q) > 1;
+    size_t far = (p + q) > 1;
     double x = p + q * cos60, y = q * sin60;
     double x0 = 1, y0 = 0;
     double x1 = cos60, y1 = sin60;
@@ -92,36 +75,72 @@ int lutriplex_noise2(lulog *log, lutriplex_config *conf,
     double dx0 = x - x0, dy0 = y - y0;
     double dx1 = x - x1, dy1 = y - y1;
     double dx2 = x - x2, dy2 = y - y2;
-    int pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
+    size_t pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
     ludata_xy g0 = conf->grad[conf->perm[pmod + conf->perm[pmod]]];
     ludata_xy g1 = conf->grad[conf->perm[qmod + conf->perm[qmod]]];
     ludata_xy g2 = conf->grad[conf->perm[far + pmod + conf->perm[far + qmod]]];
-    *noise = (scale2(g0, dx0, dy0) + scale2(g1, dx1, dy1) + scale2(g2, dx2, dy2));
+    *noise = (scale(g0, dx0, dy0) + scale(g1, dx1, dy1) + scale(g2, dx2, dy2));
     LU_NO_CLEANUP
 }
 
 
 
-typedef struct hex_tile {
-    ludata_xy centre;
-    int side;
-    int subsamples;
-} hex_tile;
-
-int hex_free(struct lutriplex_tile **tile, int prev_status) {
+int tri_free(struct lutriplex_tile **tile, size_t prev_status) {
     if (*tile) free((*tile)->state);
-    free(*tile); *tile = NULL;
     return prev_status;
 }
 
-int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
-        double x, double y, double side, int subsamples) {
+int tri_enumerate(struct lutriplex_tile *tile, lulog *log, lutriplex_config *config,
+        ludata_ij corner0, uint edges, luarray_ijz **ijz) {
     LU_STATUS
+    size_t i, j, points = 1 + tile->side * tile->subsamples;
+    double z;
+    if (!*ijz) {
+        LU_CHECK(luarray_mkijzn(log, ijz, points * (points - 1)))
+    }
+    for (i = 0; i < points; ++i) {
+        if ((i == 0 && (edges & 1)) || i) {
+            double q = ((double)i) / tile->subsamples;
+            for (j = 0; j < points - i; ++j) {
+                if ((j == points - 1 && (edges & 2)) || (j > 0 && j < i-1) || (j == 0 && (edges & 4))) {
+                    double p = ((double)j) / tile->subsamples;
+                    LU_CHECK(lutriplex_noise(log, config, p, q, &z));
+                    LU_CHECK(luarray_pushijz(log, *ijz, i, j, z));
+                }
+            }
+        }
+    }
+    LU_NO_CLEANUP
+}
+
+int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
+    LU_STATUS
+    LU_ASSERT(side > 0, "Side must be non-zero", LU_ERR_ARG);
+    LU_ASSERT(subsamples > 0, "Subsamples must be non-zero", LU_ERR_ARG);
     LU_ALLOC(log, *tile, 1)
-    LU_ALLOC_TYPE(log, (*tile)->state, 1, hex_tile)
-    (*tile)->enumerate_xy = NULL;
-    (*tile)->enumerate_xyz = NULL;
+    (*tile)->side = side;
+    (*tile)->subsamples = subsamples;
+    (*tile)->enumerate = tri_enumerate;
+    (*tile)->free = tri_free;
+    LU_NO_CLEANUP
+}
+
+
+int hex_free(struct lutriplex_tile **tile, size_t prev_status) {
+    if (*tile) free((*tile)->state);
+    return prev_status;
+}
+
+int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
+    LU_STATUS
+    LU_ASSERT(side > 0, "Side must be non-zero", LU_ERR_ARG);
+    LU_ASSERT(subsamples > 0, "Subsamples must be non-zero", LU_ERR_ARG);
+    LU_ALLOC(log, *tile, 1)
+    (*tile)->side = side;
+    (*tile)->subsamples = subsamples;
+    (*tile)->enumerate = NULL;
     (*tile)->free = hex_free;
     LU_NO_CLEANUP
 }
+
 

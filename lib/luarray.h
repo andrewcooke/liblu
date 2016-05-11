@@ -5,24 +5,14 @@
 #include "lumem.h"
 #include "ludata.h"
 
-typedef struct luarray_xy {
-    ludata_xy *xy;
+typedef struct luarray_ijz {
+    ludata_ijz *ijz;
     lumem mem;
-} luarray_xy;
+} luarray_ijz;
 
-int luarray_mkxyn(lulog *log, luarray_xy **xy, int n);
-int luarray_freexy(luarray_xy **xy, int prev_status);
-int luarray_reservexy(lulog *log, luarray_xy *xy, int n);
-int luarray_pushxy(lulog *log, luarray_xy *xy, double x, double y);
-
-typedef struct luarray_xyz {
-    ludata_xyz *xyz;
-    lumem mem;
-} luarray_xyz;
-
-int luarray_mkxyzn(lulog *log, luarray_xyz **xyz, int n);
-int luarray_freexyz(luarray_xyz **xy, int prev_status);
-int luarray_reservexyz(lulog *log, luarray_xyz *xyz, int n);
-int luarray_pushxyz(lulog *log, luarray_xyz *xyz, double x, double y, double z);
+int luarray_mkijzn(lulog *log, luarray_ijz **ijz, int n);
+int luarray_freeijz(luarray_ijz **xy, int prev_status);
+int luarray_reserveijz(lulog *log, luarray_ijz *ijz, int n);
+int luarray_pushijz(lulog *log, luarray_ijz *ijz, int i, int j, double z);
 
 #endif

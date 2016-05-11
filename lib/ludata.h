@@ -7,10 +7,15 @@ typedef struct ludata_xy {
     double y;
 } ludata_xy;
 
-typedef struct ludata_xyz {
-    double x;
-    double y;
+typedef struct ludata_ij {
+    int i;
+    int j;
+} ludata_ij;
+
+typedef struct ludata_ijz {
+    int i;
+    int j;
     double z;
-} ludata_xyz;
+} ludata_ijz;
 
 #endif
