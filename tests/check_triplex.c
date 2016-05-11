@@ -36,23 +36,6 @@ START_TEST(test_config) {
 } END_TEST
 
 
-START_TEST(test_xy) {
-    lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lutriplex_xys *xys;
-    ck_assert(!lutriplex_mkxyn(log, &xys, 0));
-    ck_assert(!lutriplex_pushxy(log, xys, 1, 2));
-    ck_assert(!lutriplex_pushxy(log, xys, 3, 4));
-    ck_assert(xys->mem.used == 2);
-    ck_assert(xys->xy[0].x == 1);
-    ck_assert(xys->xy[0].y == 2);
-    ck_assert(xys->xy[1].x == 3);
-    ck_assert(xys->xy[1].y == 4);
-    ck_assert(!lutriplex_freexy(&xys, 0));
-    ck_assert(!log->free(&log, 0));
-} END_TEST
-
-
 int main(void) {
 
     int failed = 0;
@@ -62,7 +45,6 @@ int main(void) {
 
     c = tcase_create("case");
     tcase_add_test(c, test_config);
-    tcase_add_test(c, test_xy);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);

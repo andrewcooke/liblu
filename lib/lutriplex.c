@@ -27,7 +27,7 @@ int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
     (*config)->n_perm = n_perm;
     for (i = 0; i < n_grad; ++i) {
         double theta = phase + i*2*M_PI / n_grad;
-        lutriplex_xy grad = {cos(theta), sin(theta)};
+        ludata_xy grad = {cos(theta), sin(theta)};
         (*config)->grad[i] = grad;
     }
     for (i = 0; i < n_perm; ++i) (*config)->perm[i] = i;
@@ -46,11 +46,11 @@ LU_CLEANUP
     LU_RETURN
 }
 
-static inline double dot2(lutriplex_xy g, double x, double y) {
+static inline double dot2(ludata_xy g, double x, double y) {
     return g.x * x + g.y * y;
 }
 
-static inline double scale2(lutriplex_xy g, double dx, double dy) {
+static inline double scale2(ludata_xy g, double dx, double dy) {
     double t = 0.5 - dx*dx - dy*dy;
     if (t < 0) {
         return 0;
@@ -93,65 +93,35 @@ int lutriplex_noise2(lulog *log, lutriplex_config *conf,
     double dx1 = x - x1, dy1 = y - y1;
     double dx2 = x - x2, dy2 = y - y2;
     int pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
-    lutriplex_xy g0 = conf->grad[conf->perm[pmod + conf->perm[pmod]]];
-    lutriplex_xy g1 = conf->grad[conf->perm[qmod + conf->perm[qmod]]];
-    lutriplex_xy g2 = conf->grad[conf->perm[far + pmod + conf->perm[far + qmod]]];
+    ludata_xy g0 = conf->grad[conf->perm[pmod + conf->perm[pmod]]];
+    ludata_xy g1 = conf->grad[conf->perm[qmod + conf->perm[qmod]]];
+    ludata_xy g2 = conf->grad[conf->perm[far + pmod + conf->perm[far + qmod]]];
     *noise = (scale2(g0, dx0, dy0) + scale2(g1, dx1, dy1) + scale2(g2, dx2, dy2));
     LU_NO_CLEANUP
 }
 
 
-static LUMEM_MKFREE(xy_free, lutriplex_xy)
-static LUMEM_MKRESERVE(xy_reserve, lutriplex_xy)
 
-int lutriplex_reservexy(lulog *log, lutriplex_xys *xys, int n) {
-    return xy_reserve(log, &xys->xy, &xys->mem, n);
+typedef struct hex_tile {
+    ludata_xy centre;
+    int side;
+    int subsamples;
+} hex_tile;
+
+int hex_free(struct lutriplex_tile **tile, int prev_status) {
+    if (*tile) free((*tile)->state);
+    free(*tile); *tile = NULL;
+    return prev_status;
 }
 
-int lutriplex_mkxyn(lulog *log, lutriplex_xys **xys, int n) {
+int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
+        double x, double y, double side, int subsamples) {
     LU_STATUS
-    LU_ALLOC(log, *xys, 1)
-    LU_CHECK(lutriplex_reservexy(log, *xys, n))
-    LU_NO_CLEANUP
-}
-
-int lutriplex_freexy(lutriplex_xys **xys, int prev_status) {
-    int status = xy_free(&(*xys)->xy, &(*xys)->mem, prev_status);
-    free(*xys); *xys = NULL;
-    return status;
-}
-
-int lutriplex_pushxy(lulog *log, lutriplex_xys *xys, double x, double y) {
-    LU_STATUS
-    LU_CHECK(lutriplex_reservexy(log, xys, 1))
-    xys->xy[xys->mem.used++] = (lutriplex_xy) {x, y};
-    LU_NO_CLEANUP
-}
-
-static LUMEM_MKFREE(xyz_free, lutriplex_xyz)
-static LUMEM_MKRESERVE(xyz_reserve, lutriplex_xyz)
-
-int lutriplex_reservexyz(lulog *log, lutriplex_xyzs *xyzs, int n) {
-    return xyz_reserve(log, &xyzs->xyz, &xyzs->mem, n);
-}
-
-int lutriplex_mkxyzn(lulog *log, lutriplex_xyzs **xyzs, int n) {
-    LU_STATUS
-    LU_ALLOC(log, *xyzs, 1)
-    LU_CHECK(lutriplex_reservexyz(log, *xyzs, n))
-    LU_NO_CLEANUP
-}
-
-int lutriplex_freexyz(lutriplex_xyzs **xyzs, int prev_status) {
-    int status = xyz_free(&(*xyzs)->xyz, &(*xyzs)->mem, prev_status);
-    free(*xyzs); *xyzs = NULL;
-    return status;
-}
-
-int lutriplex_pushxyz(lulog *log, lutriplex_xyzs *xyzs, double x, double y, double z) {
-    LU_STATUS
-    LU_CHECK(lutriplex_reservexyz(log, xyzs, 1))
-    xyzs->xyz[xyzs->mem.used++] = (lutriplex_xyz) {x, y, z};
+    LU_ALLOC(log, *tile, 1)
+    LU_ALLOC_TYPE(log, (*tile)->state, 1, hex_tile)
+    (*tile)->enumerate_xy = NULL;
+    (*tile)->enumerate_xyz = NULL;
+    (*tile)->free = hex_free;
     LU_NO_CLEANUP
 }
 

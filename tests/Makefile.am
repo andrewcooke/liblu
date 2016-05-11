@@ -1,7 +1,9 @@
 
-TESTS = check_str check_log check_simplex check_rand check_triplex
+TESTS = check_str check_log check_simplex check_rand check_triplex \
+	check_array
 
-check_PROGRAMS = check_str check_log check_simplex check_rand check_triplex
+check_PROGRAMS = check_str check_log check_simplex check_rand check_triplex \
+	check_array
 
 check_str_SOURCES = check_str.c $(top_builddir)/lib/lustr.h
 check_str_CFLAGS = @CHECK_CFLAGS@
@@ -22,3 +24,7 @@ check_rand_LDADD = $(top_builddir)/lib/liblu.la @CHECK_LIBS@
 check_triplex_SOURCES = check_triplex.c $(top_builddir)/lib/lutriplex.h
 check_triplex_CFLAGS = @CHECK_CFLAGS@
 check_triplex_LDADD = $(top_builddir)/lib/liblu.la @CHECK_LIBS@
+
+check_array_SOURCES = check_array.c $(top_builddir)/lib/luarray.h
+check_array_CFLAGS = @CHECK_CFLAGS@
+check_array_LDADD = $(top_builddir)/lib/liblu.la @CHECK_LIBS@
