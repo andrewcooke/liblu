@@ -22,16 +22,16 @@ START_TEST(test_config) {
     }
     ck_assert_msg(config->perm[0] == 255, "%d", config->perm[0]);
     ck_assert_msg(config->perm[1] == 244, "%d", config->perm[1]);
-    ck_assert(config->n_grad == 9);
-    for (int i = 0; i < 9; ++i) {
-        ck_assert(config->grad[i].x == cos(i * 2 * M_PI / 9));
-        ck_assert(config->grad[i].y == sin(i * 2 * M_PI / 9));
+    ck_assert(config->n_grad == 12);
+    for (int i = 0; i < 12; ++i) {
+        ck_assert(config->grad[i].x == cos(i * 2 * M_PI / 12));
+        ck_assert(config->grad[i].y == sin(i * 2 * M_PI / 12));
         ck_assert(abs(1 - (config->grad[i].x * config->grad[i].x + config->grad[i].y * config->grad[i].y)) < 1e-8);
     }
     ck_assert_msg(config->grad[0].x == 1.0, "%.*f", DECIMAL_DIG, config->grad[0].x);
     ck_assert_msg(config->grad[0].y == 0.0, "%.*f", DECIMAL_DIG, config->grad[0].y);
-    ck_assert_msg(config->grad[1].x == 0.766044443118978013452, "%.*f", DECIMAL_DIG, config->grad[1].x);
-    ck_assert_msg(config->grad[1].y == 0.642787609686539251896, "%.*f", DECIMAL_DIG, config->grad[1].y);
+    ck_assert_msg(config->grad[1].x == 0.866025403784438707611, "%.*f", DECIMAL_DIG, config->grad[1].x);
+    ck_assert_msg(config->grad[1].y == 0.499999999999999944489, "%.*f", DECIMAL_DIG, config->grad[1].y);
     ck_assert(!lutriplex_freeconfig(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST

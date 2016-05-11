@@ -41,7 +41,7 @@ int lutriplex_defaultconfig(lulog *log, lutriplex_config **config) {
     lurand *rand = NULL;
     LU_STATUS
     LU_CHECK(lurand_mkxoroshiro128plus(log, &rand, 0));
-    LU_CHECK(lutriplex_mkconfig(log, rand, config, 9, 0, 256))
+    LU_CHECK(lutriplex_mkconfig(log, rand, config, 12, 0, 256))
 LU_CLEANUP
     if (rand) status = rand->free(&rand, status);
     LU_RETURN
@@ -77,9 +77,12 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf,
     double dx1 = x - x1, dy1 = y - y1;
     double dx2 = x - x2, dy2 = y - y2;
     size_t pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
-    ludata_xy g0 = conf->grad[conf->perm[pmod + conf->perm[pmod]] % conf->n_grad];
-    ludata_xy g1 = conf->grad[conf->perm[qmod + conf->perm[qmod]] % conf->n_grad];
-    ludata_xy g2 = conf->grad[conf->perm[far + pmod + conf->perm[far + qmod]] % conf->n_grad];
+    // g0 is at (pi+1,qi)
+    ludata_xy g0 = conf->grad[conf->perm[pmod+1+conf->perm[qmod]] % conf->n_grad];
+    // g1 is at (pi,qi+1)
+    ludata_xy g1 = conf->grad[conf->perm[pmod+conf->perm[qmod+1]] % conf->n_grad];
+    // g2 is at (pi+far,qi+far)
+    ludata_xy g2 = conf->grad[conf->perm[pmod+far+conf->perm[qmod+far]] % conf->n_grad];
     *noise = (scale(g0, dx0, dy0) + scale(g1, dx1, dy1) + scale(g2, dx2, dy2));
     LU_NO_CLEANUP
 }
@@ -95,16 +98,14 @@ int tri_enumerate(struct lutriplex_tile *tile, lulog *log, lutriplex_config *con
     LU_STATUS
     size_t i, j, points = 1 + tile->side * tile->subsamples;
     double z;
-    if (!*ijz) {
-        LU_CHECK(luarray_mkijzn(log, ijz, points * (points - 1)))
-    }
+    LU_CHECK(luarray_mkijzn(log, ijz, points * (points - 1)))
     for (j = 0; j < points; ++j) {
         if ((j == 0 && (edges & 1)) || (j > 0)) {
             double q = ((double)j) / tile->subsamples;
             for (i = 0; i < points - j; ++i) {
                 if ((i == points - j && (edges & 2)) || (i > 0 && i < points - j - 1) || (i == 0 && (edges & 4))) {
                     double p = ((double)i) / tile->subsamples;
-                    ludebug(log, "(%d, %d) -> (%f, %f)", i, j, p, q);
+//                    ludebug(log, "(%d, %d) -> (%f, %f)", i, j, p, q);
                     LU_CHECK(lutriplex_noise(log, config, p, q, &z))
                     LU_CHECK(luarray_pushijz(log, *ijz, i + corner0.i, j + corner0.j, z))
                 }
@@ -170,7 +171,7 @@ int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, do
         ij.i -= bl.i; ij.j -= bl.j;
         (*data)[ij.i + ij.j * *nx] = ijz->ijz[i].z;
     }
-    int even = (bl.i + bl.j) % 2;
+    int even = (ijz->ijz[0].i + ijz->ijz[0].j) % 2;
     for (size_t j = 0; j < *ny; ++j) {
         for (size_t i = (j % 2) + even; i < *nx - 2; i += 2) {
             (*data)[i + 1 + j * *nx] = 0.5 * ((*data)[i + 0 + j * *nx] + (*data)[i + 2 + j * *nx]);

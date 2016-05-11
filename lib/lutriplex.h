@@ -53,7 +53,6 @@ int lutriplex_defaultconfig(lulog *log, lutriplex_config **config);
 
 struct lutriplex_tile;
 
-// if *ijz is NULL it will be allocated, otherwise it will be appended to
 typedef int lutriplex_enumerate(struct lutriplex_tile *tile, lulog *log,
         lutriplex_config *config, ludata_ij corner0, uint edges,
         luarray_ijz **ijz);
