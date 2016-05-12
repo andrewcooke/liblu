@@ -58,8 +58,7 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf,
 struct lutriplex_tile;
 
 typedef int lutriplex_enumerate(struct lutriplex_tile *tile, lulog *log,
-        lutriplex_config *config, ludata_ij corner0, uint edges,
-        luarray_ijz **ijz);
+        lutriplex_config *config, uint edges, luarray_ijz **ijz);
 typedef int lutriplex_freetile(struct lutriplex_tile **tile, size_t prev_status);
 
 // this function can modify its input to generate the appropriate gradients

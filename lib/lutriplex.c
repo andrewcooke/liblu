@@ -112,7 +112,7 @@ int tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
 }
 
 int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
-        ludata_ij corner0, uint edges, luarray_ijz **ijz) {
+        uint edges, luarray_ijz **ijz) {
     LU_STATUS
     size_t i, j, k;
     size_t points = 1 + tile->side * tile->subsamples;
@@ -130,7 +130,7 @@ int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
                         LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
                         z += dz / m;
                     }
-                    LU_CHECK(luarray_pushijz(log, *ijz, i + corner0.i, j + corner0.j, z))
+                    LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
                 }
             }
         }
@@ -167,11 +167,11 @@ int hex_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
 }
 
 int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
-        ludata_ij corner0, uint edges, luarray_ijz **ijz) {
+        uint edges, luarray_ijz **ijz) {
     LU_STATUS
     int i, j;
     int points = 1 + tile->side * tile->subsamples;
-    size_t k, octaves = 1; // + log2(tile->subsamples);
+    size_t k, octaves = 1 + log2(tile->subsamples);
     hex_state *state = (hex_state*)tile->state;
     LU_CHECK(luarray_mkijzn(log, ijz, 6 * points * (points - 1)))
     int jlo = 1 - points + !(edges & 1);
@@ -194,7 +194,7 @@ int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
                 LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
                 z += dz / m;
             }
-            LU_CHECK(luarray_pushijz(log, *ijz, i + corner0.i, j + corner0.j, z))
+            LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
         }
     }
     LU_NO_CLEANUP
@@ -242,9 +242,9 @@ int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, do
         ij.i -= bl.i; ij.j -= bl.j;
         (*data)[ij.i + ij.j * *nx] = ijz->ijz[i].z - zero;
     }
-    int even = (ijz->ijz[0].i + ijz->ijz[0].j) % 2;
+    int odd = (bl.i + bl.j) % 2;
     for (size_t j = 0; j < *ny; ++j) {
-        for (size_t i = (j % 2) + even; i < *nx - 2; i += 2) {
+        for (size_t i = (j + odd) % 2; i < *nx - 2; i += 2) {
             (*data)[i + 1 + j * *nx] = 0.5 * ((*data)[i + 0 + j * *nx] + (*data)[i + 2 + j * *nx]);
         }
     }
