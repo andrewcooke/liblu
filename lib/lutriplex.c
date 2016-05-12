@@ -176,15 +176,15 @@ int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
     LU_CHECK(luarray_mkijzn(log, ijz, 6 * points * (points - 1)))
     int jlo = 1 - points + !(edges & 1);
     int jhi = points - 1 - !(edges & 4);
-    for (j = jlo; j < jhi; ++j) {
+    for (j = jlo; j <= jhi; ++j) {
         double q = ((double)j) / tile->subsamples;
         int ilo, ihi;
         if (j >= 0) {
             ilo = 1 - points + !(edges & 16);
-            ihi = points - j - !(edges & 4);
+            ihi = points - j - 1 - !(edges & 4);
         } else {
-            ilo = -j - points + !(edges & 32);
-            ihi = points - !(edges & 2);
+            ilo = 1 - points - j + !(edges & 32);
+            ihi = points - 1 - !(edges & 2);
         }
         for (i = ilo; i <= ihi; ++i) {
             double p = ((double)i) / tile->subsamples;
@@ -234,13 +234,14 @@ int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, do
     ludebug(log, "Raster extends from (%d, %d) bottom left to (%d, %d) top right",
             bl.i, bl.j, tr.i, tr.j);
     ludebug(log, "Zero level is %.2g", zero);
-    *nx = tr.i - bl.i + 1; *ny = tr.j - bl.j + 1;
+    size_t border = 1;
+    *nx = tr.i - bl.i + 1 + 2 * border; *ny = tr.j - bl.j + 1 + 2 * border;
     luinfo(log, "Allocating raster area %zu x %zu", *nx, *ny);
     LU_ALLOC(log, *data, *nx * *ny)
     for (size_t i = 0; i < ijz->mem.used; ++i) {
         ludata_ij ij = tri2raster(ijz->ijz[i]);
         ij.i -= bl.i; ij.j -= bl.j;
-        (*data)[ij.i + ij.j * *nx] = ijz->ijz[i].z - zero;
+        (*data)[ij.i + border + (ij.j + border) * *nx] = ijz->ijz[i].z - zero;
     }
     int odd = (bl.i + bl.j) % 2;
     for (size_t j = 0; j < *ny; ++j) {
