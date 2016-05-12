@@ -75,6 +75,9 @@ START_TEST(test_small_hexagon) {
         ludebug(log, "%zu: (%d, %d)", i, ijz->ijz[i].i, ijz->ijz[i].j);
     }
     ck_assert_msg(ijz->mem.used == 7, "Expected 7 points, found %zu", ijz->mem.used);
+    luarray_xyz *strips;
+    luarray_int *offsets;
+    ck_assert(!lutriplex_strips(log, ijz, &strips, &offsets));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
     ck_assert(!lutriplex_freeconfig(&config, 0));

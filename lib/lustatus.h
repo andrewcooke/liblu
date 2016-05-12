@@ -12,6 +12,6 @@
 
 #define LU_CHECK(stmt) if ((status = stmt)) {goto exit;}
 
-#define LU_ASSERT(value, log, message, error) if (!(value)) {luerror(log, message); status = error; goto exit;}
+#define LU_ASSERT(value, error, log, ...) if (!(value)) {luerror(log, __VA_ARGS__); status = error; goto exit;}
 
 #endif

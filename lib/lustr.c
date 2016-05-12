@@ -24,7 +24,7 @@ int lustr_reserve(lulog *log, lustr *str, int n) {
 
 int lustr_mkn(lulog *log, lustr *str, size_t n) {
     LU_STATUS
-    LU_ASSERT(n > 0, log, "Cannot alloc zero-length string", LU_ERR_ARG)
+    LU_ASSERT(n > 0, LU_ERR_ARG, log, "Cannot alloc zero-length string")
     *str = (lustr){NULL, .mem = LUMEM_ZERO};
     LU_CHECK(lustr_reserve(log, str, n));
     str->mem.used = 1;  // no need to set value as reserved is zeroed

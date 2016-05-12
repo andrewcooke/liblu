@@ -141,8 +141,8 @@ int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
 int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile,
         size_t side, size_t subsamples, double octweight) {
     LU_STATUS
-    LU_ASSERT(side > 0, log, "Side must be non-zero", LU_ERR_ARG)
-    LU_ASSERT(subsamples > 0, log, "Subsamples must be non-zero", LU_ERR_ARG)
+    LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
+    LU_ASSERT(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
     LU_ALLOC(log, *tile, 1)
     LU_ALLOC_TYPE(log, (*tile)->state, 1, tri_state);
     (*tile)->side = side;
@@ -205,8 +205,8 @@ int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
 int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
         size_t side, size_t subsamples, double octweight) {
     LU_STATUS
-    LU_ASSERT(side > 0, log, "Side must be non-zero", LU_ERR_ARG)
-    LU_ASSERT(subsamples > 0, log, "Subsamples must be non-zero", LU_ERR_ARG)
+    LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
+    LU_ASSERT(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
     LU_ALLOC(log, *tile, 1)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
@@ -226,7 +226,7 @@ static inline ludata_ij tri2raster(ludata_ijz tri) {
 static inline int range(lulog *log, luarray_ijz *ijz,
         ludata_ij *bl, ludata_ij *tr, double *zero) {
     LU_STATUS
-    LU_ASSERT(ijz->mem.used, log, "No data", LU_ERR_ARG);
+    LU_ASSERT(ijz->mem.used, LU_ERR_ARG, log, "No data");
     *bl = tri2raster(ijz->ijz[0]), *tr = *bl;
     if (zero) *zero = ijz->ijz[0].z;
     for (size_t i = 1; i < ijz->mem.used; ++i) {
@@ -266,19 +266,27 @@ int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, do
 }
 
 
+static int ijeq(ludata_ij ij1, ludata_ij ij2) {
+    return ij1.i == ij2.i && ij1.j == ij2.j;
+}
+
+static inline ludata_ij ijz2ij(ludata_ijz ijz) {
+    return (ludata_ij){ijz.i, ijz.j};
+}
+
 static inline int ij2index(ludata_ij ij, ludata_ij bl, ludata_ij tr) {
     return ij.i - bl.i + (ij.j - bl.j) * (tr.i - bl.i + 1);
 }
 
 static inline int ijz2index(ludata_ijz ijz, ludata_ij bl, ludata_ij tr) {
-    return ij2index((ludata_ij){ijz.i, ijz.j}, bl, tr);
+    return ij2index(ijz2ij(ijz), bl, tr);
 }
 
 static int mkindex(lulog *log, luarray_ijz *ijz, ludata_ij bl, ludata_ij tr,
         ludata_ijz ***index) {
     LU_STATUS
     size_t nx = tr.i - bl.i + 1, ny = tr.j - bl.j + 1;
-    LU_ALLOC(log, **index, nx*ny)
+    LU_ALLOC(log, *index, nx*ny)
     for (size_t i = 0; i < ijz->mem.used; ++i) {
         (*index)[ijz2index(ijz->ijz[i], bl, tr)] = &ijz->ijz[i];
     }
@@ -310,7 +318,11 @@ static int addpoints(lulog *log, luarray_ijz *ijz, size_t *current,
         ludata_ijz *pnext = index[ij2index((nextisup ? upright : downright)(*pprev), bl, tr)];
         if (pnext) {
             if (!nextisup) {
-                LU_ASSERT( &ijz->ijz[*current] == &ijz->ijz[*current+1], log, "Unsorted points?", LU_ERR)
+                LU_ASSERT(ijeq(right(ijz->ijz[*current]), ijz2ij(ijz->ijz[*current+1])), LU_ERR,
+                        log, "Unsorted points?  Current at (%d,%d), next at (%d,%d), prev at (%d,%d), downright at (%d,%d)",
+                        ijz->ijz[*current].i, ijz->ijz[*current].j,
+                        ijz->ijz[*current+1].i, ijz->ijz[*current+1].j,
+                        pprev->i, pprev->j, pnext->i, pnext->j)
                 *current = *current + 1;
             }
             LU_CHECK(luarray_pushxyz(log, xyz, pnext->i, pnext->j, pnext->z))
@@ -329,24 +341,29 @@ static int addstrip(lulog *log, luarray_ijz *ijz, size_t *current, ludata_ijz **
     ludata_ijz *p1 = &ijz->ijz[*current];
     ludata_ijz *p0 = index[ij2index(upleft(*p1), bl, tr)];
     ludata_ijz *p2 = index[ij2index(upright(*p1), bl, tr)];
-    ludata_ijz *p3 = index[ij2index(right(*p1), bl, tr)];
-    if (p3) {
-        LU_ASSERT(p3 == &ijz->ijz[*current + 1], log, "Unsorted points?", LU_ERR)
-    }
     // if at least three points exist, add the first two and then add the rest
     if (p0 && p2) {
         LU_CHECK(luarray_pushint(log, offsets, xyz->mem.used))
         LU_CHECK(luarray_pushxyz(log, xyz, p0->i, p0->j, p0->z))
         LU_CHECK(luarray_pushxyz(log, xyz, p1->i, p1->j, p1->z))
         LU_CHECK(addpoints(log, ijz, current, p1, 1, index, bl, tr, xyz, offsets));
-    } else if (p2 && p3) {
-        LU_CHECK(luarray_pushint(log, offsets, xyz->mem.used))
-        LU_CHECK(luarray_pushxyz(log, xyz, p1->i, p1->j, p1->z))
-        LU_CHECK(luarray_pushxyz(log, xyz, p2->i, p2->j, p2->z))
-        *current = *current+1;
-        LU_CHECK(addpoints(log, ijz, current, p2, 0, index, bl, tr, xyz, offsets));
     } else {
-        *current = *current+1;
+        ludata_ijz *p3 = index[ij2index(right(*p1), bl, tr)];
+        if (p3) {
+            LU_ASSERT(*current + 1 < ijz->mem.used, LU_ERR, log,
+                    "Unsorted points?  No data at %zu", *current + 1);
+            LU_ASSERT(p3 == &ijz->ijz[*current + 1], LU_ERR, log,
+                    "Unsorted points?  p3=(%d,%d), p1=(%d,%d), next=(%d,%d)",
+                    p3->i, p3->j, p1->i, p1->j, ijz->ijz[*current + 1].i, ijz->ijz[*current + 1].j)
+        }
+        if (p2 && p3) {
+            LU_CHECK(luarray_pushint(log, offsets, xyz->mem.used))
+            LU_CHECK(luarray_pushxyz(log, xyz, p1->i, p1->j, p1->z))
+            LU_CHECK(luarray_pushxyz(log, xyz, p2->i, p2->j, p2->z))
+            LU_CHECK(addpoints(log, ijz, current, p2, 0, index, bl, tr, xyz, offsets));
+        } else {
+            *current = *current+1;
+        }
     }
     LU_NO_CLEANUP
 }
