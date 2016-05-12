@@ -153,6 +153,53 @@ int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t 
 }
 
 
+typedef struct hex_state {
+    int p;
+    int q;
+    int far;
+} hex_state;
+
+int hex_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
+    LU_STATUS
+//    hex_state *state = (hex_state)tile->state;
+//    *p = state->p; *q = state->q; *far = state->far;
+    LU_NO_CLEANUP
+}
+
+int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
+        ludata_ij corner0, uint edges, luarray_ijz **ijz) {
+    LU_STATUS
+    int i, j;
+    int points = 1 + tile->side * tile->subsamples;
+    size_t k, octaves = 1; // + log2(tile->subsamples);
+    hex_state *state = (hex_state*)tile->state;
+    LU_CHECK(luarray_mkijzn(log, ijz, 6 * points * (points - 1)))
+    int jlo = 1 - points + !(edges & 1);
+    int jhi = points - 1 - !(edges & 4);
+    for (j = jlo; j < jhi; ++j) {
+        double q = ((double)j) / tile->subsamples;
+        int ilo, ihi;
+        if (j >= 0) {
+            ilo = 1 - points + !(edges & 16);
+            ihi = points - j - !(edges & 4);
+        } else {
+            ilo = -j - points + !(edges & 32);
+            ihi = points - !(edges & 2);
+        }
+        for (i = ilo; i <= ihi; ++i) {
+            double p = ((double)i) / tile->subsamples;
+            double z = 0, dz;
+            for (k = 0; k < octaves; ++k) {
+                double a = k * points, m = pow(2, k);
+                LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
+                z += dz / m;
+            }
+            LU_CHECK(luarray_pushijz(log, *ijz, i + corner0.i, j + corner0.j, z))
+        }
+    }
+    LU_NO_CLEANUP
+}
+
 int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
     LU_STATUS
     LU_ASSERT(side > 0, log, "Side must be non-zero", LU_ERR_ARG)
@@ -160,7 +207,8 @@ int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t s
     LU_ALLOC(log, *tile, 1)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
-    (*tile)->enumerate = NULL;
+    (*tile)->enumerate = hex_enumerate;
+    (*tile)->wrap = hex_wrap;
     (*tile)->free = generic_free;
     LU_NO_CLEANUP
 }

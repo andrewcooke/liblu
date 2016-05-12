@@ -62,6 +62,31 @@ START_TEST(test_triangle) {
 } END_TEST
 
 
+START_TEST(test_hexagon) {
+    lulog *log;
+    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    lutriplex_config *config;
+    ck_assert(!lutriplex_defaultconfig(log, &config));
+    lutriplex_tile *hexagon;
+    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 2, 4));
+    luarray_ijz *ijz = NULL;
+    ck_assert(!hexagon->enumerate(hexagon, log, config, (ludata_ij){0, 0}, -1, &ijz));
+    size_t nx, ny; int *grey; double *data;
+    ck_assert(!lutriplex_rasterize(log, ijz, &nx, &ny, &data));
+    ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
+    lustr s;
+    ck_assert(!lustr_mkn(NULL, &s, (nx+1)*ny+1));
+    ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
+    printf(s.c);
+    ck_assert(!lustr_free(&s, 0));
+    free(grey); free(data);
+    ck_assert(!luarray_freeijz(&ijz, 0));
+    ck_assert(!hexagon->free(&hexagon, 0));
+    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!log->free(&log, 0));
+} END_TEST
+
+
 int main(void) {
 
     int failed = 0;
@@ -72,6 +97,7 @@ int main(void) {
     c = tcase_create("case");
     tcase_add_test(c, test_config);
     tcase_add_test(c, test_triangle);
+    tcase_add_test(c, test_hexagon);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);
