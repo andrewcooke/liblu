@@ -55,6 +55,10 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf,
 // ascending.  the integer coordinates are in subsample units.  edges are
 // selected for output given the bitmask "edges".
 
+// when octweight is 1, octave noise is weighted by 1/2 per octave (so
+// fine details are progressively smaller).  a larger value emphasises the
+// high frequency noise.
+
 struct lutriplex_tile;
 
 typedef int lutriplex_enumerate(struct lutriplex_tile *tile, lulog *log,
@@ -86,5 +90,6 @@ int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
 //    x x x x
 // and linearly interpolates the gaps horizontally
 int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data);
+int lutriplex_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_int **offsets);
 
 #endif

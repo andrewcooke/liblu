@@ -223,21 +223,30 @@ static inline ludata_ij tri2raster(ludata_ijz tri) {
     return (ludata_ij){2 * tri.i + tri.j, -tri.j};
 }
 
-int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data) {
+static inline int range(lulog *log, luarray_ijz *ijz,
+        ludata_ij *bl, ludata_ij *tr, double *zero) {
     LU_STATUS
-    *nx = 0; *ny = 0; *data = NULL;
-    if (!ijz->mem.used) goto exit;
-    ludata_ij bl = tri2raster(ijz->ijz[0]), tr = bl;
-    double zero = ijz->ijz[0].z;
+    LU_ASSERT(ijz->mem.used, log, "No data", LU_ERR_ARG);
+    *bl = tri2raster(ijz->ijz[0]), *tr = *bl;
+    if (zero) *zero = ijz->ijz[0].z;
     for (size_t i = 1; i < ijz->mem.used; ++i) {
         ludata_ij ij = tri2raster(ijz->ijz[i]);
-        bl.i = min(bl.i, ij.i); bl.j = min(bl.j, ij.j);
-        tr.i = max(tr.i, ij.i); tr.j = max(tr.j, ij.j);
-        zero = min(zero, ijz->ijz[i].z);
+        bl->i = min(bl->i, ij.i); bl->j = min(bl->j, ij.j);
+        tr->i = max(tr->i, ij.i); tr->j = max(tr->j, ij.j);
+        if (zero) *zero = min(*zero, ijz->ijz[i].z);
     }
-    ludebug(log, "Raster extends from (%d, %d) bottom left to (%d, %d) top right",
-            bl.i, bl.j, tr.i, tr.j);
-    ludebug(log, "Zero level is %.2g", zero);
+    ludebug(log, "Data extend from (%d, %d) bottom left to (%d, %d) top right",
+            bl->i, bl->j, tr->i, tr->j);
+    if (zero) ludebug(log, "Zero level is %.2g", *zero);
+    LU_NO_CLEANUP
+}
+
+int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data) {
+    LU_STATUS
+    ludata_ij bl, tr;
+    double zero;
+    *nx = 0; *ny = 0; *data = NULL;
+    LU_CHECK(range(log, ijz, &bl, &tr, &zero))
     size_t border = 1;
     *nx = tr.i - bl.i + 1 + 2 * border; *ny = tr.j - bl.j + 1 + 2 * border;
     luinfo(log, "Allocating raster area %zu x %zu", *nx, *ny);
@@ -256,3 +265,107 @@ int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, do
     LU_NO_CLEANUP
 }
 
+
+static inline int ij2index(ludata_ij ij, ludata_ij bl, ludata_ij tr) {
+    return ij.i - bl.i + (ij.j - bl.j) * (tr.i - bl.i + 1);
+}
+
+static inline int ijz2index(ludata_ijz ijz, ludata_ij bl, ludata_ij tr) {
+    return ij2index((ludata_ij){ijz.i, ijz.j}, bl, tr);
+}
+
+static int mkindex(lulog *log, luarray_ijz *ijz, ludata_ij bl, ludata_ij tr,
+        ludata_ijz ***index) {
+    LU_STATUS
+    size_t nx = tr.i - bl.i + 1, ny = tr.j - bl.j + 1;
+    LU_ALLOC(log, **index, nx*ny)
+    for (size_t i = 0; i < ijz->mem.used; ++i) {
+        (*index)[ijz2index(ijz->ijz[i], bl, tr)] = &ijz->ijz[i];
+    }
+    LU_NO_CLEANUP
+}
+
+static inline ludata_ij upleft(ludata_ijz p) {
+    return (ludata_ij){p.i-1, p.j+1};
+}
+
+static inline ludata_ij upright(ludata_ijz p) {
+    return (ludata_ij){p.i, p.j+1};
+}
+
+static inline ludata_ij right(ludata_ijz p) {
+    return (ludata_ij){p.i+1, p.j};
+}
+
+static inline ludata_ij downright(ludata_ijz p) {
+    return (ludata_ij){p.i+1, p.j-1};
+}
+
+static int addpoints(lulog *log, luarray_ijz *ijz, size_t *current,
+        ludata_ijz *pprev, int nextisup,
+        ludata_ijz **index, ludata_ij bl, ludata_ij tr,
+        luarray_xyz *xyz, luarray_int *offsets) {
+    LU_STATUS
+    do {
+        ludata_ijz *pnext = index[ij2index((nextisup ? upright : downright)(*pprev), bl, tr)];
+        if (pnext) {
+            if (!nextisup) {
+                LU_ASSERT( &ijz->ijz[*current] == &ijz->ijz[*current+1], log, "Unsorted points?", LU_ERR)
+                *current = *current + 1;
+            }
+            LU_CHECK(luarray_pushxyz(log, xyz, pnext->i, pnext->j, pnext->z))
+            pprev = pnext; nextisup = !nextisup;
+        } else {
+            *current = *current + 1;
+            goto exit;
+        }
+    } while (*current < ijz->mem.used);
+    LU_NO_CLEANUP
+}
+
+static int addstrip(lulog *log, luarray_ijz *ijz, size_t *current, ludata_ijz **index,
+        ludata_ij bl, ludata_ij tr, luarray_xyz *xyz, luarray_int *offsets) {
+    LU_STATUS
+    ludata_ijz *p1 = &ijz->ijz[*current];
+    ludata_ijz *p0 = index[ij2index(upleft(*p1), bl, tr)];
+    ludata_ijz *p2 = index[ij2index(upright(*p1), bl, tr)];
+    ludata_ijz *p3 = index[ij2index(right(*p1), bl, tr)];
+    if (p3) {
+        LU_ASSERT(p3 == &ijz->ijz[*current + 1], log, "Unsorted points?", LU_ERR)
+    }
+    // if at least three points exist, add the first two and then add the rest
+    if (p0 && p2) {
+        LU_CHECK(luarray_pushint(log, offsets, xyz->mem.used))
+        LU_CHECK(luarray_pushxyz(log, xyz, p0->i, p0->j, p0->z))
+        LU_CHECK(luarray_pushxyz(log, xyz, p1->i, p1->j, p1->z))
+        LU_CHECK(addpoints(log, ijz, current, p1, 1, index, bl, tr, xyz, offsets));
+    } else if (p2 && p3) {
+        LU_CHECK(luarray_pushint(log, offsets, xyz->mem.used))
+        LU_CHECK(luarray_pushxyz(log, xyz, p1->i, p1->j, p1->z))
+        LU_CHECK(luarray_pushxyz(log, xyz, p2->i, p2->j, p2->z))
+        *current = *current+1;
+        LU_CHECK(addpoints(log, ijz, current, p2, 0, index, bl, tr, xyz, offsets));
+    } else {
+        *current = *current+1;
+    }
+    LU_NO_CLEANUP
+}
+
+int lutriplex_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_int **offsets) {
+    LU_STATUS
+    ludata_ij bl, tr;
+    LU_CHECK(range(log, ijz, &bl, &tr, NULL))
+    bl.i--; bl.j--; tr.i++; tr.j++;  // add border for failed lookups
+    ludata_ijz **index = NULL;
+    LU_CHECK(mkindex(log, ijz, bl, tr, &index))
+    LU_CHECK(luarray_mkxyzn(log, xyz, 4 * ijz->mem.used))  // guess some overhead
+    LU_CHECK(luarray_mkintn(log, offsets, tr.j - bl.j + 1))  // optimistic?
+    size_t current = 0;
+    while (current < ijz->mem.used) {
+        LU_CHECK(addstrip(log, ijz, &current, index, bl, tr, *xyz, *offsets))
+    }
+    LU_CHECK(luarray_pushint(log, *offsets, (*xyz)->mem.used))
+LU_CLEANUP
+    free(index);
+    LU_RETURN
+}

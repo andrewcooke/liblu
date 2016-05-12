@@ -7,6 +7,12 @@ typedef struct ludata_xy {
     double y;
 } ludata_xy;
 
+typedef struct ludata_xyz {
+    double x;
+    double y;
+    double z;
+} ludata_xyz;
+
 typedef struct ludata_ij {
     int i;
     int j;
