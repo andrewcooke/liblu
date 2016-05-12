@@ -69,14 +69,17 @@ typedef int lutriplex_wrap(struct lutriplex_tile *tile, lulog *log,
 typedef struct lutriplex_tile {
     size_t side;
     size_t subsamples;
+    double octweight;
     lutriplex_enumerate *enumerate;
     lutriplex_wrap *wrap;
     lutriplex_freetile *free;
     void *state;
 } lutriplex_tile;
 
-int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples);
-int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples);
+int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile,
+        size_t side, size_t subsamples, double octweight);
+int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
+        size_t side, size_t subsamples, double octweight);
 
 // this is not geometrically correct.  instead, it uses a pattern like
 //     x x x

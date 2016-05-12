@@ -128,7 +128,7 @@ int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
                     for (k = 0; k < octaves; ++k) {
                         double a = k * points, m = pow(2, k);
                         LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
-                        z += dz / m;
+                        z += dz / pow(2 / tile->octweight, k);
                     }
                     LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
                 }
@@ -138,7 +138,8 @@ int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
     LU_NO_CLEANUP
 }
 
-int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
+int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile,
+        size_t side, size_t subsamples, double octweight) {
     LU_STATUS
     LU_ASSERT(side > 0, log, "Side must be non-zero", LU_ERR_ARG)
     LU_ASSERT(subsamples > 0, log, "Subsamples must be non-zero", LU_ERR_ARG)
@@ -146,6 +147,7 @@ int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile, size_t side, size_t 
     LU_ALLOC_TYPE(log, (*tile)->state, 1, tri_state);
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
+    (*tile)->octweight = octweight;
     (*tile)->enumerate = tri_enumerate;
     (*tile)->wrap = tri_wrap;
     (*tile)->free = generic_free;
@@ -192,7 +194,7 @@ int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
             for (k = 0; k < octaves; ++k) {
                 double a = k * points, m = pow(2, k);
                 LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
-                z += dz / m;
+                z += dz / pow(2 / tile->octweight, k);
             }
             LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
         }
@@ -200,13 +202,15 @@ int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
     LU_NO_CLEANUP
 }
 
-int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile, size_t side, size_t subsamples) {
+int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
+        size_t side, size_t subsamples, double octweight) {
     LU_STATUS
     LU_ASSERT(side > 0, log, "Side must be non-zero", LU_ERR_ARG)
     LU_ASSERT(subsamples > 0, log, "Subsamples must be non-zero", LU_ERR_ARG)
     LU_ALLOC(log, *tile, 1)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
+    (*tile)->octweight = octweight;
     (*tile)->enumerate = hex_enumerate;
     (*tile)->wrap = hex_wrap;
     (*tile)->free = generic_free;

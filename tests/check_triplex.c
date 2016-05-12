@@ -43,7 +43,7 @@ START_TEST(test_triangle) {
     lutriplex_config *config;
     ck_assert(!lutriplex_defaultconfig(log, &config));
     lutriplex_tile *triangle;
-    ck_assert(!lutriplex_mktriangle(log, &triangle, 4, 9));
+    ck_assert(!lutriplex_mktriangle(log, &triangle, 4, 9, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!triangle->enumerate(triangle, log, config, -1, &ijz));
     size_t nx, ny; int *grey; double *data;
@@ -68,7 +68,7 @@ START_TEST(test_small_hexagon) {
     lutriplex_config *config;
     ck_assert(!lutriplex_defaultconfig(log, &config));
     lutriplex_tile *hexagon;
-    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 1, 1));
+    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 1, 1, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     for (size_t i = 0; i < ijz->mem.used; ++i) {
@@ -88,7 +88,7 @@ START_TEST(test_hexagon) {
     lutriplex_config *config;
     ck_assert(!lutriplex_defaultconfig(log, &config));
     lutriplex_tile *hexagon;
-    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 2, 9));
+    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 4, 13, 4.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     size_t nx, ny; int *grey; double *data;
