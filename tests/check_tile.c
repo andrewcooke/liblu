@@ -7,7 +7,7 @@
 #include "../lib/lu.h"
 #include "../lib/luarray.h"
 #include "../lib/lugrey.h"
-#include "../lib/lutriplex.h"
+#include "../lib/lutile.h"
 #include "../lib/luminmax.h"
 
 static char *scale1 = " .:+*oO#@";
@@ -17,8 +17,8 @@ static char *scale2 = " '.\",-=+*:;ijcoebmIJCOEBM#@";
 START_TEST(test_config) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lutriplex_config *config;
-    ck_assert(!lutriplex_defaultconfig(log, &config));
+    lutile_config *config;
+    ck_assert(!lutile_defaultconfig(log, &config));
     ck_assert(config->n_perm == 256);
     for (int i = 0; i < 256; ++i) {
         ck_assert(config->perm[i] < 256);
@@ -35,7 +35,7 @@ START_TEST(test_config) {
     ck_assert_msg(config->grad[0].y == 0.0, "%.*f", DECIMAL_DIG, config->grad[0].y);
     ck_assert_msg(config->grad[1].x == 0.866025403784438707611, "%.*f", DECIMAL_DIG, config->grad[1].x);
     ck_assert_msg(config->grad[1].y == 0.499999999999999944489, "%.*f", DECIMAL_DIG, config->grad[1].y);
-    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!lutile_freeconfig(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
@@ -43,14 +43,14 @@ START_TEST(test_config) {
 START_TEST(test_triangle) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lutriplex_config *config;
-    ck_assert(!lutriplex_defaultconfig(log, &config));
-    lutriplex_tile *triangle;
-    ck_assert(!lutriplex_mktriangle(log, &triangle, 4, 9, 1.0));
+    lutile_config *config;
+    ck_assert(!lutile_defaultconfig(log, &config));
+    lutile_tile *triangle;
+    ck_assert(!lutile_mktriangle(log, &triangle, 4, 9, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!triangle->enumerate(triangle, log, config, -1, &ijz));
     size_t nx, ny; int *grey; double *data;
-    ck_assert(!lutriplex_rasterize(log, ijz, &nx, &ny, &data));
+    ck_assert(!lutile_rasterize(log, ijz, &nx, &ny, &data));
     ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
     lustr s;
     ck_assert(!lustr_mkn(NULL, &s, (nx+1)*ny+1));
@@ -60,7 +60,7 @@ START_TEST(test_triangle) {
     free(grey); free(data);
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!triangle->free(&triangle, 0));
-    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!lutile_freeconfig(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
@@ -68,10 +68,10 @@ START_TEST(test_triangle) {
 START_TEST(test_small_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lutriplex_config *config;
-    ck_assert(!lutriplex_defaultconfig(log, &config));
-    lutriplex_tile *hexagon;
-    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 1, 1, 1.0));
+    lutile_config *config;
+    ck_assert(!lutile_defaultconfig(log, &config));
+    lutile_tile *hexagon;
+    ck_assert(!lutile_mkhexagon(log, &hexagon, 1, 1, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     for (size_t i = 0; i < ijz->mem.used; ++i) {
@@ -80,7 +80,7 @@ START_TEST(test_small_hexagon) {
     ck_assert_msg(ijz->mem.used == 7, "Expected 7 points, found %zu", ijz->mem.used);
     luarray_xyz *strips = NULL;
     luarray_int *offsets = NULL;
-    ck_assert(!lutriplex_strips(log, ijz, &strips, &offsets));
+    ck_assert(!lutile_strips(log, ijz, &strips, &offsets));
     ck_assert(offsets->mem.used == 3);
     ck_assert(offsets->i[0] == 0);
     ck_assert(offsets->i[1] == 5);
@@ -89,7 +89,7 @@ START_TEST(test_small_hexagon) {
     ck_assert(!luarray_freexyz(&strips, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
-    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!lutile_freeconfig(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
@@ -97,10 +97,10 @@ START_TEST(test_small_hexagon) {
 START_TEST(test_medium_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lutriplex_config *config;
-    ck_assert(!lutriplex_defaultconfig(log, &config));
-    lutriplex_tile *hexagon;
-    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 2, 1, 1.0));
+    lutile_config *config;
+    ck_assert(!lutile_defaultconfig(log, &config));
+    lutile_tile *hexagon;
+    ck_assert(!lutile_mkhexagon(log, &hexagon, 2, 1, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     for (size_t i = 0; i < ijz->mem.used; ++i) {
@@ -109,7 +109,7 @@ START_TEST(test_medium_hexagon) {
     ck_assert_msg(ijz->mem.used == 19, "Expected 19 points, found %zu", ijz->mem.used);
     luarray_xyz *strips = NULL;
     luarray_int *offsets = NULL;
-    ck_assert(!lutriplex_strips(log, ijz, &strips, &offsets));
+    ck_assert(!lutile_strips(log, ijz, &strips, &offsets));
     ck_assert(offsets->mem.used == 5);
     ck_assert(offsets->i[0] == 0);
     ck_assert(offsets->i[1] == 7);
@@ -120,7 +120,7 @@ START_TEST(test_medium_hexagon) {
     ck_assert(!luarray_freexyz(&strips, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
-    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!lutile_freeconfig(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
@@ -128,14 +128,14 @@ START_TEST(test_medium_hexagon) {
 START_TEST(test_large_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lutriplex_config *config;
-    ck_assert(!lutriplex_defaultconfig(log, &config));
-    lutriplex_tile *hexagon;
-    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 4, 13, 1));
+    lutile_config *config;
+    ck_assert(!lutile_defaultconfig(log, &config));
+    lutile_tile *hexagon;
+    ck_assert(!lutile_mkhexagon(log, &hexagon, 4, 13, 1));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     size_t nx, ny; int *grey; double *data;
-    ck_assert(!lutriplex_rasterize(log, ijz, &nx, &ny, &data));
+    ck_assert(!lutile_rasterize(log, ijz, &nx, &ny, &data));
     char *scale = scale2;
     ck_assert(!lugrey_quantize(log, data, nx*ny, strlen(scale), &grey));
     lustr s;
@@ -146,7 +146,7 @@ START_TEST(test_large_hexagon) {
     free(grey); free(data);
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
-    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!lutile_freeconfig(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
@@ -161,11 +161,11 @@ void append_hexagon(lulog *log, luarray_ijz *tiled, luarray_ijz *hexagon, int di
 START_TEST(test_tiled_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lutriplex_config *config;
-    ck_assert(!lutriplex_defaultconfig(log, &config));
-    lutriplex_tile *hexagon;
+    lutile_config *config;
+    ck_assert(!lutile_defaultconfig(log, &config));
+    lutile_tile *hexagon;
     size_t n = 3, m = 2;
-    ck_assert(!lutriplex_mkhexagon(log, &hexagon, n, m, 1.0));
+    ck_assert(!lutile_mkhexagon(log, &hexagon, n, m, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, 7, &ijz));
     luarray_ijz *tiled = NULL;
@@ -175,7 +175,7 @@ START_TEST(test_tiled_hexagon) {
     append_hexagon(log, tiled, ijz, 2*n*m, -n*m);
 //    append_hexagon(log, tiled, ijz, 3*n*m, 0);
     size_t nx, ny; int *grey; double *data;
-    ck_assert(!lutriplex_rasterize(log, tiled, &nx, &ny, &data));
+    ck_assert(!lutile_rasterize(log, tiled, &nx, &ny, &data));
     char *scale = scale2;
     ck_assert(!lugrey_quantize(log, data, nx*ny, strlen(scale), &grey));
     lustr s;
@@ -187,7 +187,7 @@ START_TEST(test_tiled_hexagon) {
     ck_assert(!luarray_freeijz(&tiled, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
-    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!lutile_freeconfig(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 

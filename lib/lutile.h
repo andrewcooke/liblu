@@ -24,23 +24,23 @@
 // - p is along the x axis
 // - q is rotated 60 degrees anti-clock from p
 
-struct lutriplex_xy;
-struct lutriplex_tile;
+struct lutile_xy;
+struct lutile_tile;
 
-typedef struct lutriplex_config {
+typedef struct lutile_config {
     size_t n_grad;
     ludata_xy *grad;
     size_t n_perm;
     size_t *perm;
-} lutriplex_config;
+} lutile_config;
 
-int lutriplex_freeconfig(lutriplex_config **config, int prev_status);
-int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
+int lutile_freeconfig(lutile_config **config, int prev_status);
+int lutile_mkconfig(lulog *log, lurand *rand, lutile_config **config,
         size_t n_grad, double phase, size_t n_perm);
-int lutriplex_defaultconfig(lulog *log, lutriplex_config **config);
+int lutile_defaultconfig(lulog *log, lutile_config **config);
 
-int lutriplex_noise(lulog *log, lutriplex_config *conf,
-        struct lutriplex_tile *tile, double pin, double qin, double *noise);
+int lutile_noise(lulog *log, lutile_config *conf,
+        struct lutile_tile *tile, double pin, double qin, double *noise);
 
 // tiles are (convex?) shapes that fit within the triangular (p,q) grid of the
 // triplex and can be tiled without rotation.  corner 0 of the tile is the
@@ -59,37 +59,37 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf,
 // fine details are progressively smaller).  a larger value emphasises the
 // high frequency noise.
 
-struct lutriplex_tile;
+struct lutile_tile;
 
-typedef int lutriplex_enumerate(struct lutriplex_tile *tile, lulog *log,
-        lutriplex_config *config, uint edges, luarray_ijz **ijz);
-typedef int lutriplex_freetile(struct lutriplex_tile **tile, size_t prev_status);
+typedef int lutile_enumerate(struct lutile_tile *tile, lulog *log,
+        lutile_config *config, uint edges, luarray_ijz **ijz);
+typedef int lutile_freetile(struct lutile_tile **tile, size_t prev_status);
 
 // this function can modify its input to generate the appropriate gradients
 // for tiling.
-typedef void lutriplex_wrap(struct lutriplex_tile *tile, lulog *log, int *p, int *q);
+typedef void lutile_wrap(struct lutile_tile *tile, lulog *log, int *p, int *q);
 
-typedef struct lutriplex_tile {
+typedef struct lutile_tile {
     size_t side;
     size_t subsamples;
     size_t octave;  // used internally while rendering
     double octweight;
-    lutriplex_enumerate *enumerate;
-    lutriplex_wrap *wrap;
-    lutriplex_freetile *free;
+    lutile_enumerate *enumerate;
+    lutile_wrap *wrap;
+    lutile_freetile *free;
     void *state;
-} lutriplex_tile;
+} lutile_tile;
 
-int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile,
+int lutile_mktriangle(lulog *log, lutile_tile **tile,
         size_t side, size_t subsamples, double octweight);
-int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
+int lutile_mkhexagon(lulog *log, lutile_tile **tile,
         size_t side, size_t subsamples, double octweight);
 
 // this is not geometrically correct.  instead, it uses a pattern like
 //     x x x
 //    x x x x
 // and linearly interpolates the gaps horizontally
-int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data);
-int lutriplex_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_int **offsets);
+int lutile_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data);
+int lutile_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_int **offsets);
 
 #endif

@@ -4,10 +4,10 @@
 
 #include "lustatus.h"
 #include "luminmax.h"
-#include "lutriplex.h"
+#include "lutile.h"
 
 
-int lutriplex_freeconfig(lutriplex_config **config, int prev_status) {
+int lutile_freeconfig(lutile_config **config, int prev_status) {
     if (*config) {
         free((*config)->grad);
         free((*config)->perm);
@@ -17,7 +17,7 @@ int lutriplex_freeconfig(lutriplex_config **config, int prev_status) {
     return prev_status;
 }
 
-int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
+int lutile_mkconfig(lulog *log, lurand *rand, lutile_config **config,
         size_t n_grad, double phase, size_t n_perm) {
     size_t i;
     LU_STATUS
@@ -36,11 +36,11 @@ int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
     LU_NO_CLEANUP
 }
 
-int lutriplex_defaultconfig(lulog *log, lutriplex_config **config) {
+int lutile_defaultconfig(lulog *log, lutile_config **config) {
     lurand *rand = NULL;
     LU_STATUS
     LU_CHECK(lurand_mkxoroshiro128plus(log, &rand, 0));
-    LU_CHECK(lutriplex_mkconfig(log, rand, config, 12, 0, 256))
+    LU_CHECK(lutile_mkconfig(log, rand, config, 12, 0, 256))
 LU_CLEANUP
     if (rand) status = rand->free(&rand, status);
     LU_RETURN
@@ -61,13 +61,13 @@ static inline double scale(ludata_xy g, double dx, double dy) {
     }
 }
 
-static inline ludata_xy lookup_grad(lulog *log, lutriplex_config *conf,
-        lutriplex_tile *tile, int pi, int qi) {
+static inline ludata_xy lookup_grad(lulog *log, lutile_config *conf,
+        lutile_tile *tile, int pi, int qi) {
     if (tile) tile->wrap(tile, log, &pi, &qi);
     return conf->grad[conf->perm[(pi + conf->perm[qi % conf->n_perm]) % conf->n_perm] % conf->n_grad];
 }
 
-int lutriplex_noise(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
+int lutile_noise(lulog *log, lutile_config *conf, lutile_tile *tile,
         double pin, double qin, double *noise) {
     LU_STATUS
     double cos60 = 0.5, sin60 = sqrt(3)/2;
@@ -95,7 +95,7 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
 }
 
 
-int generic_free(lutriplex_tile **tile, size_t prev_status) {
+int generic_free(lutile_tile **tile, size_t prev_status) {
     if (*tile) free((*tile)->state);
     free(*tile); *tile = NULL;
     return prev_status;
@@ -106,41 +106,41 @@ int generic_free(lutriplex_tile **tile, size_t prev_status) {
 // generating octave noise.  the inverse is necessary so that the tile
 // can do the correct wrapping (without coupling the triplex noise code).
 
-static inline size_t octa(lutriplex_tile *tile) {
+static inline size_t octa(lutile_tile *tile) {
     return tile->octave * tile->side * tile->subsamples;
 }
 
-static inline size_t octm(lutriplex_tile *tile) {
+static inline size_t octm(lutile_tile *tile) {
     return pow(2, tile->octave);
 }
 
-static inline void octtransform(lutriplex_tile *tile, lulog *log,
+static inline void octtransform(lutile_tile *tile, lulog *log,
         double p, double q, double *po, double *qo) {
     size_t a = octa(tile), m = octm(tile);
     *po = m * p + a; *qo =  m * q + a;
 }
 
-static inline void octshift(lutriplex_tile *tile, lulog *log,
+static inline void octshift(lutile_tile *tile, lulog *log,
         int p, int q, int *po, int *qo) {
     size_t a = octa(tile);
     *po = p + a; *qo = q + a;
 }
 
-static inline void octunshift(lutriplex_tile *tile, lulog *log,
+static inline void octunshift(lutile_tile *tile, lulog *log,
         int po, int qo, int *p, int *q) {
     size_t a = octa(tile);
     *p = po - a; *q = qo - a;
 }
 
-static inline int octave(lutriplex_tile *tile, lulog *log,
-        lutriplex_config *config, int i, int j, luarray_ijz **ijz) {
+static inline int octave(lutile_tile *tile, lulog *log,
+        lutile_config *config, int i, int j, luarray_ijz **ijz) {
     LU_STATUS
     double z = 0, dz, po, qo;
     double p = ((double)i) / tile->subsamples;
     double q = ((double)j) / tile->subsamples;
     for (tile->octave = 0; tile->octave < 1 + log2(tile->subsamples); ++tile->octave) {
         octtransform(tile, log, p, q, &po, &qo);
-        LU_CHECK(lutriplex_noise(log, config, tile, po, qo, &dz))
+        LU_CHECK(lutile_noise(log, config, tile, po, qo, &dz))
         z += dz / pow(2 / tile->octweight, tile->octave);
     }
     LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
@@ -152,7 +152,7 @@ typedef struct tri_state {
     int warn;
 } tri_state;
 
-void tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q) {
+void tri_wrap(lutile_tile *tile, lulog *log, int *p, int *q) {
     tri_state *state = (tri_state*)(tile->state);
     if (!state->warn) {
         luwarn(log, "Triangle cannot be tiled - passing coords through");
@@ -160,7 +160,7 @@ void tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q) {
     }
 }
 
-int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
+int tri_enumerate(lutile_tile *tile, lulog *log, lutile_config *config,
         uint edges, luarray_ijz **ijz) {
     LU_STATUS
     size_t i, j;
@@ -180,7 +180,7 @@ int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
     LU_NO_CLEANUP
 }
 
-int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile,
+int lutile_mktriangle(lulog *log, lutile_tile **tile,
         size_t side, size_t subsamples, double octweight) {
     LU_STATUS
     LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
@@ -198,7 +198,7 @@ int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile,
 }
 
 
-void hex_wrap(lutriplex_tile *tile, lulog *log, int *po, int *qo) {
+void hex_wrap(lutile_tile *tile, lulog *log, int *po, int *qo) {
     int u, v, m = octm(tile);
     int s = tile->side * m;  // the size of the repeating octave tile
     octunshift(tile, log, *po, *qo, &u, &v);  // keep octave scaling
@@ -226,7 +226,7 @@ void hex_wrap(lutriplex_tile *tile, lulog *log, int *po, int *qo) {
     // otherwise, continue as before
 }
 
-int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
+int hex_enumerate(lutile_tile *tile, lulog *log, lutile_config *config,
         uint edges, luarray_ijz **ijz) {
     LU_STATUS
     int points = tile->side * tile->subsamples;
@@ -249,7 +249,7 @@ int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
     LU_NO_CLEANUP
 }
 
-int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
+int lutile_mkhexagon(lulog *log, lutile_tile **tile,
         size_t side, size_t subsamples, double octweight) {
     LU_STATUS
     LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
@@ -289,7 +289,7 @@ static inline int range(lulog *log, luarray_ijz *ijz,
     LU_NO_CLEANUP
 }
 
-int lutriplex_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data) {
+int lutile_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data) {
     LU_STATUS
     ludata_ij bl, tr;
     double zero;
@@ -421,7 +421,7 @@ static int addstrip(lulog *log, luarray_ijz *ijz, size_t *current, ludata_ijz **
     LU_NO_CLEANUP
 }
 
-int lutriplex_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_int **offsets) {
+int lutile_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_int **offsets) {
     LU_STATUS
     ludata_ij bl, tr;
     LU_CHECK(range(log, ijz, &bl, &tr, NULL))

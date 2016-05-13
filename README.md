@@ -32,6 +32,14 @@ lulog_free(&log, 0);  // or status = lulog_free(&log, status);
 Simple framework for dynamic memory management in `lumem.h`, extended
 in `luarray_mem.h`.
 
+```c
+#include "luarray.h"
+luarray_int *ints;
+luarray_mkintn(log, &ints, 10);  // initial capacity 10
+luarray_pushint(log, ints, 42);
+luarray_freeint(&ints, 0);
+``` 
+
 ## String Buffer
 
 The `lustr` structure (using the dynamic memory framework) is intended to 
@@ -81,9 +89,9 @@ noise = lusimplex_noise2(x, y);
 ## Tilable Simplex Noise
 
 ```c
-#include "lutriplex.h"
-lutriplex_tile *hexagon;
-lutriplex_mkhexagon(log, &hexagon, 3, 2, 1.0));
+#include "lutile.h"
+lutile_tile *hexagon;
+lutile_mkhexagon(log, &hexagon, 3, 2, 1.0));
 luarray_ijz *ijz = NULL;
 hexagon->enumerate(hexagon, log, config, 7, &ijz);
 ```
