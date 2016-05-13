@@ -61,7 +61,7 @@ The `log` above can be `NULL`, or an instance of the log above.
 
 ## Random
 
-The `lurand` structure is a source of randomg integers:
+The `lurand` structure is a source of random integers:
 
 ```c
 #include "lurand.h"
