@@ -4,10 +4,12 @@
 ## Table of Contents
 
   * [Log](#log)
+  * [Dynamic Memory and Arrays](#dynamic-memory-and-arrays)
   * [String Buffer](#string-buffer)
   * [Random](#random)
-  * [Simplex Noise](#simplex-noise)
   * [Greyscale](#greyscale)
+  * [Simplex Noise](#simplex-noise)
+  * [Tilable Simplex Noise](#tilable-simplex-noise)
   * [Conventions](#conventions)
 
 ## Log
@@ -25,11 +27,15 @@ luerror(log, "Bad thing: %d != %d", 2, 37);
 lulog_free(&log, 0);  // or status = lulog_free(&log, status);
 ```
 
+## Dynamic Memory and Arrays
+
+Simple framework for dynamic memory management in `lumem.h`, extended
+in `luarray_mem.h`.
+
 ## String Buffer
 
-The `lustr` structure is intended to be used as a buffer where complex
-strings can be assembled (it's a `char*` plus a couple of values needed for
-bookkeeping memory):
+The `lustr` structure (using the dynamic memory framework) is intended to 
+be used as a buffer where complex strings can be assembled:
 
 ```c
 #include "lustr.h"
@@ -58,6 +64,10 @@ lurand_shuffle(log, rand, anagram, 1, strlen(anagram));
 rand->free(rand, 0);
 ```
 
+## Greyscale
+
+See examples below.
+
 ## Simplex Noise
 
 An efficient implementation based on code from Stefan Gustavson and
@@ -68,32 +78,41 @@ Peter Eastman.
 noise = lusimplex_noise2(x, y);
 ```
 
-## Greyscale
+## Tilable Simplex Noise
 
-Support for greyscale images (output from 
-[check_simplex](../master/tests/check_simplex.c)):
+```c
+#include "lutriplex.h"
+lutriplex_tile *hexagon;
+lutriplex_mkhexagon(log, &hexagon, 3, 2, 1.0));
+luarray_ijz *ijz = NULL;
+hexagon->enumerate(hexagon, log, config, 7, &ijz);
+```
 
 ```
- :++:.:...:++++:::+:***+:..:++*oOO#@@OOo
- .+*+::...:::+::.:+***+::..::+:+oooO#OOo
- .::+*::..::+:+:::*o**::+:::++:+**oOOOo*
-.:+*++:.:::****++*ooo*++++++::::::+*oo*:
-*+***+:.+**o**oooo*o****oo++:::.::++**++
-Ooo**:.::**ooo**oooo**o*Ooo*+:.:++:+*o*+
-OOo***+++***oo**oOOOooOOOo**+:.:::++*Oo+
-oOO*+**+ooooO***O#@#OO#@@Oo*++:::+++oOO*
-*ooo****ooOOo**oO###OO@@###oo****:++oO#o
-oo*oOoooooOoo**ooo####@@#@@O*+***++oO#@O
-oo*oOOOoooOo*++**oOoOO#@@@#O*+++***oO##O
-*ooOOOOOOOOo+::::*ooOOO#@@#o+:+****OOOOO
-+O##@###Ooo+:....+ooooOO@@Oo+:+****oooO#
-*O@@@@#OOo*+::. .+*oooOOO#oo+:+****oOO##
-oO@@@@OOoo*+::..:+**oOO#@#OO*++****oOO##
-O#@@###OOoo*+:++**oooo#@@#Oo*++**o*oO#O#
-oO#####OOOOo*+*ooooOOo###Ooo+++++*ooOOOO
-**oOO###OOo**+ooOOO##OOOOO++:++:+*ooOo**
-+++oOOO#OOo*++oO#@@##OOo**::++++*oOOOo+*
-::+**ooOOO****oO#@@##Oo*+::+*o*ooO@#O*++
+                         :mboi+iociom*     
+                      "+;cccccIBIc;=;c=    
+                     =cccIBECCCIbecj;;;-   
+                    c@Cc:,:cjijcIBIcebec=  
+                   c@Em;,+;*=" ;CIbecIBEC; 
+                  iBIc*"*cJMJcj;jcemeccccc 
+       :mboi+iociomc;- .,:cJMMMmiiiomecob* 
+    "+;cccccIBIc;=;cbCbc;=;cJMJc;=;cemec=  
+   =cccIBECCCIbecj;;;icJ@ObCMJc*"' .,=+"   
+  c@Cc:,:cjijcIBIcebecj;jcemeccccc:,:c=    
+ c@Em;,+;*=" ;CIbecIBECmo+ "=;cC@EmIC;     
+ BIc*"*cJMJcj;jcemecccccccccemec;+;c=      
+ -;- .,:cJMMMmiiiomecob* :mboi+iociom*     
+  ;Cbc;=;cJMJc;=;cemec;+;cccccIBIc;=;c=    
+   =cJ@ObCMJc*"' .,=+;cccIBECCCIbecj;;;-   
+    -;jcemeccccc:,:cC@Cc:,:cjijcIBIcebec=  
+     +o+ "=;cC@EmICB@Em;,+;*=" ;CIbecIBEC; 
+      =cccemec;+;cIBIc*"*cJMJcj;jcemeccccc 
+                   -;- .,:cJMMMmiiiomecob* 
+                    ;Cbc;=;cJMJc;=;cemec=  
+                     =cJ@ObCMJc*"' .,=+"   
+                      -;jcemeccccc:,:c=    
+                       +o+ "=;cC@EmIC;     
+                        =cccemec;+;c=     
 ```
 
 ## Conventions

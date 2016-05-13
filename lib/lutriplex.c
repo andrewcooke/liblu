@@ -185,7 +185,7 @@ int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile,
     LU_STATUS
     LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
     LU_ASSERT(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
-    LU_ASSERT(side * subsamples > 1, LU_ERR_ARG, log, "Only zero outer points visible")
+    if (side * subsamples == 1) luwarn(log, "Only zero outer points visible");
     LU_ALLOC(log, *tile, 1)
     LU_ALLOC_TYPE(log, (*tile)->state, 1, tri_state);
     (*tile)->side = side;
@@ -254,6 +254,7 @@ int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
     LU_STATUS
     LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
     LU_ASSERT(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
+    if (side * subsamples == 1) luwarn(log, "Only zero outer points visible");
     LU_ALLOC(log, *tile, 1)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;

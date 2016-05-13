@@ -11,7 +11,7 @@
 #include "../lib/luminmax.h"
 
 static char *scale1 = " .:+*oO#@";
-static char *scale2 = " .,'\"-=+*:;ijcoebmIJCOEBM#@";
+static char *scale2 = " '.\",-=+*:;ijcoebmIJCOEBM#@";
 
 
 START_TEST(test_config) {
@@ -164,7 +164,7 @@ START_TEST(test_tiled_hexagon) {
     lutriplex_config *config;
     ck_assert(!lutriplex_defaultconfig(log, &config));
     lutriplex_tile *hexagon;
-    size_t n = 4, m = 4;
+    size_t n = 3, m = 2;
     ck_assert(!lutriplex_mkhexagon(log, &hexagon, n, m, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, 7, &ijz));
@@ -173,7 +173,7 @@ START_TEST(test_tiled_hexagon) {
     append_hexagon(log, tiled, ijz, 0, 0);
     append_hexagon(log, tiled, ijz, n*m, n*m);
     append_hexagon(log, tiled, ijz, 2*n*m, -n*m);
-    append_hexagon(log, tiled, ijz, 3*n*m, 0);
+//    append_hexagon(log, tiled, ijz, 3*n*m, 0);
     size_t nx, ny; int *grey; double *data;
     ck_assert(!lutriplex_rasterize(log, tiled, &nx, &ny, &data));
     char *scale = scale2;
