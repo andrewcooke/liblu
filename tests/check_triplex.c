@@ -10,6 +10,9 @@
 #include "../lib/lutriplex.h"
 #include "../lib/luminmax.h"
 
+static char *scale1 = " .:+*oO#@";
+static char *scale2 = " .,'\"-=+*:;ijcoebmIJCOEBM#@";
+
 
 START_TEST(test_config) {
     lulog *log;
@@ -133,10 +136,11 @@ START_TEST(test_large_hexagon) {
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     size_t nx, ny; int *grey; double *data;
     ck_assert(!lutriplex_rasterize(log, ijz, &nx, &ny, &data));
-    ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
+    char *scale = scale2;
+    ck_assert(!lugrey_quantize(log, data, nx*ny, strlen(scale), &grey));
     lustr s;
     ck_assert(!lustr_mkn(NULL, &s, (nx+1)*ny+1));
-    ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
+    ck_assert(!lugrey_str(log, grey, nx, ny, scale, &s));
     printf(s.c);
     ck_assert(!lustr_free(&s, 0));
     free(grey); free(data);
@@ -172,10 +176,11 @@ START_TEST(test_tiled_hexagon) {
     append_hexagon(log, tiled, ijz, 3*n*m, 0);
     size_t nx, ny; int *grey; double *data;
     ck_assert(!lutriplex_rasterize(log, tiled, &nx, &ny, &data));
-    ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
+    char *scale = scale2;
+    ck_assert(!lugrey_quantize(log, data, nx*ny, strlen(scale), &grey));
     lustr s;
     ck_assert(!lustr_mkn(NULL, &s, (nx+1)*ny+1));
-    ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
+    ck_assert(!lugrey_str(log, grey, nx, ny, scale, &s));
     printf(s.c);
     ck_assert(!lustr_free(&s, 0));
     free(grey); free(data);
@@ -200,8 +205,8 @@ int main(void) {
     tcase_add_test(c, test_triangle);
     tcase_add_test(c, test_small_hexagon);
     tcase_add_test(c, test_medium_hexagon);
-    tcase_add_test(c, test_large_hexagon);
     tcase_add_test(c, test_tiled_hexagon);
+    tcase_add_test(c, test_large_hexagon);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);
