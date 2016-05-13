@@ -159,7 +159,7 @@ START_TEST(test_tiled_hexagon) {
     lutriplex_config *config;
     ck_assert(!lutriplex_defaultconfig(log, &config));
     lutriplex_tile *hexagon;
-    size_t n = 4;
+    size_t n = 1;
     ck_assert(!lutriplex_mkhexagon(log, &hexagon, n, n, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, 7, &ijz));
