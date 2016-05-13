@@ -23,7 +23,7 @@ int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
     LU_STATUS
     LU_ALLOC(log, *config, 1)
     LU_ALLOC(log, (*config)->grad, n_grad)
-    LU_ALLOC(log, (*config)->perm, n_perm * 2)
+    LU_ALLOC(log, (*config)->perm, n_perm)
     (*config)->n_grad = n_grad;
     (*config)->n_perm = n_perm;
     for (i = 0; i < n_grad; ++i) {
@@ -33,7 +33,6 @@ int lutriplex_mkconfig(lulog *log, lurand *rand, lutriplex_config **config,
     }
     for (i = 0; i < n_perm; ++i) (*config)->perm[i] = i;
     LU_CHECK(lurand_shuffle(log, rand, (*config)->perm, sizeof(*(*config)->perm), n_perm))
-    for (i = 0; i < n_perm; ++i) (*config)->perm[i+n_perm] = (*config)->perm[i];
     LU_NO_CLEANUP
 }
 
@@ -62,12 +61,10 @@ static inline double scale(ludata_xy g, double dx, double dy) {
     }
 }
 
-static inline ludata_xy lookup_grad(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
-        int pi, int qi) {
+static inline ludata_xy lookup_grad(lulog *log, lutriplex_config *conf,
+        lutriplex_tile *tile, int pi, int qi) {
     if (tile) tile->wrap(tile, log, &pi, &qi);
-    size_t pmod = pi % conf->n_perm;
-    size_t qmod = qi % conf->n_perm;
-    return conf->grad[conf->perm[pmod + conf->perm[qmod]] % conf->n_grad];
+    return conf->grad[conf->perm[(pi + conf->perm[qi % conf->n_perm]) % conf->n_perm] % conf->n_grad];
 }
 
 int lutriplex_noise(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
@@ -208,8 +205,8 @@ typedef struct hex_state {
 void hex_wrap(lutriplex_tile *tile, lulog *log, int *po, int *qo) {
     hex_state *state = (hex_state*)tile->state;
     int u, v, m = octm(tile);
-    int s = tile->side * m;
-    octunshift(tile, log, *po, *qo, &u, &v);
+    int s = tile->side * m;  // the size of the repeating octave tile
+    octunshift(tile, log, *po, *qo, &u, &v);  // keep octave scaling
     if ((u == s && v == 0) || (u == -s && v == s)) {
         // corners 2 and 4 should match corner 0
         u = 0; v = s;

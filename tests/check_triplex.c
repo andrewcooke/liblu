@@ -18,7 +18,6 @@ START_TEST(test_config) {
     ck_assert(config->n_perm == 256);
     for (int i = 0; i < 256; ++i) {
         ck_assert(config->perm[i] < 256);
-        ck_assert(config->perm[i] == config->perm[i+256]);
     }
     ck_assert_msg(config->perm[0] == 255, "%d", config->perm[0]);
     ck_assert_msg(config->perm[1] == 244, "%d", config->perm[1]);
@@ -147,6 +146,47 @@ START_TEST(test_large_hexagon) {
 } END_TEST
 
 
+void append_hexagon(lulog *log, luarray_ijz *tiled, luarray_ijz *hexagon, int di, int dj) {
+    for (size_t i = 0; i < hexagon->mem.used; ++i) {
+        ludata_ijz ijz = hexagon->ijz[i];
+        luarray_pushijz(log, tiled, ijz.i + di, ijz.j + dj, ijz.z);
+    }
+}
+
+START_TEST(test_tiled_hexagon) {
+    lulog *log;
+    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    lutriplex_config *config;
+    ck_assert(!lutriplex_defaultconfig(log, &config));
+    lutriplex_tile *hexagon;
+    size_t n = 4;
+    ck_assert(!lutriplex_mkhexagon(log, &hexagon, n, n, 1.0));
+    luarray_ijz *ijz = NULL;
+    ck_assert(!hexagon->enumerate(hexagon, log, config, 7, &ijz));
+    luarray_ijz *tiled = NULL;
+    ck_assert(!luarray_mkijzn(log, &tiled, 0));
+    append_hexagon(log, tiled, ijz, 0, 0);
+    append_hexagon(log, tiled, ijz, 4*n, 4*n);
+    append_hexagon(log, tiled, ijz, 8*n, -4*n);
+    append_hexagon(log, tiled, ijz, 12*n, 0);
+    size_t nx, ny; int *grey; double *data;
+    ck_assert(!lutriplex_rasterize(log, tiled, &nx, &ny, &data));
+    ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
+    lustr s;
+    ck_assert(!lustr_mkn(NULL, &s, (nx+1)*ny+1));
+    ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
+    printf(s.c);
+    ck_assert(!lustr_free(&s, 0));
+    free(grey); free(data);
+    ck_assert(!luarray_freeijz(&tiled, 0));
+    ck_assert(!luarray_freeijz(&ijz, 0));
+    ck_assert(!hexagon->free(&hexagon, 0));
+    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!log->free(&log, 0));
+} END_TEST
+
+
+
 int main(void) {
 
     int failed = 0;
@@ -160,6 +200,7 @@ int main(void) {
     tcase_add_test(c, test_small_hexagon);
     tcase_add_test(c, test_medium_hexagon);
     tcase_add_test(c, test_large_hexagon);
+    tcase_add_test(c, test_tiled_hexagon);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);

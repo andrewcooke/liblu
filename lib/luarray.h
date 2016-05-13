@@ -20,7 +20,6 @@ int luarray_freeijz(luarray_ijz **ijz, int prev_status);
 int luarray_reserveijz(lulog *log, luarray_ijz *ijz, int n);
 int luarray_pushijz(lulog *log, luarray_ijz *ijz, int i, int j, double z);
 
-
 typedef struct luarray_xyz {
     ludata_xyz *xyz;
     lumem mem;
