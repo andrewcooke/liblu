@@ -382,6 +382,7 @@ int lutriplex_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_in
         LU_CHECK(addstrip(log, ijz, &current, index, bl, tr, *xyz, *offsets))
     }
     LU_CHECK(luarray_pushint(log, *offsets, (*xyz)->mem.used))
+    luinfo(log, "Generated %zu triangle strips", (*offsets)->mem.used - 1);
 LU_CLEANUP
     free(index);
     LU_RETURN

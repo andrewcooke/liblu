@@ -72,12 +72,18 @@ START_TEST(test_small_hexagon) {
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     for (size_t i = 0; i < ijz->mem.used; ++i) {
-        ludebug(log, "%zu: (%d, %d)", i, ijz->ijz[i].i, ijz->ijz[i].j);
+//        ludebug(log, "%zu: (%d, %d)", i, ijz->ijz[i].i, ijz->ijz[i].j);
     }
     ck_assert_msg(ijz->mem.used == 7, "Expected 7 points, found %zu", ijz->mem.used);
-    luarray_xyz *strips;
-    luarray_int *offsets;
+    luarray_xyz *strips = NULL;
+    luarray_int *offsets = NULL;
     ck_assert(!lutriplex_strips(log, ijz, &strips, &offsets));
+    ck_assert(offsets->mem.used == 3);
+    ck_assert(offsets->i[0] == 0);
+    ck_assert(offsets->i[1] == 5);
+    ck_assert(offsets->i[2] == 10);
+    ck_assert(!luarray_freeint(&offsets, 0));
+    ck_assert(!luarray_freexyz(&strips, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
     ck_assert(!lutriplex_freeconfig(&config, 0));
@@ -85,7 +91,38 @@ START_TEST(test_small_hexagon) {
 } END_TEST
 
 
-START_TEST(test_hexagon) {
+START_TEST(test_medium_hexagon) {
+    lulog *log;
+    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    lutriplex_config *config;
+    ck_assert(!lutriplex_defaultconfig(log, &config));
+    lutriplex_tile *hexagon;
+    ck_assert(!lutriplex_mkhexagon(log, &hexagon, 2, 1, 1.0));
+    luarray_ijz *ijz = NULL;
+    ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
+    for (size_t i = 0; i < ijz->mem.used; ++i) {
+//        ludebug(log, "%zu: (%d, %d)", i, ijz->ijz[i].i, ijz->ijz[i].j);
+    }
+    ck_assert_msg(ijz->mem.used == 19, "Expected 19 points, found %zu", ijz->mem.used);
+    luarray_xyz *strips = NULL;
+    luarray_int *offsets = NULL;
+    ck_assert(!lutriplex_strips(log, ijz, &strips, &offsets));
+    ck_assert(offsets->mem.used == 5);
+    ck_assert(offsets->i[0] == 0);
+    ck_assert(offsets->i[1] == 7);
+    ck_assert(offsets->i[2] == 16);
+    ck_assert(offsets->i[3] == 25);
+    ck_assert(offsets->i[4] == 32);
+    ck_assert(!luarray_freeint(&offsets, 0));
+    ck_assert(!luarray_freexyz(&strips, 0));
+    ck_assert(!luarray_freeijz(&ijz, 0));
+    ck_assert(!hexagon->free(&hexagon, 0));
+    ck_assert(!lutriplex_freeconfig(&config, 0));
+    ck_assert(!log->free(&log, 0));
+} END_TEST
+
+
+START_TEST(test_large_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lutriplex_config *config;
@@ -121,7 +158,8 @@ int main(void) {
     tcase_add_test(c, test_config);
     tcase_add_test(c, test_triangle);
     tcase_add_test(c, test_small_hexagon);
-    tcase_add_test(c, test_hexagon);
+    tcase_add_test(c, test_medium_hexagon);
+    tcase_add_test(c, test_large_hexagon);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);
