@@ -47,6 +47,7 @@ LU_CLEANUP
     LU_RETURN
 }
 
+
 static inline double dot(ludata_xy g, double x, double y) {
     return g.x * x + g.y * y;
 }
@@ -111,26 +112,34 @@ int tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
     LU_NO_CLEANUP
 }
 
+static inline int octave(lutriplex_tile *tile, lulog *log,
+        lutriplex_config *config, int i, int j, luarray_ijz **ijz) {
+    LU_STATUS
+    double z = 0, dz;
+    double p = ((double)i) / tile->subsamples;
+    double q = ((double)j) / tile->subsamples;
+    for (size_t k = 0; k < 1 + log2(tile->subsamples); ++k) {
+        double a = k * tile->side * tile->subsamples, m = pow(2, k);
+        LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
+        z += dz / pow(2 / tile->octweight, k);
+    }
+    LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
+    LU_NO_CLEANUP
+}
+
 int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
         uint edges, luarray_ijz **ijz) {
     LU_STATUS
-    size_t i, j, k;
+    size_t i, j;
     size_t points = 1 + tile->side * tile->subsamples;
-    size_t octaves = 1 + log2(tile->subsamples);
     LU_CHECK(luarray_mkijzn(log, ijz, points * (points - 1)))
     for (j = 0; j < points; ++j) {
         if ((j == 0 && (edges & 1)) || (j > 0)) {
-            double q = ((double)j) / tile->subsamples;
             for (i = 0; i < points - j; ++i) {
-                if ((i == points - j - 1 && (edges & 2)) || (i > 0 && i < points - j - 1) || (i == 0 && (edges & 4))) {
-                    double p = ((double)i) / tile->subsamples;
-                    double z = 0, dz;
-                    for (k = 0; k < octaves; ++k) {
-                        double a = k * points, m = pow(2, k);
-                        LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
-                        z += dz / pow(2 / tile->octweight, k);
-                    }
-                    LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
+                if ((i == points - j - 1 && (edges & 2)) ||
+                        (i > 0 && i < points - j - 1) ||
+                        (i == 0 && (edges & 4))) {
+                    LU_CHECK(octave(tile, log, config, i, j, ijz))
                 }
             }
         }
@@ -173,13 +182,11 @@ int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
     LU_STATUS
     int i, j;
     int points = 1 + tile->side * tile->subsamples;
-    size_t k, octaves = 1 + log2(tile->subsamples);
     hex_state *state = (hex_state*)tile->state;
     LU_CHECK(luarray_mkijzn(log, ijz, 6 * points * (points - 1)))
     int jlo = 1 - points + !(edges & 1);
-    int jhi = points - 1 - !(edges & 4);
+    int jhi = points - 1 - !(edges & 8);
     for (j = jlo; j <= jhi; ++j) {
-        double q = ((double)j) / tile->subsamples;
         int ilo, ihi;
         if (j >= 0) {
             ilo = 1 - points + !(edges & 16);
@@ -189,14 +196,7 @@ int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
             ihi = points - 1 - !(edges & 2);
         }
         for (i = ilo; i <= ihi; ++i) {
-            double p = ((double)i) / tile->subsamples;
-            double z = 0, dz;
-            for (k = 0; k < octaves; ++k) {
-                double a = k * points, m = pow(2, k);
-                LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
-                z += dz / pow(2 / tile->octweight, k);
-            }
-            LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
+            LU_CHECK(octave(tile, log, config, i, j, ijz))
         }
     }
     LU_NO_CLEANUP

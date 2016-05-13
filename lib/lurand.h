@@ -26,6 +26,9 @@ int lurand_mksplitmix64(lulog *log, lurand **rand, uint64_t seed);
 // longer period (s^128-1).  has low probability of zero.
 int lurand_mkxoroshiro128plus(lulog *log, lurand **rand, uint64_t seed);
 
+// these map (continuously) between [MIN(t),MAX(t)] for the two types
+// so that we can generate ranges in unsigned integers and return them as
+// signed.
 uint64_t lurand_remove_sign(int64_t n);
 int64_t lurand_add_sign(uint64_t u);
 
