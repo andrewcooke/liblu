@@ -62,6 +62,14 @@ static inline double scale(ludata_xy g, double dx, double dy) {
     }
 }
 
+static inline ludata_xy lookup_grad(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
+        int pi, int qi) {
+    if (tile) tile->wrap(tile, log, &pi, &qi);
+    size_t pmod = pi % conf->n_perm;
+    size_t qmod = qi % conf->n_perm;
+    return conf->grad[conf->perm[pmod + conf->perm[qmod]] % conf->n_grad];
+}
+
 int lutriplex_noise(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
         double pin, double qin, double *noise) {
     LU_STATUS
@@ -77,15 +85,14 @@ int lutriplex_noise(lulog *log, lutriplex_config *conf, lutriplex_tile *tile,
     double dx0 = x - x0, dy0 = y - y0;
     double dx1 = x - x1, dy1 = y - y1;
     double dx2 = x - x2, dy2 = y - y2;
-    if (tile) tile->wrap(tile, log, &pi, &qi, &far);
-    size_t pmod = pi % conf->n_perm, qmod = qi % conf->n_perm;
+    int pmod, qmod;
     // lookup below depends on the (p,q) coordinate of the corner
     // g0 is at (pi+1,qi)
-    ludata_xy g0 = conf->grad[conf->perm[pmod+1+conf->perm[qmod]] % conf->n_grad];
+    ludata_xy g0 = lookup_grad(log, conf, tile, pi+1, qi);
     // g1 is at (pi,qi+1)
-    ludata_xy g1 = conf->grad[conf->perm[pmod+conf->perm[qmod+1]] % conf->n_grad];
+    ludata_xy g1 = lookup_grad(log, conf, tile, pi, qi+1);
     // g2 is at (pi+far,qi+far)
-    ludata_xy g2 = conf->grad[conf->perm[pmod+far+conf->perm[qmod+far]] % conf->n_grad];
+    ludata_xy g2 = lookup_grad(log, conf, tile, pi+far, qi+far);
     *noise = (scale(g0, dx0, dy0) + scale(g1, dx1, dy1) + scale(g2, dx2, dy2));
     LU_NO_CLEANUP
 }
@@ -98,46 +105,75 @@ int generic_free(lutriplex_tile **tile, size_t prev_status) {
 }
 
 
-typedef struct tri_state {
-    int warn;
-} tri_state;
+// this block of functions describes the transform (and inverse) used when
+// generating octave noise.  the inverse is necessary so that the tile
+// can do the correct wrapping (without coupling the triplex noise code).
 
-int tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
-    LU_STATUS
-    tri_state *state = (tri_state*)(tile->state);
-    if (!state->warn) {
-        luwarn(log, "Triangle cannot be tiled - passing coords through");
-        state->warn = 1;
-    }
-    LU_NO_CLEANUP
+static inline size_t octa(lutriplex_tile *tile) {
+    return tile->octave * tile->side * tile->subsamples;
+}
+
+static inline size_t octm(lutriplex_tile *tile) {
+    return pow(2, tile->octave);
+}
+
+static inline void octtransform(lutriplex_tile *tile, lulog *log,
+        double p, double q, double *po, double *qo) {
+    size_t a = octa(tile), m = octm(tile);
+    *po = m * p + a; *qo =  m * q + a;
+}
+
+static inline void octshift(lutriplex_tile *tile, lulog *log,
+        int p, int q, int *po, int *qo) {
+    size_t a = octa(tile);
+    *po = p + a; *qo = q + a;
+}
+
+static inline void octunshift(lutriplex_tile *tile, lulog *log,
+        int po, int qo, int *p, int *q) {
+    size_t a = octa(tile);
+    *p = po - a; *q = qo - a;
 }
 
 static inline int octave(lutriplex_tile *tile, lulog *log,
         lutriplex_config *config, int i, int j, luarray_ijz **ijz) {
     LU_STATUS
-    double z = 0, dz;
+    double z = 0, dz, po, qo;
     double p = ((double)i) / tile->subsamples;
     double q = ((double)j) / tile->subsamples;
-    for (size_t k = 0; k < 1 + log2(tile->subsamples); ++k) {
-        double a = k * tile->side * tile->subsamples, m = pow(2, k);
-        LU_CHECK(lutriplex_noise(log, config, tile, m * p + a, m * q + a, &dz))
-        z += dz / pow(2 / tile->octweight, k);
+    for (tile->octave = 0; tile->octave < 1 + log2(tile->subsamples); ++tile->octave) {
+        octtransform(tile, log, p, q, &po, &qo);
+        LU_CHECK(lutriplex_noise(log, config, tile, po, qo, &dz))
+        z += dz / pow(2 / tile->octweight, tile->octave);
     }
     LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
     LU_NO_CLEANUP
+}
+
+
+typedef struct tri_state {
+    int warn;
+} tri_state;
+
+void tri_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q) {
+    tri_state *state = (tri_state*)(tile->state);
+    if (!state->warn) {
+        luwarn(log, "Triangle cannot be tiled - passing coords through");
+        state->warn = 1;
+    }
 }
 
 int tri_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
         uint edges, luarray_ijz **ijz) {
     LU_STATUS
     size_t i, j;
-    size_t points = 1 + tile->side * tile->subsamples;
+    size_t points = tile->side * tile->subsamples;
     LU_CHECK(luarray_mkijzn(log, ijz, points * (points - 1)))
-    for (j = 0; j < points; ++j) {
+    for (j = 0; j <= points; ++j) {
         if ((j == 0 && (edges & 1)) || (j > 0)) {
-            for (i = 0; i < points - j; ++i) {
-                if ((i == points - j - 1 && (edges & 2)) ||
-                        (i > 0 && i < points - j - 1) ||
+            for (i = 0; i <= points - j; ++i) {
+                if ((i == points - j && (edges & 2)) ||
+                        (i > 0 && i < points - j) ||
                         (i == 0 && (edges & 4))) {
                     LU_CHECK(octave(tile, log, config, i, j, ijz))
                 }
@@ -165,38 +201,58 @@ int lutriplex_mktriangle(lulog *log, lutriplex_tile **tile,
 
 
 typedef struct hex_state {
-    int p;
-    int q;
-    int far;
+    int i;
+    int j;
 } hex_state;
 
-int hex_wrap(lutriplex_tile *tile, lulog *log, int *p, int *q, int *far) {
-    LU_STATUS
-//    hex_state *state = (hex_state)tile->state;
-//    *p = state->p; *q = state->q; *far = state->far;
-    LU_NO_CLEANUP
+void hex_wrap(lutriplex_tile *tile, lulog *log, int *po, int *qo) {
+    hex_state *state = (hex_state*)tile->state;
+    int u, v, m = octm(tile);
+    int s = tile->side * m;
+    octunshift(tile, log, *po, *qo, &u, &v);
+    if ((u == s && v == 0) || (u == -s && v == s)) {
+        // corners 2 and 4 should match corner 0
+        u = 0; v = s;
+        octshift(tile, log, u, v, po, qo);
+    } else if ((u == s && v == s) || (u == -s && v == 0)) {
+        // corners 3 and 5 should match corner 1
+        u = s; v = -s;
+        octshift(tile, log, u, v, po, qo);
+    } else if (v == s) {
+        // edge 3 should match edge 0
+        u += s; v = -s;
+        octshift(tile, log, u, v, po, qo);
+    } else if (u == -s) {
+        // edge 4 should match edge 1
+        u = s; v -= s;
+        octshift(tile, log, u, v, po, qo);
+    } else if (v - u == s) {
+        // edge 5 should match edge 2
+        u += s; v += s;
+        octshift(tile, log, u, v, po, qo);
+    }
+    // otherwise, continue as before
 }
 
 int hex_enumerate(lutriplex_tile *tile, lulog *log, lutriplex_config *config,
         uint edges, luarray_ijz **ijz) {
     LU_STATUS
-    int i, j;
-    int points = 1 + tile->side * tile->subsamples;
+    int points = tile->side * tile->subsamples;
     hex_state *state = (hex_state*)tile->state;
-    LU_CHECK(luarray_mkijzn(log, ijz, 6 * points * (points - 1)))
-    int jlo = 1 - points + !(edges & 1);
-    int jhi = points - 1 - !(edges & 8);
-    for (j = jlo; j <= jhi; ++j) {
+    LU_CHECK(luarray_mkijzn(log, ijz, 6 * points * (points + 1)))
+    int jlo = !(edges & 1) - points;
+    int jhi = points - !(edges & 8);
+    for (state->j = jlo; state->j <= jhi; ++state->j) {
         int ilo, ihi;
-        if (j >= 0) {
-            ilo = 1 - points + !(edges & 16);
-            ihi = points - j - 1 - !(edges & 4);
+        if (state->j >= 0) {
+            ilo = !(edges & 16) - points;
+            ihi = points - state->j - !(edges & 4);
         } else {
-            ilo = 1 - points - j + !(edges & 32);
-            ihi = points - 1 - !(edges & 2);
+            ilo = !(edges & 32) - points - state->j;
+            ihi = points - !(edges & 2);
         }
-        for (i = ilo; i <= ihi; ++i) {
-            LU_CHECK(octave(tile, log, config, i, j, ijz))
+        for (state->i = ilo; state->i <= ihi; ++state->i) {
+            LU_CHECK(octave(tile, log, config, state->i, state->j, ijz))
         }
     }
     LU_NO_CLEANUP
@@ -208,6 +264,7 @@ int lutriplex_mkhexagon(lulog *log, lutriplex_tile **tile,
     LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
     LU_ASSERT(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
     LU_ALLOC(log, *tile, 1)
+    LU_ALLOC_TYPE(log, (*tile)->state, 1, hex_state)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
     (*tile)->octweight = octweight;
@@ -318,6 +375,11 @@ static int addpoints(lulog *log, luarray_ijz *ijz, size_t *current,
         ludata_ijz *pnext = index[ij2index((nextisup ? upright : downright)(*pprev), bl, tr)];
         if (pnext) {
             if (!nextisup) {
+                // we're walking geometrically (in i,j space) across the
+                // points, but we need to keep the traversal of ijz (via
+                // the current index) in step so we can restart correctly
+                // for the next strip.  this is only possible if the points
+                // are sorted (which enumerate should guarantee).
                 LU_ASSERT(ijeq(right(ijz->ijz[*current]), ijz2ij(ijz->ijz[*current+1])), LU_ERR,
                         log, "Unsorted points?  Current at (%d,%d), next at (%d,%d), prev at (%d,%d), downright at (%d,%d)",
                         ijz->ijz[*current].i, ijz->ijz[*current].j,

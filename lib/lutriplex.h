@@ -67,12 +67,12 @@ typedef int lutriplex_freetile(struct lutriplex_tile **tile, size_t prev_status)
 
 // this function can modify its input to generate the appropriate gradients
 // for tiling.
-typedef int lutriplex_wrap(struct lutriplex_tile *tile, lulog *log,
-        int *p, int *q, int *far);
+typedef void lutriplex_wrap(struct lutriplex_tile *tile, lulog *log, int *p, int *q);
 
 typedef struct lutriplex_tile {
     size_t side;
     size_t subsamples;
+    size_t octave;  // used internally while rendering
     double octweight;
     lutriplex_enumerate *enumerate;
     lutriplex_wrap *wrap;
