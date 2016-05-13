@@ -38,6 +38,7 @@ int lugrey_quantize(lulog *log, double *data, int n, int levels, int **out) {
         lo = min(lo, data[i]);
         hi = max(hi, data[i]);
     }
+    LU_ASSERT(lo != hi, LU_ERR, log, "Constant data")
     luinfo(log, "Scaling %5.4g - %5.4g to 0 - %d", lo, hi, levels-1);
     delta = (hi - lo) / levels;
     LU_ALLOC(log, *out, n)

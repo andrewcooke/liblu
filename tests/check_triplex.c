@@ -8,6 +8,7 @@
 #include "../lib/luarray.h"
 #include "../lib/lugrey.h"
 #include "../lib/lutriplex.h"
+#include "../lib/luminmax.h"
 
 
 START_TEST(test_config) {
@@ -159,16 +160,16 @@ START_TEST(test_tiled_hexagon) {
     lutriplex_config *config;
     ck_assert(!lutriplex_defaultconfig(log, &config));
     lutriplex_tile *hexagon;
-    size_t n = 1;
-    ck_assert(!lutriplex_mkhexagon(log, &hexagon, n, n, 1.0));
+    size_t n = 4, m = 4;
+    ck_assert(!lutriplex_mkhexagon(log, &hexagon, n, m, 1.0));
     luarray_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, 7, &ijz));
     luarray_ijz *tiled = NULL;
     ck_assert(!luarray_mkijzn(log, &tiled, 0));
     append_hexagon(log, tiled, ijz, 0, 0);
-    append_hexagon(log, tiled, ijz, 4*n, 4*n);
-    append_hexagon(log, tiled, ijz, 8*n, -4*n);
-    append_hexagon(log, tiled, ijz, 12*n, 0);
+    append_hexagon(log, tiled, ijz, n*m, n*m);
+    append_hexagon(log, tiled, ijz, 2*n*m, -n*m);
+    append_hexagon(log, tiled, ijz, 3*n*m, 0);
     size_t nx, ny; int *grey; double *data;
     ck_assert(!lutriplex_rasterize(log, tiled, &nx, &ny, &data));
     ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
