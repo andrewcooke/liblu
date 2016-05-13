@@ -88,6 +88,10 @@ noise = lusimplex_noise2(x, y);
 
 ## Tilable Simplex Noise
 
+This is a rewrite of the 2D Gustavson code, making it more flexible 
+(configurable size of gradients and permutations, tilings), and more correct 
+(gradients are unit vectors), but also much slower. 
+
 ```c
 #include "lutile.h"
 lutile_tile *hexagon;
