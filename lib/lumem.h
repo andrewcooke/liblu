@@ -6,6 +6,10 @@
 
 #include "lu.h"
 
+
+// basic support for dynamically allocated memory.  see luarray_mem.h for
+// use in constructing dynamic arrays.
+
 typedef struct lulog lulog;  // avoid dependency loops
 
 #define LU_ALLOC(log, ptr, n)\

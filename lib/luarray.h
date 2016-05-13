@@ -6,6 +6,10 @@
 #include "ludata.h"
 
 
+// there's nothing special about which arrays are present here - they are
+// simply what is needed elsewhere in the library.
+
+
 typedef struct luarray_ijz {
     ludata_ijz *ijz;
     lumem mem;
