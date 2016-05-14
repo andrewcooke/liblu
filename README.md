@@ -20,7 +20,7 @@ The `lulog` structure can log to a stream, file, syslog, or an in-memory
 string:
 
 ```c
-#include "lulog.h"
+#include "lu/log.h"
 lulog *log;
 lulog_mkstderr(&log, lulog_level_info);  // don't display debug
 luinfo(log, "So far all OK");
@@ -31,11 +31,11 @@ lulog_free(&log, 0);  // or status = lulog_free(&log, status);
 
 ## Dynamic Memory and Arrays
 
-Simple framework for dynamic memory management in `lumem.h`, extended
-in `luarray_mem.h`.
+Simple framework for dynamic memory management in `lu/dynamic_memory.h`, 
+extended in `lu/array_macros.h`.
 
 ```c
-#include "luarray.h"
+#include "lu/array.h"
 luarray_int *ints;
 luarray_mkintn(log, &ints, 10);  // initial capacity 10
 luarray_pushint(log, ints, 42);
@@ -48,7 +48,7 @@ The `lustr` structure (using the dynamic memory framework) is intended to
 be used as a buffer where complex strings can be assembled:
 
 ```c
-#include "lustr.h"
+#include "lu/strings.h"
 lustr str;
 lustr_init(log, &str);
 lustr_print(log, &str, "hello");
@@ -66,7 +66,7 @@ The `log` above can be `NULL`, or an instance of the log above.
 The `lurand` structure is a source of random integers:
 
 ```c
-#include "lurand.h"
+#include "lu/random.h"
 lurand *rand;
 lurand_mkxoroshiro128plus(log, &rand, 0);
 int n = lurand_int64_range(rand, lo, hi);
@@ -84,7 +84,7 @@ An efficient implementation based on code from Stefan Gustavson and
 Peter Eastman.
 
 ```c
-#include "lusimplex.h"
+#include "lu/simplex.h"
 noise = lusimplex_noise2(x, y);
 ```
 
@@ -95,7 +95,7 @@ This is a rewrite of the 2D Gustavson code, making it more flexible
 (gradients are unit vectors), but also much slower. 
 
 ```c
-#include "lutile.h"
+#include "lu/tiles.h"
 lutile_tile *hexagon;
 lutile_mkhexagon(log, &hexagon, 3, 2, 1.0));
 luarray_ijz *ijz = NULL;
