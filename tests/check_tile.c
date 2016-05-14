@@ -10,7 +10,7 @@
 #include "../lib/lutile.h"
 #include "../lib/luminmax.h"
 
-static char *scale1 = " .:+*oO#@";
+//static char *scale1 = " .:+*oO#@";
 static char *scale2 = " '.\",-=+*:;ijcoebmIJCOEBM#@";
 
 
@@ -191,7 +191,7 @@ START_TEST(test_tiled_hexagon) {
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
-
+//
 
 int main(void) {
 

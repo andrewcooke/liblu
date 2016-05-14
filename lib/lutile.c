@@ -67,6 +67,7 @@ static inline ludata_xy lookup_grad(lulog *log, lutile_config *conf,
     return conf->grad[conf->perm[(pi + conf->perm[qi % conf->n_perm]) % conf->n_perm] % conf->n_grad];
 }
 
+// this can be called with tile=NULL for direct evaluation.
 int lutile_noise(lulog *log, lutile_config *conf, lutile_tile *tile,
         double pin, double qin, double *noise) {
     LU_STATUS

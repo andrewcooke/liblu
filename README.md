@@ -9,7 +9,7 @@
   * [Random](#random)
   * [Greyscale](#greyscale)
   * [Simplex Noise](#simplex-noise)
-  * [Tilable Simplex Noise](#tilable-simplex-noise)
+  * [Tileable Simplex Noise](#tileable-simplex-noise)
   * [Conventions](#conventions)
 
 ## Log
@@ -86,7 +86,7 @@ Peter Eastman.
 noise = lusimplex_noise2(x, y);
 ```
 
-## Tilable Simplex Noise
+## Tileable Simplex Noise
 
 This is a rewrite of the 2D Gustavson code, making it more flexible 
 (configurable size of gradients and permutations, tilings), and more correct 
