@@ -35,7 +35,7 @@ Simple framework for dynamic memory management in `lu/dynamic_memory.h`,
 extended in `lu/array_macros.h`.
 
 ```c
-#include "lu/array.h"
+#include "lu/arrays.h"
 luarray_int *ints;
 luarray_mkintn(log, &ints, 10);  // initial capacity 10
 luarray_pushint(log, ints, 42);
