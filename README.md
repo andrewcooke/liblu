@@ -100,6 +100,8 @@ luarray_ijz *ijz = NULL;
 hexagon->enumerate(hexagon, log, config, 7, &ijz);
 ```
 
+When tiled three times:
+
 ```
                          :mboi+iociom*     
                       "+;cccccIBIc;=;c=    
