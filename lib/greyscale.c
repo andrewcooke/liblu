@@ -2,12 +2,12 @@
 #include <string.h>
 #include <math.h>
 
-#include "lu/lustatus.h"
-#include "lu/luminmax.h"
-#include "lu/lustr.h"
-#include "lu/lulog.h"
-#include "lu/lumem.h"
-#include "lu/lugrey.h"
+#include "lu/status.h"
+#include "lu/minmax.h"
+#include "lu/strings.h"
+#include "lu/log.h"
+#include "lu/dynamic_memory.h"
+#include "lu/greyscale.h"
 
 
 int lugrey_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, lustr *out) {

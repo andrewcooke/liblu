@@ -2,8 +2,8 @@
 #include <check.h>
 #include <stdlib.h>
 
-#include "../lib/lu/lu.h"
-#include "../lib/lu/lulog.h"
+#include "../lib/lu/error_codes.h"
+#include "../lib/lu/log.h"
 
 
 START_TEST(test_stderr) {

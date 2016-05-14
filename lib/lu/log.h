@@ -7,7 +7,7 @@
 
 struct lulog;
 
-#include "lustr.h"
+#include "lu/strings.h"
 
 typedef enum lulog_level {
 	lulog_level_error,

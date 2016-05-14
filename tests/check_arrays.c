@@ -2,9 +2,9 @@
 #include <check.h>
 #include <stdlib.h>
 
-#include "../lib/lu/lu.h"
-#include "../lib/lu/lulog.h"
-#include "../lib/lu/luarray.h"
+#include "../lib/lu/error_codes.h"
+#include "../lib/lu/log.h"
+#include "../lib/lu/arrays.h"
 
 
 START_TEST(test_ijz) {

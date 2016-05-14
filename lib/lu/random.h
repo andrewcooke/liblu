@@ -1,11 +1,11 @@
 
-#ifndef LU_RAND_H
-#define LU_RAND_H
+#ifndef LU_RANDOM_H
+#define LU_RANDOM_H
 
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "lulog.h"
+#include "lu/log.h"
 
 #define LURAND_MAX UINT64_MAX
 

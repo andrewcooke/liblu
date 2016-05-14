@@ -1,6 +1,6 @@
 
-#ifndef LU_DATA_H
-#define LU_DATA_H
+#ifndef LU_STRUCTS_H
+#define LU_STRUCTS_H
 
 typedef struct ludata_xy {
     double x;

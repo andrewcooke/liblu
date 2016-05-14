@@ -4,10 +4,10 @@
 #include <stdarg.h>
 #include <syslog.h>
 
-#include "lu/lustatus.h"
-#include "lu/lumem.h"
-#include "lu/lustr.h"
-#include "lu/lulog.h"
+#include "lu/status.h"
+#include "lu/dynamic_memory.h"
+#include "lu/strings.h"
+#include "lu/log.h"
 
 
 static const char* const prefixes[] = {

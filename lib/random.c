@@ -3,10 +3,10 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-#include "lu/lu.h"
-#include "lu/lumem.h"
-#include "lu/lustatus.h"
-#include "lu/lurand.h"
+#include "lu/error_codes.h"
+#include "lu/dynamic_memory.h"
+#include "lu/status.h"
+#include "lu/random.h"
 
 
 static int generic_free(lurand **rand, int prev_status) {

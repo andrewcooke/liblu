@@ -1,10 +1,10 @@
 
-#ifndef LU_MEM_H
-#define LU_MEM_H
+#ifndef LU_DYNAMIC_MEMORY_H
+#define LU_DYNAMIC_MEMORY_H
 
 #include <stdlib.h>
 
-#include "lu.h"
+#include "lu/error_codes.h"
 
 
 // basic support for dynamically allocated memory.  see luarray_mem.h for

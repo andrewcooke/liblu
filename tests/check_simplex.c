@@ -5,11 +5,11 @@
 #include <float.h>
 #include <math.h>
 
-#include "../lib/lu/lu.h"
-#include "../lib/lu/lustr.h"
-#include "../lib/lu/lulog.h"
-#include "../lib/lu/lugrey.h"
-#include "../lib/lu/lusimplex.h"
+#include "../lib/lu/error_codes.h"
+#include "../lib/lu/strings.h"
+#include "../lib/lu/log.h"
+#include "../lib/lu/greyscale.h"
+#include "../lib/lu/simplex.h"
 
 
 static void assert_constant(const char *name, const char *expr, double value, double target) {

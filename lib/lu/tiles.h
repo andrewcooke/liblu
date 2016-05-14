@@ -1,10 +1,10 @@
 
-#ifndef LU_TRIPLEX_H
-#define LU_TRIPLEX_H
+#ifndef LU_TILES_H
+#define LU_TILES_H
 
-#include "lulog.h"
-#include "lurand.h"
-#include "luarray.h"
+#include "lu/log.h"
+#include "lu/random.h"
+#include "lu/arrays.h"
 
 
 // a re-implementation of perlin's simplex noise that:

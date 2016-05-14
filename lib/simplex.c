@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#include "lu/lusimplex.h"
+#include "lu/simplex.h"
 
 
 // perlin simplex noise, based on java code by Stefan Gustavson

@@ -1,6 +1,6 @@
 
-#ifndef LU_H
-#define LU_H
+#ifndef LU_ERROR_CODES_H
+#define LU_ERROR_CODES_H
 
 #define LU_OK 0
 #define LU_ERR 1

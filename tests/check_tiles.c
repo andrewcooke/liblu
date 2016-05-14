@@ -4,11 +4,11 @@
 #include <float.h>
 #include <math.h>
 
-#include "../lib/lu/lu.h"
-#include "../lib/lu/luarray.h"
-#include "../lib/lu/lugrey.h"
-#include "../lib/lu/lutile.h"
-#include "../lib/lu/luminmax.h"
+#include "../lib/lu/error_codes.h"
+#include "../lib/lu/arrays.h"
+#include "../lib/lu/greyscale.h"
+#include "../lib/lu/tiles.h"
+#include "../lib/lu/minmax.h"
 
 //static char *scale1 = " .:+*oO#@";
 static char *scale2 = " '.\",-=+*:;ijcoebmIJCOEBM#@";

@@ -1,10 +1,10 @@
 
-#ifndef LU_STRING_H
-#define LU_STRING_H
+#ifndef LU_STRINGS_H
+#define LU_STRINGS_H
 
 #include <stdarg.h>
 
-#include "lumem.h"
+#include "lu/dynamic_memory.h"
 
 typedef struct lulog lulog;  // avoid dependency loops
 

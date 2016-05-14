@@ -2,9 +2,9 @@
 #include <check.h>
 #include <stdlib.h>
 
-#include "../lib/lu/lu.h"
-#include "../lib/lu/lustr.h"
-#include "../lib/lu/luminmax.h"
+#include "../lib/lu/error_codes.h"
+#include "../lib/lu/strings.h"
+#include "../lib/lu/minmax.h"
 
 
 void assert_str(lustr str, const char *target) {

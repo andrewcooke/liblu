@@ -1,7 +1,7 @@
 
 lib_LTLIBRARIES = liblu.la
-liblu_la_SOURCES = lustr.c lulog.c lusimplex.c lugrey.c lutile.c lurand.c \
-	luarray.c
-include_HEADERS = lu/lu.h lu/luarray.h lu/luarray_mem.h lu/ludata.h \
-	lu/lugrey.h lu/lulog.h lu/lumem.h lu/luminmax.h lu/lurand.h \
-	lu/lusimplex.h lu/lustatus.h lu/lustr.h lu/lutile.h
+liblu_la_SOURCES = strings.c log.c simplex.c greyscale.c tiles.c random.c \
+	arrays.c
+include_HEADERS = lu/error_codes.h lu/arrays.h lu/array_macros.h lu/structs.h \
+	lu/greyscale.h lu/log.h lu/dynamic_memory.h lu/minmax.h lu/random.h \
+	lu/simplex.h lu/status.h lu/strings.h lu/tiles.h

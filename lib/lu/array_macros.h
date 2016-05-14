@@ -1,8 +1,8 @@
 
-#ifndef LU_ARRAY_BASE_H
-#define LU_ARRAY_BASE_H
+#ifndef LU_ARRAY_MACROS_H
+#define LU_ARRAY_MACROS_H
 
-#include "lumem.h"
+#include "lu/dynamic_memory.h"
 
 
 // additional macros that build on lumem.h to define the base of a
