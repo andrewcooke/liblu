@@ -3,11 +3,11 @@
 #include <string.h>
 #include <errno.h>
 
-#include "lustatus.h"
-#include "lumem.h"
-#include "lulog.h"
-#include "luminmax.h"
-#include "lustr.h"
+#include "lu/lustatus.h"
+#include "lu/lumem.h"
+#include "lu/lulog.h"
+#include "lu/luminmax.h"
+#include "lu/lustr.h"
 
 
 static LUMEM_MKFREE(internal_free, char)

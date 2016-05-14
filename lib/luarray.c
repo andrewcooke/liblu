@@ -1,10 +1,10 @@
 
 #include <string.h>
 
-#include "lulog.h"
-#include "lustatus.h"
-#include "luarray.h"
-#include "luarray_mem.h"
+#include "lu/lulog.h"
+#include "lu/lustatus.h"
+#include "lu/luarray.h"
+#include "lu/luarray_mem.h"
 
 
 LUARRAY_MKBASE(ijz, luarray_ijz, ludata_ijz, ijz)

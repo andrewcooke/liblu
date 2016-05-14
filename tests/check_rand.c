@@ -4,8 +4,8 @@
 #include <inttypes.h>
 #include <float.h>
 
-#include "../lib/lu.h"
-#include "../lib/lurand.h"
+#include "../lib/lu/lu.h"
+#include "../lib/lu/lurand.h"
 
 
 void assert_next(lurand *rand, uint64_t target) {

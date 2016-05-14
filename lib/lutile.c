@@ -2,9 +2,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "lustatus.h"
-#include "luminmax.h"
-#include "lutile.h"
+#include "lu/lustatus.h"
+#include "lu/luminmax.h"
+#include "lu/lutile.h"
 
 
 int lutile_freeconfig(lutile_config **config, int prev_status) {

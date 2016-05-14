@@ -2,12 +2,12 @@
 #include <string.h>
 #include <math.h>
 
-#include "lustatus.h"
-#include "luminmax.h"
-#include "lustr.h"
-#include "lulog.h"
-#include "lumem.h"
-#include "lugrey.h"
+#include "lu/lustatus.h"
+#include "lu/luminmax.h"
+#include "lu/lustr.h"
+#include "lu/lulog.h"
+#include "lu/lumem.h"
+#include "lu/lugrey.h"
 
 
 int lugrey_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, lustr *out) {
