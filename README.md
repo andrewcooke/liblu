@@ -1,6 +1,8 @@
 
 # Light Utility Library
 
+A C99 library with few dependencies that contains whatever utilitirs I need.
+
 ## Table of Contents
 
   * [Log](#log)
@@ -133,7 +135,7 @@ When tiled three times:
 
 Most routines return an `int` status that is non-zero on error.  Free
 routines take the same value to allow chaining on cleanup.  See source
-for how this is used in practice.
+and `lustatus.h` for how this is used in practice.
 
 Most routines take a `lulog*` pointer as the first argument.  This can
 be NULL if no logging is required.
