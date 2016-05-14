@@ -2,7 +2,7 @@
 #ifndef LU_ARRAY_MACROS_H
 #define LU_ARRAY_MACROS_H
 
-#include "lu/dynamic_memory.h"
+#include "dynamic_memory.h"
 
 
 // additional macros that build on lumem.h to define the base of a

@@ -4,7 +4,7 @@
 
 #include <stdarg.h>
 
-#include "lu/dynamic_memory.h"
+#include "dynamic_memory.h"
 
 typedef struct lulog lulog;  // avoid dependency loops
 

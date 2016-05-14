@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "lu/log.h"
+#include "log.h"
 
 #define LURAND_MAX UINT64_MAX
 

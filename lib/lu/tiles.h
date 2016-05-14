@@ -2,9 +2,9 @@
 #ifndef LU_TILES_H
 #define LU_TILES_H
 
-#include "lu/log.h"
-#include "lu/random.h"
-#include "lu/arrays.h"
+#include "log.h"
+#include "random.h"
+#include "arrays.h"
 
 
 // a re-implementation of perlin's simplex noise that:

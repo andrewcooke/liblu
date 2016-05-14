@@ -2,8 +2,8 @@
 #ifndef LU_ARRAYS_H
 #define LU_ARRAYS_H
 
-#include "lu/dynamic_memory.h"
-#include "lu/structs.h"
+#include "dynamic_memory.h"
+#include "structs.h"
 
 
 // there's nothing special about which arrays are present here - they are

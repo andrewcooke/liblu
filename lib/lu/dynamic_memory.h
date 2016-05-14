@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 
-#include "lu/error_codes.h"
+#include "error_codes.h"
 
 
 // basic support for dynamically allocated memory.  see luarray_mem.h for
