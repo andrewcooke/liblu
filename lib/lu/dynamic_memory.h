@@ -39,7 +39,7 @@ int name(type **ptr, lumem *mem, int prev_status) {\
 
 // this provides ADDITIONAL (unused) space
 #define LUMEM_MKRESERVE(name, type)\
-int name(lulog *log, type **ptr, lumem *mem, size_t n) {\
+int name(const lulog *log, type **ptr, lumem *mem, size_t n) {\
 	LU_STATUS\
 	if (mem->capacity - mem->used < n) {\
         int required = mem->capacity > 0 ? mem->capacity : 1;\
