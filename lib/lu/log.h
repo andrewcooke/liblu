@@ -18,7 +18,7 @@ typedef enum lulog_level {
 
 #define LULOG_DEFAULT_MAX_LINE_LENGTH 1000
 
-typedef int lulog_printfv(struct lulog *log, lulog_level level, const char *format, va_list ap);
+typedef int lulog_printfv(const struct lulog *log, lulog_level level, const char *format, va_list ap);
 typedef int lulog_free(struct lulog **log, int status);
 
 typedef struct lulog {
@@ -35,11 +35,11 @@ int lulog_mkstdout(lulog **log, lulog_level threshold);
 int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold);
 int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold);
 
-int ludebug(lulog *log, const char *format, ...);
-int luinfo(lulog *log, const char *format, ...);
-int luwarn(lulog *log, const char *format, ...);
-int luerror(lulog *log, const char *format, ...);
+int ludebug(const lulog *log, const char *format, ...);
+int luinfo(const lulog *log, const char *format, ...);
+int luwarn(const lulog *log, const char *format, ...);
+int luerror(const lulog *log, const char *format, ...);
 
-int lulog_lines(lulog *log, lulog_level level, const char *lines);
+int lulog_lines(const lulog *log, lulog_level level, const char *lines);
 
 #endif
