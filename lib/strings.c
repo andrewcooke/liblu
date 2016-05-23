@@ -56,7 +56,8 @@ int lustr_clear(lulog *log, lustr *str) {
 int lustr_add(lulog *log, lustr *str, char c) {
     LU_STATUS
     LU_CHECK(lustr_reserve(log, str, 1))
-    str->c[(str->mem.used++)-1] = c;
+    str->c[str->mem.used-1] = c;
+    str->c[str->mem.used++] = '\0';
     LU_NO_CLEANUP
 }
 
