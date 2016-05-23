@@ -49,7 +49,7 @@ be used as a buffer where complex strings can be assembled:
 
 ```c
 #include "lu/strings.h"
-lustr str;
+lustr str = {};
 lustr_init(log, &str);
 lustr_print(log, &str, "hello");
 lustr_appendf(log, &str, " world %d", 42);

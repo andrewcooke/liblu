@@ -115,20 +115,20 @@ int string_printfv(lulog *log, lulog_level level, const char *format, va_list ap
     if (level <= log->threshold) {
         lustr *string = (lustr*)log->state;
         size_t zero = string->mem.used;
-        LU_CHECK(lustr_nprintf(NULL, string, log->max_line_length, "%s: ",
-                 prefixes[level]));
+        LU_CHECK(lustr_nappendf(NULL, string, log->max_line_length, "%s: ",
+                 prefixes[level]))
         LU_CHECK(lustr_nappendfv(NULL, string,
-                log->max_line_length - (string->mem.used - zero), format, ap));
-        LU_CHECK(lustr_append(NULL, string, "\n"));
+                log->max_line_length - (string->mem.used - zero), format, ap))
+        LU_CHECK(lustr_append(NULL, string, "\n"))
     }
     LU_NO_CLEANUP
 }
 
 int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
     LU_STATUS
-    LU_ALLOC_TYPE(NULL, *string, 1, lustr);
-    LU_CHECK(lustr_mk(NULL, *string));
-    LU_ALLOC(NULL, *log, 1);
+    LU_ALLOC_TYPE(NULL, *string, 1, lustr)
+    LU_CHECK(lustr_mk(NULL, *string))
+    LU_ALLOC(NULL, *log, 1)
     (*log)->state = *string;
     (*log)->threshold = threshold;
     (*log)->max_line_length = LULOG_DEFAULT_MAX_LINE_LENGTH;
@@ -155,3 +155,26 @@ MKPRINT(error)
 MKPRINT(warn)
 MKPRINT(info)
 MKPRINT(debug)
+
+int lulog_lines(lulog *log, lulog_level level, const char *lines) {
+    LU_STATUS
+    lustr line = {};
+    LU_CHECK(lustr_mk(log, &line))
+    const char *src = lines;
+    while (*src) {
+        LU_CHECK(lustr_clear(log, &line))
+        while (*src && *src != '\n') lustr_add(log, &line, *src++);
+        switch(level) {
+        case lulog_level_debug: ludebug(log, "%s", line.c); break;
+        case lulog_level_info: luinfo(log, "%s", line.c); break;
+        case lulog_level_warn: luwarn(log, "%s", line.c); break;
+        default: luerror(log, "%s", line.c); break;
+        }
+        if (*src == '\n') src++;
+    }
+LU_CLEANUP
+    status = lustr_free(&line, status);
+    LU_RETURN
+}
+
+

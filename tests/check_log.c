@@ -54,6 +54,15 @@ START_TEST(test_syslog) {
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
+START_TEST(test_lines) {
+    lulog *log;
+    lustr *str;
+    ck_assert(!lulog_mkstring(&log, &str, lulog_level_debug));
+    ck_assert(!lulog_lines(log, lulog_level_info, "a\nb\nc"));
+    ck_assert_msg(!strcmp(str->c, "info: a\ninfo: b\ninfo: c\n"), "%s", str->c);
+    ck_assert(!log->free(&log, 0));
+} END_TEST
+
 
 int main(void) {
 
@@ -67,6 +76,7 @@ int main(void) {
     tcase_add_test(c, test_output);
     tcase_add_test(c, test_string);
     tcase_add_test(c, test_syslog);
+    tcase_add_test(c, test_lines);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);

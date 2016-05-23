@@ -13,6 +13,19 @@ void assert_str(lustr str, const char *target) {
     ck_assert(str.mem.capacity >= str.mem.used);
 }
 
+START_TEST(test_add) {
+
+    lustr str = {};
+
+    ck_assert(!lustr_mk(NULL, &str));
+    ck_assert(!lustr_add(NULL, &str, 'a'));
+    ck_assert(!lustr_add(NULL, &str, 'b'));
+    ck_assert(!lustr_add(NULL, &str, 'c'));
+    assert_str(str, "abc");
+    ck_assert(!lustr_free(&str, 0));
+
+} END_TEST
+
 START_TEST(test_print) {
 
     lustr str;
@@ -115,6 +128,7 @@ int main(void) {
     SRunner *r;
 
     c = tcase_create("case");
+    tcase_add_test(c, test_add);
     tcase_add_test(c, test_print);
     tcase_add_test(c, test_scaling);
     tcase_add_test(c, test_max_size);

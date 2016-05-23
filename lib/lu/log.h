@@ -40,4 +40,6 @@ int luinfo(lulog *log, const char *format, ...);
 int luwarn(lulog *log, const char *format, ...);
 int luerror(lulog *log, const char *format, ...);
 
+int lulog_lines(lulog *log, lulog_level level, const char *lines);
+
 #endif

@@ -53,6 +53,13 @@ int lustr_clear(lulog *log, lustr *str) {
 }
 
 
+int lustr_add(lulog *log, lustr *str, char c) {
+    LU_STATUS
+    LU_CHECK(lustr_reserve(log, str, 1))
+    str->c[(str->mem.used++)-1] = c;
+    LU_NO_CLEANUP
+}
+
 int lustr_print(lulog *log, lustr *str, const char *text) {
     return lustr_nprint(log, str, -1, text);
 }

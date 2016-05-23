@@ -20,6 +20,7 @@ int lustr_free(lustr *str, int status);
 int lustr_reserve(lulog *log, lustr *str, int n);
 int lustr_clear(lulog *log, lustr *str);
 
+int lustr_add(lulog *log, lustr *str, char c);
 int lustr_print(lulog *log, lustr *str, const char *text);
 int lustr_nprint(lulog *log, lustr *str, int max_size, const char *text);
 int lustr_printf(lulog *log, lustr *str, const char *format, ...);
