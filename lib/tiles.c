@@ -448,15 +448,14 @@ LU_CLEANUP
 }
 
 
-int lutile_ijz2xyzw(lulog *log, luarray_ijz *ijz, double step, luarray_xyzw **xyzw) {
+int lutile_ijz2fxyzw(lulog *log, luarray_ijz *ijz, double step, luarray_fxyzw **fxyzw) {
     LU_STATUS
-    LU_CHECK(luarray_mkxyzwn(log, xyzw, ijz->mem.used))
+    LU_CHECK(luarray_mkfxyzwn(log, fxyzw, ijz->mem.used))
     for (size_t i = 0; i < ijz->mem.used; ++i) {
         ludata_ijz *p = &ijz->ijz[i];
         double x = (p->i + p->j * cos(M_PI/3)) * step;
         double y = p->j * sin(M_PI/3) * step;
-//        LU_CHECK(luarray_pushxyzw(log, *xyzw, x, y, p->z, 1))
-        LU_CHECK(luarray_pushxyzw(log, *xyzw, x, y, 0, 1))
+        LU_CHECK(luarray_pushfxyzw(log, *fxyzw, x, y, p->z, 1))
     }
     LU_NO_CLEANUP
 }

@@ -155,8 +155,8 @@ int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va
         } else {
             size_t max_total = max_size < 0 ? total : min(max_size, total);
             LU_CHECK(lustr_reserve(log, str, max_total));
-            ludebug(log, "Requested %zu; received %zu (used %zu)",
-                    max_total, str->mem.capacity - str->mem.used, str->mem.used);
+//            ludebug(log, "Requested %zu; received %zu (used %zu)",
+//                    max_total, str->mem.capacity - str->mem.used, str->mem.used);
         }
     }
     LU_NO_CLEANUP

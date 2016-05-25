@@ -13,12 +13,12 @@ typedef struct ludata_xyz {
     double z;
 } ludata_xyz;
 
-typedef struct ludata_xyzw {
-    double x;
-    double y;
-    double z;
-    double w;
-} ludata_xyzw;
+typedef struct ludata_fxyzw {
+    float x;
+    float y;
+    float z;
+    float w;
+} ludata_fxyzw;
 
 typedef struct ludata_ij {
     int i;
