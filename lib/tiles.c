@@ -105,7 +105,7 @@ int generic_free(lutile_tile **tile, size_t prev_status) {
 
 // this block of functions describes the transform (and inverse) used when
 // generating octave noise.  the inverse is necessary so that the tile
-// can do the correct wrapping (without coupling the triplex noise code).
+// can do the correct wrapping (without coupling the noise code).
 
 static inline size_t octa(lutile_tile *tile) {
     return tile->octave * tile->side * tile->subsamples;
@@ -332,12 +332,13 @@ static inline int ijz2index(ludata_ijz ijz, ludata_ij bl, ludata_ij tr) {
 }
 
 static int mkindex(lulog *log, luarray_ijz *ijz, ludata_ij bl, ludata_ij tr,
-        ludata_ijz ***index) {
+        size_t **index) {
     LU_STATUS
     size_t nx = tr.i - bl.i + 1, ny = tr.j - bl.j + 1;
     LU_ALLOC(log, *index, nx*ny)
     for (size_t i = 0; i < ijz->mem.used; ++i) {
-        (*index)[ijz2index(ijz->ijz[i], bl, tr)] = &ijz->ijz[i];
+        // note that we add 1 - zero means missing
+        (*index)[ijz2index(ijz->ijz[i], bl, tr)] = i+1;
     }
     LU_NO_CLEANUP
 }
@@ -358,13 +359,25 @@ static inline ludata_ij downright(ludata_ijz p) {
     return (ludata_ij){p.i+1, p.j-1};
 }
 
+static int new_point(lulog *log, luarray_xyz *xyz, luarray_uint *indices, ludata_ijz *p, size_t i) {
+    LU_STATUS
+    if (xyz) {
+        LU_CHECK(luarray_pushxyz(log, xyz, p->i, p->j, p->z))
+    }
+    if (indices) {
+        LU_CHECK(luarray_pushuint(log, indices, i))
+    }
+    LU_NO_CLEANUP
+}
+
 static int addpoints(lulog *log, luarray_ijz *ijz, size_t *current,
         ludata_ijz *pprev, int nextisup,
-        ludata_ijz **index, ludata_ij bl, ludata_ij tr,
-        luarray_xyz *xyz, luarray_int *offsets) {
+        size_t *index, ludata_ij bl, ludata_ij tr,
+        luarray_xyz *xyz, luarray_uint *indices, luarray_int *offsets) {
     LU_STATUS
     do {
-        ludata_ijz *pnext = index[ij2index((nextisup ? upright : downright)(*pprev), bl, tr)];
+        size_t next = index[ij2index((nextisup ? upright : downright)(*pprev), bl, tr)];
+        ludata_ijz *pnext = next ? &ijz->ijz[next-1] : NULL;
         if (pnext) {
             if (!nextisup) {
                 // we're walking geometrically (in i,j space) across the
@@ -379,7 +392,7 @@ static int addpoints(lulog *log, luarray_ijz *ijz, size_t *current,
                         pprev->i, pprev->j, pnext->i, pnext->j)
                 *current = *current + 1;
             }
-            LU_CHECK(luarray_pushxyz(log, xyz, pnext->i, pnext->j, pnext->z))
+            LU_CHECK(new_point(log, xyz, indices, pnext, next - 1)) // correct for 0/NULL
             pprev = pnext; nextisup = !nextisup;
         } else {
             *current = *current + 1;
@@ -389,20 +402,27 @@ static int addpoints(lulog *log, luarray_ijz *ijz, size_t *current,
     LU_NO_CLEANUP
 }
 
-static int addstrip(lulog *log, luarray_ijz *ijz, size_t *current, ludata_ijz **index,
-        ludata_ij bl, ludata_ij tr, luarray_xyz *xyz, luarray_int *offsets) {
+static int new_offset(lulog *log, luarray_int *offsets, luarray_xyz *xyz, luarray_uint *indices) {
+    return luarray_pushint(log, offsets, (xyz ? xyz->mem : indices->mem).used);
+}
+
+static int addstrip(lulog *log, luarray_ijz *ijz, size_t *current, size_t *index,
+        ludata_ij bl, ludata_ij tr, luarray_xyz *xyz, luarray_uint *indices, luarray_int *offsets) {
     LU_STATUS
     ludata_ijz *p1 = &ijz->ijz[*current];
-    ludata_ijz *p0 = index[ij2index(upleft(*p1), bl, tr)];
-    ludata_ijz *p2 = index[ij2index(upright(*p1), bl, tr)];
+    size_t i0 = index[ij2index(upleft(*p1), bl, tr)];
+    ludata_ijz *p0 = i0 ? &ijz->ijz[i0-1] : NULL;
+    size_t i2 = index[ij2index(upright(*p1), bl, tr)];
+    ludata_ijz *p2 = i2 ? &ijz->ijz[i2-1] : NULL;
     // if at least three points exist, add the first two and then add the rest
     if (p0 && p2) {
-        LU_CHECK(luarray_pushint(log, offsets, xyz->mem.used))
-        LU_CHECK(luarray_pushxyz(log, xyz, p0->i, p0->j, p0->z))
-        LU_CHECK(luarray_pushxyz(log, xyz, p1->i, p1->j, p1->z))
-        LU_CHECK(addpoints(log, ijz, current, p1, 1, index, bl, tr, xyz, offsets));
+        LU_CHECK(new_offset(log, offsets, xyz, indices))
+        LU_CHECK(new_point(log, xyz, indices, p0, i0 - 1)) // correct for 0/NULL
+        LU_CHECK(new_point(log, xyz, indices, p1, *current)) // correct for 0/NULL
+        LU_CHECK(addpoints(log, ijz, current, p1, 1, index, bl, tr, xyz, indices, offsets));
     } else {
-        ludata_ijz *p3 = index[ij2index(right(*p1), bl, tr)];
+        size_t i3 = index[ij2index(right(*p1), bl, tr)];
+        ludata_ijz *p3 = i3 ? &ijz->ijz[i3-1] : NULL;
         if (p3) {
             LU_ASSERT(*current + 1 < ijz->mem.used, LU_ERR, log,
                     "Unsorted points?  No data at %zu", *current + 1);
@@ -411,10 +431,10 @@ static int addstrip(lulog *log, luarray_ijz *ijz, size_t *current, ludata_ijz **
                     p3->i, p3->j, p1->i, p1->j, ijz->ijz[*current + 1].i, ijz->ijz[*current + 1].j)
         }
         if (p2 && p3) {
-            LU_CHECK(luarray_pushint(log, offsets, xyz->mem.used))
-            LU_CHECK(luarray_pushxyz(log, xyz, p1->i, p1->j, p1->z))
-            LU_CHECK(luarray_pushxyz(log, xyz, p2->i, p2->j, p2->z))
-            LU_CHECK(addpoints(log, ijz, current, p2, 0, index, bl, tr, xyz, offsets));
+            LU_CHECK(new_offset(log, offsets, xyz, indices))
+            LU_CHECK(new_point(log, xyz, indices, p1, *current))
+            LU_CHECK(new_point(log, xyz, indices, p2, i2 - 1)) // correct for 0/NULL
+            LU_CHECK(addpoints(log, ijz, current, p2, 0, index, bl, tr, xyz, indices, offsets));
         } else {
             *current = *current+1;
         }
@@ -422,20 +442,29 @@ static int addstrip(lulog *log, luarray_ijz *ijz, size_t *current, ludata_ijz **
     LU_NO_CLEANUP
 }
 
-int lutile_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_int **offsets) {
+int lutile_strips(lulog *log, luarray_ijz *ijz,
+        luarray_xyz **xyz, luarray_uint **indices, luarray_int **offsets) {
     LU_STATUS
     ludata_ij bl, tr;
+    size_t *index = NULL;
+    LU_ASSERT(xyz || indices, LU_ERR, log,
+            "Must provide at least one of xyz or indices")
     LU_CHECK(range(log, ijz, &bl, &tr, NULL))
     bl.i--; bl.j--; tr.i++; tr.j++;  // add border for failed lookups
-    ludata_ijz **index = NULL;
     LU_CHECK(mkindex(log, ijz, bl, tr, &index))
-    LU_CHECK(luarray_mkxyzn(log, xyz, 4 * ijz->mem.used))  // guess some overhead
+    if (xyz) {
+        LU_CHECK(luarray_mkxyzn(log, xyz, 4 * ijz->mem.used))  // guess some overhead
+    }
+    if (indices) {
+        LU_CHECK(luarray_mkuintn(log, indices, 4 * ijz->mem.used))
+    }
     LU_CHECK(luarray_mkintn(log, offsets, tr.j - bl.j + 1))  // optimistic?
     size_t current = 0;
     while (current < ijz->mem.used) {
-        LU_CHECK(addstrip(log, ijz, &current, index, bl, tr, *xyz, *offsets))
+        LU_CHECK(addstrip(log, ijz, &current, index, bl, tr,
+                xyz ? *xyz : NULL, indices ? *indices : NULL, *offsets))
     }
-    LU_CHECK(luarray_pushint(log, *offsets, (*xyz)->mem.used))
+    LU_CHECK(luarray_pushint(log, *offsets, (xyz ? (*xyz)->mem : (*indices)->mem).used))
     luinfo(log, "Generated %zu triangle strips", (*offsets)->mem.used - 1);
 LU_CLEANUP
     free(index);

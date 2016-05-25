@@ -35,3 +35,13 @@ int luarray_pushint(const lulog *log, luarray_int *i, int j) {
     i->i[i->mem.used++] = j;
     LU_NO_CLEANUP
 }
+
+
+LUARRAY_MKBASE(uint, luarray_uint, unsigned int, i)
+
+int luarray_pushuint(const lulog *log, luarray_uint *i, unsigned int j) {
+    LU_STATUS
+    LU_CHECK(luarray_reserveuint(log, i, 1))
+    i->i[i->mem.used++] = j;
+    LU_NO_CLEANUP
+}

@@ -90,6 +90,8 @@ int lutile_mkhexagon(lulog *log, lutile_tile **tile,
 //    x x x x
 // and linearly interpolates the gaps horizontally
 int lutile_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data);
-int lutile_strips(lulog *log, luarray_ijz *ijz, luarray_xyz **xyz, luarray_int **offsets);
+// generate triangle strips (each strip offset into a single array)
+int lutile_strips(lulog *log, luarray_ijz *ijz,
+        luarray_xyz **xyz, luarray_uint **indices, luarray_int **offsets);
 
 #endif

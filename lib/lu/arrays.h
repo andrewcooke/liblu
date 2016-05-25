@@ -15,9 +15,9 @@ typedef struct luarray_ijz {
     lumem mem;
 } luarray_ijz;
 
-int luarray_mkijzn(const lulog *log, luarray_ijz **ijz, int n);
+int luarray_mkijzn(const lulog *log, luarray_ijz **ijz, size_t n);
 int luarray_freeijz(luarray_ijz **ijz, int prev_status);
-int luarray_reserveijz(const lulog *log, luarray_ijz *ijz, int n);
+int luarray_reserveijz(const lulog *log, luarray_ijz *ijz, size_t n);
 int luarray_pushijz(const lulog *log, luarray_ijz *ijz, int i, int j, double z);
 
 typedef struct luarray_xyz {
@@ -25,20 +25,29 @@ typedef struct luarray_xyz {
     lumem mem;
 } luarray_xyz;
 
-int luarray_mkxyzn(const lulog *log, luarray_xyz **xyz, int n);
+int luarray_mkxyzn(const lulog *log, luarray_xyz **xyz, size_t n);
 int luarray_freexyz(luarray_xyz **xyz, int prev_status);
-int luarray_reservexyz(const lulog *log, luarray_xyz *xyz, int n);
+int luarray_reservexyz(const lulog *log, luarray_xyz *xyz, size_t n);
 int luarray_pushxyz(const lulog *log, luarray_xyz *xyz, double x, double y, double z);
-
 
 typedef struct luarray_int {
     int *i;
     lumem mem;
 } luarray_int;
 
-int luarray_mkintn(const lulog *log, luarray_int **i, int n);
+int luarray_mkintn(const lulog *log, luarray_int **i, size_t n);
 int luarray_freeint(luarray_int **xy, int prev_status);
-int luarray_reserveint(const lulog *log, luarray_int *i, int n);
+int luarray_reserveint(const lulog *log, luarray_int *i, size_t n);
 int luarray_pushint(const lulog *log, luarray_int *i, int j);
+
+typedef struct luarray_uint {
+    unsigned int *i;
+    lumem mem;
+} luarray_uint;
+
+int luarray_mkuintn(const lulog *log, luarray_uint **i, size_t n);
+int luarray_freeuint(luarray_uint **xy, int prev_status);
+int luarray_reserveuint(const lulog *log, luarray_uint *i, size_t n);
+int luarray_pushuint(const lulog *log, luarray_uint *i, unsigned int j);
 
 #endif

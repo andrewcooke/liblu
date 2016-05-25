@@ -79,13 +79,25 @@ START_TEST(test_small_hexagon) {
     }
     ck_assert_msg(ijz->mem.used == 7, "Expected 7 points, found %zu", ijz->mem.used);
     luarray_xyz *strips = NULL;
+    luarray_uint *indices = NULL;
     luarray_int *offsets = NULL;
-    ck_assert(!lutile_strips(log, ijz, &strips, &offsets));
+    ck_assert(!lutile_strips(log, ijz, &strips, &indices, &offsets));
     ck_assert(offsets->mem.used == 3);
     ck_assert(offsets->i[0] == 0);
     ck_assert(offsets->i[1] == 5);
     ck_assert(offsets->i[2] == 10);
+    ck_assert_msg(indices->i[0] == 2, "index 0 == %d", indices->i[0]);
+    ck_assert_msg(indices->i[1] == 0, "index 1 == %d", indices->i[1]);
+    ck_assert_msg(indices->i[2] == 3, "index 2 == %d", indices->i[2]);
+    ck_assert_msg(indices->i[3] == 1, "index 3 == %d", indices->i[2]);
+    ck_assert_msg(indices->i[4] == 4, "index 4 == %d", indices->i[2]);
+    ck_assert_msg(indices->i[5] == 2, "index 5 == %d", indices->i[2]);
+    ck_assert_msg(indices->i[6] == 5, "index 6 == %d", indices->i[2]);
+    ck_assert_msg(indices->i[7] == 3, "index 7 == %d", indices->i[2]);
+    ck_assert_msg(indices->i[8] == 6, "index 8 == %d", indices->i[2]);
+    ck_assert_msg(indices->i[9] == 4, "index 9 == %d", indices->i[2]);
     ck_assert(!luarray_freeint(&offsets, 0));
+    ck_assert(!luarray_freeuint(&indices, 0));
     ck_assert(!luarray_freexyz(&strips, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
@@ -109,7 +121,7 @@ START_TEST(test_medium_hexagon) {
     ck_assert_msg(ijz->mem.used == 19, "Expected 19 points, found %zu", ijz->mem.used);
     luarray_xyz *strips = NULL;
     luarray_int *offsets = NULL;
-    ck_assert(!lutile_strips(log, ijz, &strips, &offsets));
+    ck_assert(!lutile_strips(log, ijz, &strips, NULL, &offsets));
     ck_assert(offsets->mem.used == 5);
     ck_assert(offsets->i[0] == 0);
     ck_assert(offsets->i[1] == 7);
@@ -191,7 +203,6 @@ START_TEST(test_tiled_hexagon) {
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
-//
 
 int main(void) {
 

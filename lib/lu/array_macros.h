@@ -10,12 +10,12 @@
 
 
 #define LUARRAY_MKRESERVE(name, type, internal, data)\
-int name(const lulog *log, type *ptr, int n) {\
+int name(const lulog *log, type *ptr, size_t n) {\
     return internal(log, &ptr->data, &ptr->mem, n);\
 }
 
 #define LUARRAY_MKMAKE(name, type, reserve)\
-int name(const lulog *log, type **ptr, int n) {\
+int name(const lulog *log, type **ptr, size_t n) {\
     LU_STATUS\
     LU_ALLOC(log, *ptr, 1)\
     LU_CHECK(reserve(log, *ptr, n))\
