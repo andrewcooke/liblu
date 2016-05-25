@@ -110,7 +110,7 @@ int string_free(lulog **log, int prev_status) {
     LU_NO_CLEANUP2(prev_status)
 }
 
-int string_printfv(const lulog *log, lulog_level level, const char *format, va_list ap) {
+int string_printfv(lulog *log, lulog_level level, const char *format, va_list ap) {
     LU_STATUS
     if (level <= log->threshold) {
         lustr *string = (lustr*)log->state;
@@ -139,7 +139,7 @@ int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
 
 
 #define MKPRINT(level)\
-int lu ## level(const lulog *log, const char *format, ...) {\
+int lu ## level(lulog *log, const char *format, ...) {\
     LU_STATUS\
     if (log) {\
         va_list ap;\
@@ -156,7 +156,7 @@ MKPRINT(warn)
 MKPRINT(info)
 MKPRINT(debug)
 
-int lulog_lines(const lulog *log, lulog_level level, const char *lines) {
+int lulog_lines(lulog *log, lulog_level level, const char *lines) {
     LU_STATUS
     lustr line = {};
     LU_CHECK(lustr_mk(log, &line))

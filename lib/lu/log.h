@@ -35,11 +35,11 @@ int lulog_mkstdout(lulog **log, lulog_level threshold);
 int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold);
 int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold);
 
-int ludebug(const lulog *log, const char *format, ...);
-int luinfo(const lulog *log, const char *format, ...);
-int luwarn(const lulog *log, const char *format, ...);
-int luerror(const lulog *log, const char *format, ...);
+int ludebug(lulog *log, const char *format, ...);
+int luinfo(lulog *log, const char *format, ...);
+int luwarn(lulog *log, const char *format, ...);
+int luerror(lulog *log, const char *format, ...);
 
-int lulog_lines(const lulog *log, lulog_level level, const char *lines);
+int lulog_lines(lulog *log, lulog_level level, const char *lines);
 
 #endif

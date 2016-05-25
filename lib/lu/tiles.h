@@ -35,9 +35,9 @@ typedef struct lutile_config {
 } lutile_config;
 
 int lutile_freeconfig(lutile_config **config, int prev_status);
-int lutile_mkconfig(lulog *log, lurand *rand, lutile_config **config,
+int lutile_mkconfig(lulog *log, lutile_config **config, lurand *rand,
         size_t n_grad, double phase, size_t n_perm);
-int lutile_defaultconfig(lulog *log, lutile_config **config);
+int lutile_defaultconfig(lulog *log, lutile_config **config, uint64_t seed);
 
 int lutile_noise(lulog *log, lutile_config *conf,
         struct lutile_tile *tile, double pin, double qin, double *noise);
@@ -91,7 +91,7 @@ int lutile_mkhexagon(lulog *log, lutile_tile **tile,
 // and linearly interpolates the gaps horizontally
 int lutile_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data);
 // generate triangle strips (each strip offset into a single array)
-int lutile_strips(lulog *log, luarray_ijz *ijz,
-        luarray_xyz **xyz, luarray_uint **indices, luarray_int **offsets);
+int lutile_strips(lulog *log, luarray_ijz *ijz, luarray_uint **indices, luarray_int **offsets);
+int lutile_ijz2xyz(lulog *log, luarray_ijz *ijz, double step, luarray_xyz **xyz);
 
 #endif

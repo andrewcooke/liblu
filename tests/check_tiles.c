@@ -18,7 +18,7 @@ START_TEST(test_config) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lutile_config *config;
-    ck_assert(!lutile_defaultconfig(log, &config));
+    ck_assert(!lutile_defaultconfig(log, &config, 0));
     ck_assert(config->n_perm == 256);
     for (int i = 0; i < 256; ++i) {
         ck_assert(config->perm[i] < 256);
@@ -44,7 +44,7 @@ START_TEST(test_triangle) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lutile_config *config;
-    ck_assert(!lutile_defaultconfig(log, &config));
+    ck_assert(!lutile_defaultconfig(log, &config, 0));
     lutile_tile *triangle;
     ck_assert(!lutile_mktriangle(log, &triangle, 4, 9, 1.0));
     luarray_ijz *ijz = NULL;
@@ -69,7 +69,7 @@ START_TEST(test_small_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lutile_config *config;
-    ck_assert(!lutile_defaultconfig(log, &config));
+    ck_assert(!lutile_defaultconfig(log, &config, 0));
     lutile_tile *hexagon;
     ck_assert(!lutile_mkhexagon(log, &hexagon, 1, 1, 1.0));
     luarray_ijz *ijz = NULL;
@@ -78,10 +78,9 @@ START_TEST(test_small_hexagon) {
 //        ludebug(log, "%zu: (%d, %d)", i, ijz->ijz[i].i, ijz->ijz[i].j);
     }
     ck_assert_msg(ijz->mem.used == 7, "Expected 7 points, found %zu", ijz->mem.used);
-    luarray_xyz *strips = NULL;
     luarray_uint *indices = NULL;
     luarray_int *offsets = NULL;
-    ck_assert(!lutile_strips(log, ijz, &strips, &indices, &offsets));
+    ck_assert(!lutile_strips(log, ijz, &indices, &offsets));
     ck_assert(offsets->mem.used == 3);
     ck_assert(offsets->i[0] == 0);
     ck_assert(offsets->i[1] == 5);
@@ -98,7 +97,6 @@ START_TEST(test_small_hexagon) {
     ck_assert_msg(indices->i[9] == 4, "index 9 == %d", indices->i[2]);
     ck_assert(!luarray_freeint(&offsets, 0));
     ck_assert(!luarray_freeuint(&indices, 0));
-    ck_assert(!luarray_freexyz(&strips, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
     ck_assert(!lutile_freeconfig(&config, 0));
@@ -110,7 +108,7 @@ START_TEST(test_medium_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lutile_config *config;
-    ck_assert(!lutile_defaultconfig(log, &config));
+    ck_assert(!lutile_defaultconfig(log, &config, 0));
     lutile_tile *hexagon;
     ck_assert(!lutile_mkhexagon(log, &hexagon, 2, 1, 1.0));
     luarray_ijz *ijz = NULL;
@@ -119,9 +117,9 @@ START_TEST(test_medium_hexagon) {
 //        ludebug(log, "%zu: (%d, %d)", i, ijz->ijz[i].i, ijz->ijz[i].j);
     }
     ck_assert_msg(ijz->mem.used == 19, "Expected 19 points, found %zu", ijz->mem.used);
-    luarray_xyz *strips = NULL;
     luarray_int *offsets = NULL;
-    ck_assert(!lutile_strips(log, ijz, &strips, NULL, &offsets));
+    luarray_uint *indices = NULL;
+    ck_assert(!lutile_strips(log, ijz, &indices, &offsets));
     ck_assert(offsets->mem.used == 5);
     ck_assert(offsets->i[0] == 0);
     ck_assert(offsets->i[1] == 7);
@@ -129,7 +127,7 @@ START_TEST(test_medium_hexagon) {
     ck_assert(offsets->i[3] == 25);
     ck_assert(offsets->i[4] == 32);
     ck_assert(!luarray_freeint(&offsets, 0));
-    ck_assert(!luarray_freexyz(&strips, 0));
+    ck_assert(!luarray_freeuint(&indices, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
     ck_assert(!lutile_freeconfig(&config, 0));
@@ -141,7 +139,7 @@ START_TEST(test_large_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lutile_config *config;
-    ck_assert(!lutile_defaultconfig(log, &config));
+    ck_assert(!lutile_defaultconfig(log, &config, 0));
     lutile_tile *hexagon;
     ck_assert(!lutile_mkhexagon(log, &hexagon, 4, 13, 1));
     luarray_ijz *ijz = NULL;
@@ -174,7 +172,7 @@ START_TEST(test_tiled_hexagon) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
     lutile_config *config;
-    ck_assert(!lutile_defaultconfig(log, &config));
+    ck_assert(!lutile_defaultconfig(log, &config, 0));
     lutile_tile *hexagon;
     size_t n = 3, m = 2;
     ck_assert(!lutile_mkhexagon(log, &hexagon, n, m, 1.0));
