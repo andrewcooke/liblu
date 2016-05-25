@@ -29,11 +29,17 @@ int name(type **ptr, int prev_status) {\
     return status;\
 }
 
+#define LUARRAY_MKSIZE(name, type, data)\
+size_t name(type *ptr) {\
+    return ptr->mem.used * sizeof(*ptr->data);\
+}
+
 #define LUARRAY_MKBASE(stem, atype, dtype, data)\
 static LUMEM_MKFREE(stem##_free, dtype)\
 static LUMEM_MKRESERVE(stem##_reserve, dtype)\
 LUARRAY_MKRESERVE(luarray_reserve##stem, atype, stem##_reserve, data)\
 LUARRAY_MKMAKE(luarray_mk##stem##n, atype, luarray_reserve##stem)\
-LUARRAY_MKFREE(luarray_free##stem, atype, stem##_free, data)
+LUARRAY_MKFREE(luarray_free##stem, atype, stem##_free, data)\
+LUARRAY_MKSIZE(luarray_size##stem, atype, data)\
 
 #endif

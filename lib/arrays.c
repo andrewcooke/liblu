@@ -27,6 +27,16 @@ int luarray_pushxyz(lulog *log, luarray_xyz *xyz, double x, double y, double z) 
 }
 
 
+LUARRAY_MKBASE(xyzw, luarray_xyzw, ludata_xyzw, xyzw)
+
+int luarray_pushxyzw(lulog *log, luarray_xyzw *xyzw, double x, double y, double z, double w) {
+    LU_STATUS
+    LU_CHECK(luarray_reservexyzw(log, xyzw, 1))
+    xyzw->xyzw[xyzw->mem.used++] = (ludata_xyzw){x, y, z, w};
+    LU_NO_CLEANUP
+}
+
+
 LUARRAY_MKBASE(int, luarray_int, int, i)
 
 int luarray_pushint(lulog *log, luarray_int *i, int j) {

@@ -13,6 +13,13 @@ typedef struct ludata_xyz {
     double z;
 } ludata_xyz;
 
+typedef struct ludata_xyzw {
+    double x;
+    double y;
+    double z;
+    double w;
+} ludata_xyzw;
+
 typedef struct ludata_ij {
     int i;
     int j;
