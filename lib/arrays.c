@@ -16,6 +16,8 @@ int luarray_pushijz(lulog *log, luarray_ijz *ijz, int32_t i, int32_t j, double z
     LU_NO_CLEANUP
 }
 
+LUARRAY_MKDUMP(luarray_dumpijz, luarray_ijz, 5, "{%d,%d,%g}", ptr->ijz[i].i, ptr->ijz[i].j, ptr->ijz[i].z)
+
 
 LUARRAY_MKBASE(xyz, luarray_xyz, ludata_xyz, xyz)
 
@@ -25,6 +27,8 @@ int luarray_pushxyz(lulog *log, luarray_xyz *xyz, double x, double y, double z) 
     xyz->xyz[xyz->mem.used++] = (ludata_xyz){x, y, z};
     LU_NO_CLEANUP
 }
+
+LUARRAY_MKDUMP(luarray_dumpxyz, luarray_xyz, 3, "{%g,%g,%g}", ptr->xyz[i].z, ptr->xyz[i].y, ptr->xyz[i].z)
 
 
 LUARRAY_MKBASE(fxyzw, luarray_fxyzw, ludata_fxyzw, fxyzw)

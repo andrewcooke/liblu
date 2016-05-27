@@ -22,6 +22,7 @@ int luarray_freeijz(luarray_ijz **ijz, int prev_status);
 int luarray_reserveijz(lulog *log, luarray_ijz *ijz, size_t n);
 int luarray_pushijz(lulog *log, luarray_ijz *ijz, int32_t i, int32_t j, double z);
 size_t luarray_sizeijz(luarray_ijz *ijz);
+int luarray_dumpijz(lulog *log, luarray_ijz *ijz, const char *name, size_t nlines);
 
 typedef struct luarray_xyz {
     ludata_xyz *xyz;
@@ -33,6 +34,7 @@ int luarray_freexyz(luarray_xyz **xyz, int prev_status);
 int luarray_reservexyz(lulog *log, luarray_xyz *xyz, size_t n);
 int luarray_pushxyz(lulog *log, luarray_xyz *xyz, double x, double y, double z);
 size_t luarray_sizexyz(luarray_xyz *xyz);
+int luarray_dumpxyz(lulog *log, luarray_xyz *xyz, const char *name, size_t nlines);
 
 typedef struct luarray_fxyzw {
     ludata_fxyzw *fxyzw;
