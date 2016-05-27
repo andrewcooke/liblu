@@ -78,8 +78,8 @@ START_TEST(test_small_hexagon) {
 //        ludebug(log, "%zu: (%d, %d)", i, ijz->ijz[i].i, ijz->ijz[i].j);
     }
     ck_assert_msg(ijz->mem.used == 7, "Expected 7 points, found %zu", ijz->mem.used);
-    luarray_uint *indices = NULL;
-    luarray_int *offsets = NULL;
+    luarray_uint32 *indices = NULL;
+    luarray_uint32 *offsets = NULL;
     ck_assert(!lutile_strips(log, ijz, &indices, &offsets));
     ck_assert(offsets->mem.used == 3);
     ck_assert(offsets->i[0] == 0);
@@ -95,8 +95,8 @@ START_TEST(test_small_hexagon) {
     ck_assert_msg(indices->i[7] == 3, "index 7 == %d", indices->i[2]);
     ck_assert_msg(indices->i[8] == 6, "index 8 == %d", indices->i[2]);
     ck_assert_msg(indices->i[9] == 4, "index 9 == %d", indices->i[2]);
-    ck_assert(!luarray_freeint(&offsets, 0));
-    ck_assert(!luarray_freeuint(&indices, 0));
+    ck_assert(!luarray_freeuint32(&offsets, 0));
+    ck_assert(!luarray_freeuint32(&indices, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
     ck_assert(!lutile_freeconfig(&config, 0));
@@ -117,8 +117,8 @@ START_TEST(test_medium_hexagon) {
 //        ludebug(log, "%zu: (%d, %d)", i, ijz->ijz[i].i, ijz->ijz[i].j);
     }
     ck_assert_msg(ijz->mem.used == 19, "Expected 19 points, found %zu", ijz->mem.used);
-    luarray_int *offsets = NULL;
-    luarray_uint *indices = NULL;
+    luarray_uint32 *offsets = NULL;
+    luarray_uint32 *indices = NULL;
     ck_assert(!lutile_strips(log, ijz, &indices, &offsets));
     ck_assert(offsets->mem.used == 5);
     ck_assert(offsets->i[0] == 0);
@@ -126,8 +126,8 @@ START_TEST(test_medium_hexagon) {
     ck_assert(offsets->i[2] == 16);
     ck_assert(offsets->i[3] == 25);
     ck_assert(offsets->i[4] == 32);
-    ck_assert(!luarray_freeint(&offsets, 0));
-    ck_assert(!luarray_freeuint(&indices, 0));
+    ck_assert(!luarray_freeuint32(&offsets, 0));
+    ck_assert(!luarray_freeuint32(&indices, 0));
     ck_assert(!luarray_freeijz(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
     ck_assert(!lutile_freeconfig(&config, 0));

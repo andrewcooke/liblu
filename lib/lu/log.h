@@ -18,7 +18,7 @@ typedef enum lulog_level {
 
 #define LULOG_DEFAULT_MAX_LINE_LENGTH 1000
 
-typedef int lulog_printfv(const struct lulog *log, lulog_level level, const char *format, va_list ap);
+typedef int lulog_printfv(struct lulog *log, lulog_level level, const char *format, va_list ap);
 typedef int lulog_free(struct lulog **log, int status);
 
 typedef struct lulog {

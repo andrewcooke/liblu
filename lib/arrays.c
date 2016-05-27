@@ -9,7 +9,7 @@
 
 LUARRAY_MKBASE(ijz, luarray_ijz, ludata_ijz, ijz)
 
-int luarray_pushijz(lulog *log, luarray_ijz *ijz, int i, int j, double z) {
+int luarray_pushijz(lulog *log, luarray_ijz *ijz, int32_t i, int32_t j, double z) {
     LU_STATUS
     LU_CHECK(luarray_reserveijz(log, ijz, 1))
     ijz->ijz[ijz->mem.used++] = (ludata_ijz){i, j, z};
@@ -29,7 +29,7 @@ int luarray_pushxyz(lulog *log, luarray_xyz *xyz, double x, double y, double z) 
 
 LUARRAY_MKBASE(fxyzw, luarray_fxyzw, ludata_fxyzw, fxyzw)
 
-int luarray_pushfxyzw(lulog *log, luarray_fxyzw *fxyzw, double x, double y, double z, double w) {
+int luarray_pushfxyzw(lulog *log, luarray_fxyzw *fxyzw, float x, float y, float z, float w) {
     LU_STATUS
     LU_CHECK(luarray_reservefxyzw(log, fxyzw, 1))
     fxyzw->fxyzw[fxyzw->mem.used++] = (ludata_fxyzw){x, y, z, w};
@@ -40,25 +40,25 @@ LUARRAY_MKDUMP(luarray_dumpfxyzw, luarray_fxyzw, 3, "{%g,%g,%g,%g}",
         ptr->fxyzw[i].x, ptr->fxyzw[i].y, ptr->fxyzw[i].z, ptr->fxyzw[i].w)
 
 
-LUARRAY_MKBASE(int, luarray_int, int, i)
+LUARRAY_MKBASE(int32, luarray_int32, int32_t, i)
 
-int luarray_pushint(lulog *log, luarray_int *i, int j) {
+int luarray_pushint32(lulog *log, luarray_int32 *i, int32_t j) {
     LU_STATUS
-    LU_CHECK(luarray_reserveint(log, i, 1))
+    LU_CHECK(luarray_reserveint32(log, i, 1))
     i->i[i->mem.used++] = j;
     LU_NO_CLEANUP
 }
 
 
-LUARRAY_MKBASE(uint, luarray_uint, unsigned int, i)
+LUARRAY_MKBASE(uint32, luarray_uint32, uint32_t, i)
 
-int luarray_pushuint(lulog *log, luarray_uint *i, unsigned int j) {
+int luarray_pushuint32(lulog *log, luarray_uint32 *i, uint32_t j) {
     LU_STATUS
-    LU_CHECK(luarray_reserveuint(log, i, 1))
+    LU_CHECK(luarray_reserveuint32(log, i, 1))
     i->i[i->mem.used++] = j;
     LU_NO_CLEANUP
 }
 
-LUARRAY_MKDUMP(luarray_dumpuint, luarray_uint, 20, "%u", ptr->i[i])
+LUARRAY_MKDUMP(luarray_dumpuint32, luarray_uint32, 20, "%u", ptr->i[i])
 
 

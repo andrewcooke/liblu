@@ -2,6 +2,8 @@
 #ifndef LU_ARRAYS_H
 #define LU_ARRAYS_H
 
+#include <stdint.h>
+
 #include "dynamic_memory.h"
 #include "structs.h"
 
@@ -18,7 +20,7 @@ typedef struct luarray_ijz {
 int luarray_mkijzn(lulog *log, luarray_ijz **ijz, size_t n);
 int luarray_freeijz(luarray_ijz **ijz, int prev_status);
 int luarray_reserveijz(lulog *log, luarray_ijz *ijz, size_t n);
-int luarray_pushijz(lulog *log, luarray_ijz *ijz, int i, int j, double z);
+int luarray_pushijz(lulog *log, luarray_ijz *ijz, int32_t i, int32_t j, double z);
 size_t luarray_sizeijz(luarray_ijz *ijz);
 
 typedef struct luarray_xyz {
@@ -40,31 +42,31 @@ typedef struct luarray_fxyzw {
 int luarray_mkfxyzwn(lulog *log, luarray_fxyzw **fxyzw, size_t n);
 int luarray_freefxyzw(luarray_fxyzw **fxyzw, int prev_status);
 int luarray_reservefxyzw(lulog *log, luarray_fxyzw *fxyzw, size_t n);
-int luarray_pushfxyzw(lulog *log, luarray_fxyzw *fxyzw, double x, double y, double z, double w);
+int luarray_pushfxyzw(lulog *log, luarray_fxyzw *fxyzw, float x, float y, float z, float w);
 size_t luarray_sizefxyzw(luarray_fxyzw *fxyzw);
 int luarray_dumpfxyzw(lulog *log, luarray_fxyzw *fxyzw, const char *name, size_t nlines);
 
-typedef struct luarray_int {
-    int *i;
+typedef struct luarray_int32 {
+    int32_t *i;
     lumem mem;
-} luarray_int;
+} luarray_int32;
 
-int luarray_mkintn(lulog *log, luarray_int **i, size_t n);
-int luarray_freeint(luarray_int **xy, int prev_status);
-int luarray_reserveint(lulog *log, luarray_int *i, size_t n);
-int luarray_pushint(lulog *log, luarray_int *i, int j);
-size_t luarray_sizeint(luarray_int *i);
+int luarray_mkint32n(lulog *log, luarray_int32 **i, size_t n);
+int luarray_freeint32(luarray_int32 **xy, int prev_status);
+int luarray_reserveint32(lulog *log, luarray_int32 *i, size_t n);
+int luarray_pushint32(lulog *log, luarray_int32 *i, int j);
+size_t luarray_sizeint32(luarray_int32 *i);
 
-typedef struct luarray_uint {
-    unsigned int *i;
+typedef struct luarray_uint32 {
+    uint32_t *i;
     lumem mem;
-} luarray_uint;
+} luarray_uint32;
 
-int luarray_mkuintn(lulog *log, luarray_uint **i, size_t n);
-int luarray_freeuint(luarray_uint **xy, int prev_status);
-int luarray_reserveuint(lulog *log, luarray_uint *i, size_t n);
-int luarray_pushuint(lulog *log, luarray_uint *i, unsigned int j);
-size_t luarray_sizeuint(luarray_uint *i);
-int luarray_dumpuint(lulog *log, luarray_uint *i, const char *name, size_t nlines);
+int luarray_mkuint32n(lulog *log, luarray_uint32 **i, size_t n);
+int luarray_freeuint32(luarray_uint32 **xy, int prev_status);
+int luarray_reserveuint32(lulog *log, luarray_uint32 *i, size_t n);
+int luarray_pushuint32(lulog *log, luarray_uint32 *i, unsigned int j);
+size_t luarray_sizeuint32(luarray_uint32 *i);
+int luarray_dumpuint32(lulog *log, luarray_uint32 *i, const char *name, size_t nlines);
 
 #endif
