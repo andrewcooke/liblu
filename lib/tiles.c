@@ -461,3 +461,16 @@ int lutile_ijz2fxyzw(lulog *log, luarray_ijz *ijz, float step, luarray_fxyzw **f
     LU_NO_CLEANUP
 }
 
+
+int lutile_offsets2counts(lulog *log, size_t chunk, luarray_uint32 *offsets, luarray_int32 **counts) {
+	LU_STATUS
+	LU_CHECK(luarray_mkint32n(log, counts, offsets->mem.used-1))
+	for (size_t i = 0; i < offsets->mem.used-1; ++i) {
+		LU_CHECK(luarray_pushint32(log, *counts, offsets->i[i+1] - offsets->i[i]))
+	}
+	for (size_t i = 0; i < offsets->mem.used-1; ++i) {
+		offsets->i[i] *= chunk;
+	}
+	LU_NO_CLEANUP
+}
+

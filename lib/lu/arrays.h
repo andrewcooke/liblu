@@ -56,6 +56,7 @@ int luarray_freeint32(luarray_int32 **xy, int prev_status);
 int luarray_reserveint32(lulog *log, luarray_int32 *i, size_t n);
 int luarray_pushint32(lulog *log, luarray_int32 *i, int j);
 size_t luarray_sizeint32(luarray_int32 *i);
+int luarray_dumpint32(lulog *log, luarray_int32 *i, const char *name, size_t nlines);
 
 typedef struct luarray_uint32 {
     uint32_t *i;
