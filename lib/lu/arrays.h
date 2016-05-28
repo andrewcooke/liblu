@@ -54,7 +54,7 @@ typedef struct luarray_int32 {
 } luarray_int32;
 
 int luarray_mkint32n(lulog *log, luarray_int32 **i, size_t n);
-int luarray_freeint32(luarray_int32 **xy, int prev_status);
+int luarray_freeint32(luarray_int32 **i, int prev_status);
 int luarray_reserveint32(lulog *log, luarray_int32 *i, size_t n);
 int luarray_pushint32(lulog *log, luarray_int32 *i, int j);
 size_t luarray_sizeint32(luarray_int32 *i);
@@ -66,10 +66,22 @@ typedef struct luarray_uint32 {
 } luarray_uint32;
 
 int luarray_mkuint32n(lulog *log, luarray_uint32 **i, size_t n);
-int luarray_freeuint32(luarray_uint32 **xy, int prev_status);
+int luarray_freeuint32(luarray_uint32 **i, int prev_status);
 int luarray_reserveuint32(lulog *log, luarray_uint32 *i, size_t n);
 int luarray_pushuint32(lulog *log, luarray_uint32 *i, unsigned int j);
 size_t luarray_sizeuint32(luarray_uint32 *i);
 int luarray_dumpuint32(lulog *log, luarray_uint32 *i, const char *name, size_t nlines);
+
+typedef struct luarray_void {
+    void **ptr;
+    lumem mem;
+} luarray_void;
+
+int luarray_mkvoidn(lulog *log, luarray_void **ptrs, size_t n);
+int luarray_freevoid(luarray_void **ptrs, int prev_status);
+int luarray_reservevoid(lulog *log, luarray_void *ptrs, size_t n);
+int luarray_pushvoid(lulog *log, luarray_void *ptrs, void *ptr);
+size_t luarray_sizevoid(luarray_void *ptrs);
+int luarray_dumpvoid(lulog *log, luarray_void *ptrs, const char *name, size_t nlines);
 
 #endif

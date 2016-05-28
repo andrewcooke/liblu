@@ -272,8 +272,7 @@ static inline ludata_ij tri2raster(ludata_ijz tri) {
     return (ludata_ij){2 * tri.i + tri.j, -tri.j};
 }
 
-static inline int range(lulog *log, luarray_ijz *ijz,
-        ludata_ij *bl, ludata_ij *tr, double *zero) {
+int lutile_range(lulog *log, luarray_ijz *ijz, ludata_ij *bl, ludata_ij *tr, double *zero) {
     LU_STATUS
     LU_ASSERT(ijz->mem.used, LU_ERR_ARG, log, "No data");
     *bl = tri2raster(ijz->ijz[0]), *tr = *bl;
@@ -295,7 +294,7 @@ int lutile_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, doubl
     ludata_ij bl, tr;
     double zero;
     *nx = 0; *ny = 0; *data = NULL;
-    LU_CHECK(range(log, ijz, &bl, &tr, &zero))
+    LU_CHECK(lutile_range(log, ijz, &bl, &tr, &zero))
     size_t border = 1;
     *nx = tr.i - bl.i + 1 + 2 * border; *ny = tr.j - bl.j + 1 + 2 * border;
     luinfo(log, "Allocating raster area %zu x %zu", *nx, *ny);

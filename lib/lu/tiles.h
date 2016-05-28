@@ -85,6 +85,8 @@ int lutile_mktriangle(lulog *log, lutile_tile **tile,
 int lutile_mkhexagon(lulog *log, lutile_tile **tile,
         size_t side, size_t subsamples, double octweight);
 
+int lutile_range(lulog *log, luarray_ijz *ijz, ludata_ij *bl, ludata_ij *tr, double *zero);
+
 // this is not geometrically correct.  instead, it uses a pattern like
 //     x x x
 //    x x x x

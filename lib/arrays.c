@@ -68,3 +68,14 @@ int luarray_pushuint32(lulog *log, luarray_uint32 *i, uint32_t j) {
 LUARRAY_MKDUMP(luarray_dumpuint32, luarray_uint32, 20, "%u", ptr->i[i])
 
 
+LUARRAY_MKBASE(void, luarray_void, void *, ptr)
+
+int luarray_pushvoid(lulog *log, luarray_void *ptrs, void *ptr) {
+    LU_STATUS
+    LU_CHECK(luarray_reservevoid(log, ptrs, 1))
+    ptrs->ptr[ptrs->mem.used++] = ptr;
+    LU_NO_CLEANUP
+}
+
+LUARRAY_MKDUMP(luarray_dumpvoid, luarray_void, 4, "%016x", (uint64_t)ptr->ptr[i])
+
