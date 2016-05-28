@@ -24,9 +24,11 @@ int name(lulog *log, type **ptr, size_t n) {\
 }
 
 #define LUARRAY_MKFREE(name, type, internal, data)\
-int name(type **ptr, int prev_status) {\
-    int status = internal(&(*ptr)->data, &(*ptr)->mem, prev_status);\
-    free(*ptr); *ptr = NULL;\
+int name(type **ptr, int status) {\
+    if (ptr && *ptr) {\
+        status = internal(&(*ptr)->data, &(*ptr)->mem, status);\
+        free(*ptr); *ptr = NULL;\
+    }\
     return status;\
 }
 
