@@ -28,3 +28,7 @@ ludata_fxyzw lunorm3(ludata_fxyzw a) {
     float l = lulen3(a);
     return (ludata_fxyzw){a.x/l, a.y/l, a.z/l, a.w};
 }
+
+ludata_fxyzw lusetw(ludata_fxyzw a, float w) {
+    return (ludata_fxyzw){a.x, a.y, a.z, w};
+}

@@ -35,6 +35,6 @@ typedef struct ludata_ijz {
 } ludata_ijz;
 
 
-char *ludata_fxyzw2str(ludata_fxyzw xyzw);
+char *ludata_fxyzw2str(ludata_fxyzw xyzw, int n, char *buffer);
 
 #endif

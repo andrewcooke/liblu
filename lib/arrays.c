@@ -53,7 +53,7 @@ int luarray_pushint32(lulog *log, luarray_int32 *i, int32_t j) {
     LU_NO_CLEANUP
 }
 
-LUARRAY_MKDUMP(luarray_dumpint32, luarray_int32, 20, "%d", ptr->i[i])
+LUARRAY_MKDUMP(luarray_dumpint32, luarray_int32, 10, "%d", ptr->i[i])
 
 
 LUARRAY_MKBASE(uint32, luarray_uint32, uint32_t, i)
@@ -65,7 +65,7 @@ int luarray_pushuint32(lulog *log, luarray_uint32 *i, uint32_t j) {
     LU_NO_CLEANUP
 }
 
-LUARRAY_MKDUMP(luarray_dumpuint32, luarray_uint32, 20, "%u", ptr->i[i])
+LUARRAY_MKDUMP(luarray_dumpuint32, luarray_uint32, 10, "%u", ptr->i[i])
 
 
 LUARRAY_MKBASE(void, luarray_void, void *, ptr)
