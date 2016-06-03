@@ -1,6 +1,7 @@
 
 #include <check.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "../lib/lu/structs.h"
 #include "../lib/lu/vectors.h"
@@ -28,11 +29,20 @@ START_TEST(test_vec) {
     ck_assert(!luvec_copyf4(NULL, &d, &e));
     ck_assert_msg(luvec_eqf4(&c, e), luvec_strf4(e, 100, buffer));
     free(e);
-    luvec_f4 x = {1,0,0,0}, y = {0,1,0,0}, z = {0,0,1,0};
+    luvec_f4 x = {1,0,0,1}, y = {0,1,0,1}, z = {0,0,1,1};
     luvec_crsf4_3(&x, &y, &a);
     ck_assert(luvec_eqf4(&a, &z));
     float q = luvec_dotf4_3(&b, &y);
     ck_assert(q == 5);
+} END_TEST
+
+
+START_TEST(test_mat) {
+    lumat_f4 r = {};
+    luvec_f4 x = {1,0,0,1}, v = {}, xy = {sqrt(2),sqrt(2),0,1};
+    lumat_rotf4_z(M_PI/4, &r);
+    luvec_mulf4(&r, &x, &v);
+    ck_assert(luvec_apxf4_3(&v, &xy, 0.001));
 } END_TEST
 
 
@@ -46,6 +56,7 @@ int main(void) {
     c = tcase_create("case");
     tcase_add_test(c, test_basics);
     tcase_add_test(c, test_vec);
+    tcase_add_test(c, test_mat);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);
