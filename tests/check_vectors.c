@@ -20,6 +20,22 @@ START_TEST(test_basics) {
 } END_TEST
 
 
+START_TEST(test_vec) {
+    luvec_f4 a = {1,2,3,1}, b = {5,5,5,1}, c = {}, d = {6,7,8,1}, *e = NULL;
+    char buffer[100];
+    luvec_addf4_3(&a, &b, &c);
+    ck_assert_msg(luvec_eqf4(&c, &d), luvec_strf4(&c, 100, buffer));
+    ck_assert(!luvec_copyf4(NULL, &d, &e));
+    ck_assert_msg(luvec_eqf4(&c, e), luvec_strf4(e, 100, buffer));
+    free(e);
+    luvec_f4 x = {1,0,0,0}, y = {0,1,0,0}, z = {0,0,1,0};
+    luvec_crsf4_3(&x, &y, &a);
+    ck_assert(luvec_eqf4(&a, &z));
+    float q = luvec_dotf4_3(&b, &y);
+    ck_assert(q == 5);
+} END_TEST
+
+
 int main(void) {
 
     int failed = 0;
@@ -29,6 +45,7 @@ int main(void) {
 
     c = tcase_create("case");
     tcase_add_test(c, test_basics);
+    tcase_add_test(c, test_vec);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);

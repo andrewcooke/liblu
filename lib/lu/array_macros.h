@@ -45,24 +45,34 @@ LUARRAY_MKMAKE(luarray_mk##stem##n, atype, luarray_reserve##stem)\
 LUARRAY_MKFREE(luarray_free##stem, atype, stem##_free, data)\
 LUARRAY_MKSIZE(luarray_size##stem, atype, data)
 
-#define LUARRAY_MKDUMP(name, type, nrow, format, ...)\
-int name(lulog *log, type *ptr, const char *title, size_t nlines) {\
+#define LUARRAY_MKDUMP(name, type, format, ...)\
+int name(lulog *log, type *ptr, const char *title, size_t n) {\
     LU_STATUS\
-    size_t n = min(nrow * nlines, ptr->mem.used);\
+    size_t line = 0, nused = min(n, ptr->mem.used);\
+    lustr lines = {}, word = {}, prefix = {};\
+    LU_CHECK(lustr_mk(log, &lines))\
+    LU_CHECK(lustr_mk(log, &word))\
+    LU_CHECK(lustr_mk(log, &prefix))\
     ludebug(log, "%s - first %zu of %zu (%zu) elements:",\
-            title, n, ptr->mem.used, ptr->mem.capacity);\
-    lustr line = {}; LU_CHECK(lustr_mk(log, &line));\
+            title, nused, ptr->mem.used, ptr->mem.capacity);\
     for (size_t i = 0; i < n; ++i) {\
-        lustr_appendf(log, &line, format, __VA_ARGS__);\
-        if (!((i+1) % nrow) || i == n-1) {\
-            ludebug(log, "%s", line.c);\
-            LU_CHECK(lustr_printf(log, &line, "%zu: ", i+1));\
+        lustr_printf(log, &word, format, __VA_ARGS__);\
+        if (line > 0 && line + word.mem.used > 77) {\
+            lustr_printf(log, &prefix, "%d: ", i);\
+            lustr_appendf(log, &lines, "\n%s%s", prefix.c, word.c);\
+            line = prefix.mem.used + word.mem.used - 2;\
+        } else if (line > 0){\
+            lustr_appendf(log, &lines, ", %s", word.c);\
+            line += 1 + word.mem.used;\
         } else {\
-            lustr_append(log, &line, ", ");\
+            lustr_appendf(log, &lines, "0: %s", word.c);\
+            line += 2 + word.mem.used;\
         }\
     }\
+    lulog_lines(log, lulog_level_debug, lines.c);\
 LU_CLEANUP\
-    status = lustr_free(&line, status);\
+    status = lustr_free(&lines, status);\
+    status = lustr_free(&word, status);\
     LU_RETURN\
 }
 

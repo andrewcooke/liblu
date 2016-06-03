@@ -34,7 +34,6 @@ typedef struct ludata_ijz {
     double z;
 } ludata_ijz;
 
-
 char *ludata_fxyzw2str(ludata_fxyzw xyzw, int n, char *buffer);
 
 #endif
