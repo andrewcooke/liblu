@@ -8,14 +8,14 @@
 #include "../lib/lu/random.h"
 
 
-void assert_next(lurand *rand, uint64_t target) {
+void assert_next(luran *rand, uint64_t target) {
     uint64_t value = rand->next(rand);
     ck_assert_msg(value == target, "%" PRIu64 " != %" PRIu64,
             value, target);
 }
 
-void assert_double(lurand *rand, double target) {
-    double value = lurand_double(rand);
+void assert_double(luran *rand, double target) {
+    double value = luran_double(rand);
     ck_assert_msg(value == target, "%.*f != %.*f",
             DECIMAL_DIG, value, DECIMAL_DIG, target);
 }
@@ -23,8 +23,8 @@ void assert_double(lurand *rand, double target) {
 START_TEST(test_xoroshiro128plus) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lurand *rand;
-    ck_assert(!lurand_mkxoroshiro128plus(log, &rand, 0));
+    luran *rand;
+    ck_assert(!luran_mkxoroshiro128plus(log, &rand, 0));
     assert_next(rand, UINT64_C(5807750865143411619));
     assert_next(rand, UINT64_C(38375600193489914));
     assert_next(rand, UINT64_C(1180499099402622421));
@@ -38,10 +38,10 @@ START_TEST(test_xoroshiro128plus) {
 } END_TEST
 
 
-void assert_rangeu(lurand *rand, uint64_t lo, uint64_t hi, int n) {
+void assert_rangeu(luran *rand, uint64_t lo, uint64_t hi, int n) {
     int i, hit_lo = 0, hit_hi = 0;
     for (i = 0; i < n; ++i) {
-        uint64_t value = lurand_uint64_range(rand, lo, hi);
+        uint64_t value = luran_uint64_range(rand, lo, hi);
         ck_assert_msg(lo <= value && hi >= value, "%" PRIu64, value);
         hit_lo |= lo == value;
         hit_hi |= hi == value;
@@ -53,8 +53,8 @@ void assert_rangeu(lurand *rand, uint64_t lo, uint64_t hi, int n) {
 START_TEST(test_rangeu) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lurand *rand;
-    ck_assert(!lurand_mkxoroshiro128plus(log, &rand, 0));
+    luran *rand;
+    ck_assert(!luran_mkxoroshiro128plus(log, &rand, 0));
     assert_rangeu(rand, 1234, 5678, 10000);
     ck_assert(!rand->free(&rand, 0));
     ck_assert(!rand);
@@ -66,8 +66,8 @@ START_TEST(test_rangeu) {
 void assert_signu(uint64_t lo, uint64_t hi) {
     uint64_t u;
     for (u = lo; u <= hi; ++u) {
-        int64_t n = lurand_add_sign(u);
-        ck_assert_msg(lurand_remove_sign(n) == u,
+        int64_t n = luran_add_sign(u);
+        ck_assert_msg(luran_remove_sign(n) == u,
                 "Bad conversion from %" PRIu64 " to %" PRId64, u, n);
         if (u == hi) break;  // avoid overflow nasties
     }
@@ -76,8 +76,8 @@ void assert_signu(uint64_t lo, uint64_t hi) {
 void assert_signn(int64_t lo, int64_t hi) {
     int64_t n;
     for (n = lo; n <= hi; ++n) {
-        int64_t u = lurand_remove_sign(n);
-        ck_assert_msg(lurand_add_sign(u) == n,
+        int64_t u = luran_remove_sign(n);
+        ck_assert_msg(luran_add_sign(u) == n,
                 "Bad conversion from %" PRId64 " to %" PRIu64, n, u);
         if (n == hi) break;  // avoid overflow nasties
     }
@@ -92,10 +92,10 @@ START_TEST(test_sign) {
 } END_TEST
 
 
-void assert_rangen(lurand *rand, int64_t lo, int64_t hi, int n) {
+void assert_rangen(luran *rand, int64_t lo, int64_t hi, int n) {
     int i, hit_lo = 0, hit_hi = 0;
     for (i = 0; i < n; ++i) {
-        int64_t value = lurand_int64_range(rand, lo, hi);
+        int64_t value = luran_int64_range(rand, lo, hi);
         ck_assert_msg(lo <= value && hi >= value, "%" PRId64, value);
         hit_lo |= lo == value;
         hit_hi |= hi == value;
@@ -107,8 +107,8 @@ void assert_rangen(lurand *rand, int64_t lo, int64_t hi, int n) {
 START_TEST(test_rangen) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lurand *rand;
-    ck_assert(!lurand_mkxoroshiro128plus(log, &rand, 0));
+    luran *rand;
+    ck_assert(!luran_mkxoroshiro128plus(log, &rand, 0));
     assert_rangen(rand, -5678, -1234, 10000);
     ck_assert(!rand->free(&rand, 0));
     ck_assert(!rand);
@@ -122,14 +122,14 @@ START_TEST(test_shuffle) {
     char data2[] = "hello world", target2[] = "dol roewllh";
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    lurand *rand;
-    ck_assert(!lurand_mkxoroshiro128plus(log, &rand, 0));
+    luran *rand;
+    ck_assert(!luran_mkxoroshiro128plus(log, &rand, 0));
 
-    ck_assert(!lurand_shuffle(log, rand, data1, sizeof(int), 3));
+    ck_assert(!luran_shuffle(log, rand, data1, sizeof(int), 3));
 //    for (i = 0; i < 3; ++i) printf("%d\n", data1[i]);
     ck_assert(!memcmp(data1, target1, sizeof(target1)));
 
-    ck_assert(!lurand_shuffle(log, rand, data2, 1, strlen(data2)));
+    ck_assert(!luran_shuffle(log, rand, data2, 1, strlen(data2)));
 //    for (i = 0; i < strlen(data2); ++i) printf("%c\n", data2[i]);
     ck_assert(!memcmp(data2, target2, strlen(target2)));
 

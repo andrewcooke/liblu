@@ -21,7 +21,7 @@ START_TEST(test_constants) {
     int n_p, i, count[256] = {0};
     const uint8_t *p = NULL;
     double f2, g2, f4, g4;
-    lusimplex_constants(&n_p, &p, &f2, &g2, &f4, &g4);
+    luplx_constants(&n_p, &p, &f2, &g2, &f4, &g4);
     ck_assert(n_p == 512);
     for (i = 0; i < n_p; ++i) count[p[i]] += 1;
     for (i = 0; i < 256; ++i) ck_assert_msg(count[i] == 2, "count at %d is %d", i, count[i]);
@@ -33,7 +33,7 @@ START_TEST(test_constants) {
 
 
 static void assert_value(double x, double y, double target) {
-    double value = lusimplex_noise2(x, y);
+    double value = luplx_noise2(x, y);
     ck_assert_msg(value == target, "%.*f != %.*f at (%0.1g, %0.1g)",
             DECIMAL_DIG, value, DECIMAL_DIG, target, x, y);
 }
@@ -60,12 +60,12 @@ START_TEST(print_octave) {
             for (k = 0; k < 5; ++k) {
                 x = (i + (100*k)) / pow(2, k);
                 y = (j + (100*k)) / pow(2, k);
-                data[i+j*nx] += lusimplex_noise2(x, y) * pow(2, k);
+                data[i+j*nx] += luplx_noise2(x, y) * pow(2, k);
             }
         }
     }
-    ck_assert(!lugrey_quantize(log, data, nx*ny, 9, &grey));
-    ck_assert(!lugrey_str(log, grey, nx, ny, " .:+*oO#@", &s));
+    ck_assert(!lugry_quantize(log, data, nx*ny, 9, &grey));
+    ck_assert(!lugry_str(log, grey, nx, ny, " .:+*oO#@", &s));
     ck_assert_msg(strlen(s.c) == (nx+1) * ny, "length %zu != %d", strlen(s.c), (nx+1) * ny);
     printf(s.c);
     ck_assert(!lustr_free(&s, 0));

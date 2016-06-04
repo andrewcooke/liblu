@@ -10,12 +10,12 @@
 // dynamic array
 
 
-#define LUARRAY_MKRESERVE(name, type, internal, data)\
+#define LUARY_MKRESERVE(name, type, internal, data)\
 int name(lulog *log, type *ptr, size_t n) {\
     return internal(log, &ptr->data, &ptr->mem, n);\
 }
 
-#define LUARRAY_MKMAKE(name, type, reserve)\
+#define LUARY_MKMAKE(name, type, reserve)\
 int name(lulog *log, type **ptr, size_t n) {\
     LU_STATUS\
     LU_ALLOC(log, *ptr, 1)\
@@ -23,7 +23,7 @@ int name(lulog *log, type **ptr, size_t n) {\
     LU_NO_CLEANUP\
 }
 
-#define LUARRAY_MKFREE(name, type, internal, data)\
+#define LUARY_MKFREE(name, type, internal, data)\
 int name(type **ptr, int status) {\
     if (ptr && *ptr) {\
         status = internal(&(*ptr)->data, &(*ptr)->mem, status);\
@@ -32,20 +32,20 @@ int name(type **ptr, int status) {\
     return status;\
 }
 
-#define LUARRAY_MKSIZE(name, type, data)\
+#define LUARY_MKSIZE(name, type, data)\
 size_t name(type *ptr) {\
     return ptr->mem.used * sizeof(*ptr->data);\
 }
 
-#define LUARRAY_MKBASE(stem, atype, dtype, data)\
+#define LUARY_MKBASE(stem, atype, dtype, data)\
 static LUMEM_MKFREE(stem##_free, dtype)\
 static LUMEM_MKRESERVE(stem##_reserve, dtype)\
-LUARRAY_MKRESERVE(luarray_reserve##stem, atype, stem##_reserve, data)\
-LUARRAY_MKMAKE(luarray_mk##stem##n, atype, luarray_reserve##stem)\
-LUARRAY_MKFREE(luarray_free##stem, atype, stem##_free, data)\
-LUARRAY_MKSIZE(luarray_size##stem, atype, data)
+LUARY_MKRESERVE(luary_reserve##stem, atype, stem##_reserve, data)\
+LUARY_MKMAKE(luary_mk##stem##n, atype, luary_reserve##stem)\
+LUARY_MKFREE(luary_free##stem, atype, stem##_free, data)\
+LUARY_MKSIZE(luary_size##stem, atype, data)
 
-#define LUARRAY_MKDUMP(name, type, format, ...)\
+#define LUARY_MKDUMP(name, type, format, ...)\
 int name(lulog *log, type *ptr, const char *title, size_t n) {\
     LU_STATUS\
     size_t line = 0, nused = min(n, ptr->mem.used);\

@@ -112,7 +112,7 @@ static inline double dot4(xyzw g, double x, double y, double z, double w) {
 }
 
 // see warning above about problems with this code
-double lusimplex_noise2(double xin, double yin) {
+double luplx_noise2(double xin, double yin) {
     double n0, n1, n2; // noise contributions from the three corners
     // skew the input space to determine which simplex cell we're in
     double s = (xin+yin)*F2; // hairy factor for 2D
@@ -171,7 +171,7 @@ double lusimplex_noise2(double xin, double yin) {
     return 70.0 * (n0 + n1 + n2);
 }
 
-double lusimplex_noise3(double xin, double yin, double zin) {
+double luplx_noise3(double xin, double yin, double zin) {
     double n0, n1, n2, n3; // noise contributions from the four corners
     // skew the input space to determine which simplex cell we're in
     double s = (xin+yin+zin)*F3; // very nice and simple skew factor for 3D
@@ -261,7 +261,7 @@ double lusimplex_noise3(double xin, double yin, double zin) {
     return 32.0*(n0 + n1 + n2 + n3);
 }
 
-double lusimplex_noise4(double xin, double yin, double zin, double win) {
+double luplx_noise4(double xin, double yin, double zin, double win) {
     double n0, n1, n2, n3, n4; // noise contributions from the five corners
     // skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
     double s = (xin + yin + zin + win) * F4; // factor for 4D skewing
@@ -382,7 +382,7 @@ double lusimplex_noise4(double xin, double yin, double zin, double win) {
     return 27.0 * (n0 + n1 + n2 + n3 + n4);
 }
 
-void lusimplex_constants(int *n_p, const uint8_t **p,
+void luplx_constants(int *n_p, const uint8_t **p,
         double *f2, double *g2, double *f4, double *g4) {
     *n_p = sizeof(perm);
     *p = perm;

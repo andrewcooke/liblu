@@ -10,7 +10,7 @@
 #include "lu/greyscale.h"
 
 
-int lugrey_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, lustr *out) {
+int lugry_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, lustr *out) {
     LU_STATUS
     size_t i, j, warn = 0;
     int n = strlen(scale) - 1;
@@ -30,7 +30,7 @@ int lugrey_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, l
     LU_NO_CLEANUP
 }
 
-int lugrey_quantize(lulog *log, double *data, int n, int levels, int **out) {
+int lugry_quantize(lulog *log, double *data, int n, int levels, int **out) {
     LU_STATUS;
     int i;
     double lo = *data, hi = *data, delta;

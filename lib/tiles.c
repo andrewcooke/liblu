@@ -7,7 +7,7 @@
 #include "lu/tiles.h"
 
 
-int lutile_freeconfig(lutile_config **config, int prev_status) {
+int lutle_freeconfig(lutle_config **config, int prev_status) {
     if (*config) {
         free((*config)->grad);
         free((*config)->perm);
@@ -17,7 +17,7 @@ int lutile_freeconfig(lutile_config **config, int prev_status) {
     return prev_status;
 }
 
-int lutile_mkconfig(lulog *log, lutile_config **config, lurand *rand,
+int lutle_mkconfig(lulog *log, lutle_config **config, luran *rand,
         size_t n_grad, double phase, size_t n_perm) {
     size_t i;
     LU_STATUS
@@ -28,30 +28,30 @@ int lutile_mkconfig(lulog *log, lutile_config **config, lurand *rand,
     (*config)->n_perm = n_perm;
     for (i = 0; i < n_grad; ++i) {
         double theta = phase + i*2*M_PI / n_grad;
-        ludata_xy grad = {cos(theta), sin(theta)};
+        ludat_xy grad = {cos(theta), sin(theta)};
         (*config)->grad[i] = grad;
     }
     for (i = 0; i < n_perm; ++i) (*config)->perm[i] = i;
-    LU_CHECK(lurand_shuffle(log, rand, (*config)->perm, sizeof(*(*config)->perm), n_perm))
+    LU_CHECK(luran_shuffle(log, rand, (*config)->perm, sizeof(*(*config)->perm), n_perm))
     LU_NO_CLEANUP
 }
 
-int lutile_defaultconfig(lulog *log, lutile_config **config, uint64_t seed) {
-    lurand *rand = NULL;
+int lutle_defaultconfig(lulog *log, lutle_config **config, uint64_t seed) {
+    luran *rand = NULL;
     LU_STATUS
-    LU_CHECK(lurand_mkxoroshiro128plus(log, &rand, seed));
-    LU_CHECK(lutile_mkconfig(log, config, rand, 12, 0, 256))
+    LU_CHECK(luran_mkxoroshiro128plus(log, &rand, seed));
+    LU_CHECK(lutle_mkconfig(log, config, rand, 12, 0, 256))
 LU_CLEANUP
     if (rand) status = rand->free(&rand, status);
     LU_RETURN
 }
 
 
-static inline double dot(ludata_xy g, double x, double y) {
+static inline double dot(ludat_xy g, double x, double y) {
     return g.x * x + g.y * y;
 }
 
-static inline double scale(ludata_xy g, double dx, double dy) {
+static inline double scale(ludat_xy g, double dx, double dy) {
     double t = 0.5 - dx*dx - dy*dy;
     if (t < 0) {
         return 0;
@@ -61,14 +61,14 @@ static inline double scale(ludata_xy g, double dx, double dy) {
     }
 }
 
-static inline ludata_xy lookup_grad(lulog *log, lutile_config *conf,
-        lutile_tile *tile, int pi, int qi) {
+static inline ludat_xy lookup_grad(lulog *log, lutle_config *conf,
+        lutle_tile *tile, int pi, int qi) {
     if (tile) tile->wrap(tile, log, &pi, &qi);
     return conf->grad[conf->perm[(pi + conf->perm[qi % conf->n_perm]) % conf->n_perm] % conf->n_grad];
 }
 
 // this can be called with tile=NULL for direct evaluation.
-int lutile_noise(lulog *log, lutile_config *conf, lutile_tile *tile,
+int lutle_noise(lulog *log, lutle_config *conf, lutle_tile *tile,
         double pin, double qin, double *noise) {
     LU_STATUS
     double cos60 = 0.5, sin60 = sqrt(3)/2;
@@ -86,17 +86,17 @@ int lutile_noise(lulog *log, lutile_config *conf, lutile_tile *tile,
     int pmod, qmod;
     // lookup below depends on the (p,q) coordinate of the corner
     // g0 is at (pi+1,qi)
-    ludata_xy g0 = lookup_grad(log, conf, tile, pi+1, qi);
+    ludat_xy g0 = lookup_grad(log, conf, tile, pi+1, qi);
     // g1 is at (pi,qi+1)
-    ludata_xy g1 = lookup_grad(log, conf, tile, pi, qi+1);
+    ludat_xy g1 = lookup_grad(log, conf, tile, pi, qi+1);
     // g2 is at (pi+far,qi+far)
-    ludata_xy g2 = lookup_grad(log, conf, tile, pi+far, qi+far);
+    ludat_xy g2 = lookup_grad(log, conf, tile, pi+far, qi+far);
     *noise = (scale(g0, dx0, dy0) + scale(g1, dx1, dy1) + scale(g2, dx2, dy2));
     LU_NO_CLEANUP
 }
 
 
-int generic_free(lutile_tile **tile, size_t prev_status) {
+int generic_free(lutle_tile **tile, size_t prev_status) {
     if (*tile) free((*tile)->state);
     free(*tile); *tile = NULL;
     return prev_status;
@@ -107,44 +107,44 @@ int generic_free(lutile_tile **tile, size_t prev_status) {
 // generating octave noise.  the inverse is necessary so that the tile
 // can do the correct wrapping (without coupling the noise code).
 
-static inline size_t octa(lutile_tile *tile) {
+static inline size_t octa(lutle_tile *tile) {
     return tile->octave * tile->side * tile->subsamples;
 }
 
-static inline size_t octm(lutile_tile *tile) {
+static inline size_t octm(lutle_tile *tile) {
     return pow(2, tile->octave);
 }
 
-static inline void octtransform(lutile_tile *tile, lulog *log,
+static inline void octtransform(lutle_tile *tile, lulog *log,
         double p, double q, double *po, double *qo) {
     size_t a = octa(tile), m = octm(tile);
     *po = m * p + a; *qo =  m * q + a;
 }
 
-static inline void octshift(lutile_tile *tile, lulog *log,
+static inline void octshift(lutle_tile *tile, lulog *log,
         int p, int q, int *po, int *qo) {
     size_t a = octa(tile);
     *po = p + a; *qo = q + a;
 }
 
-static inline void octunshift(lutile_tile *tile, lulog *log,
+static inline void octunshift(lutle_tile *tile, lulog *log,
         int po, int qo, int *p, int *q) {
     size_t a = octa(tile);
     *p = po - a; *q = qo - a;
 }
 
-static inline int octave(lutile_tile *tile, lulog *log,
-        lutile_config *config, int i, int j, luarray_ijz **ijz) {
+static inline int octave(lutle_tile *tile, lulog *log,
+        lutle_config *config, int i, int j, luary_ijz **ijz) {
     LU_STATUS
     double z = 0, dz, po, qo;
     double p = ((double)i) / tile->subsamples;
     double q = ((double)j) / tile->subsamples;
     for (tile->octave = 0; tile->octave < 1 + log2(tile->subsamples); ++tile->octave) {
         octtransform(tile, log, p, q, &po, &qo);
-        LU_CHECK(lutile_noise(log, config, tile, po, qo, &dz))
+        LU_CHECK(lutle_noise(log, config, tile, po, qo, &dz))
         z += dz / pow(2 / tile->octweight, tile->octave);
     }
-    LU_CHECK(luarray_pushijz(log, *ijz, i, j, z))
+    LU_CHECK(luary_pushijz(log, *ijz, i, j, z))
     LU_NO_CLEANUP
 }
 
@@ -153,7 +153,7 @@ typedef struct tri_state {
     int warn;
 } tri_state;
 
-void tri_wrap(lutile_tile *tile, lulog *log, int *p, int *q) {
+void tri_wrap(lutle_tile *tile, lulog *log, int *p, int *q) {
     tri_state *state = (tri_state*)(tile->state);
     if (!state->warn) {
         luwarn(log, "Triangle cannot be tiled - passing coords through");
@@ -161,12 +161,12 @@ void tri_wrap(lutile_tile *tile, lulog *log, int *p, int *q) {
     }
 }
 
-int tri_enumerate(lutile_tile *tile, lulog *log, lutile_config *config,
-        uint edges, luarray_ijz **ijz) {
+int tri_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
+        uint edges, luary_ijz **ijz) {
     LU_STATUS
     size_t i, j;
     size_t points = tile->side * tile->subsamples;
-    LU_CHECK(luarray_mkijzn(log, ijz, points * (points - 1)))
+    LU_CHECK(luary_mkijzn(log, ijz, points * (points - 1)))
     for (j = 0; j <= points; ++j) {
         if ((j == 0 && (edges & 1)) || (j > 0)) {
             for (i = 0; i <= points - j; ++i) {
@@ -181,7 +181,7 @@ int tri_enumerate(lutile_tile *tile, lulog *log, lutile_config *config,
     LU_NO_CLEANUP
 }
 
-int lutile_mktriangle(lulog *log, lutile_tile **tile,
+int lutle_mktriangle(lulog *log, lutle_tile **tile,
         size_t side, size_t subsamples, double octweight) {
     LU_STATUS
     LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
@@ -199,7 +199,7 @@ int lutile_mktriangle(lulog *log, lutile_tile **tile,
 }
 
 
-void hex_wrap(lutile_tile *tile, lulog *log, int *po, int *qo) {
+void hex_wrap(lutle_tile *tile, lulog *log, int *po, int *qo) {
     int u, v, m = octm(tile);
     int s = tile->side * m;  // the size of the repeating octave tile
     octunshift(tile, log, *po, *qo, &u, &v);  // keep octave scaling
@@ -227,11 +227,11 @@ void hex_wrap(lutile_tile *tile, lulog *log, int *po, int *qo) {
     // otherwise, continue as before
 }
 
-int hex_enumerate(lutile_tile *tile, lulog *log, lutile_config *config,
-        uint edges, luarray_ijz **ijz) {
+int hex_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
+        uint edges, luary_ijz **ijz) {
     LU_STATUS
     int points = tile->side * tile->subsamples;
-    LU_CHECK(luarray_mkijzn(log, ijz, 6 * points * (points + 1)))
+    LU_CHECK(luary_mkijzn(log, ijz, 6 * points * (points + 1)))
     int jlo = !(edges & 1) - points;
     int jhi = points - !(edges & 8);
     for (int j = jlo; j <= jhi; ++j) {
@@ -250,7 +250,7 @@ int hex_enumerate(lutile_tile *tile, lulog *log, lutile_config *config,
     LU_NO_CLEANUP
 }
 
-int lutile_mkhexagon(lulog *log, lutile_tile **tile,
+int lutle_mkhexagon(lulog *log, lutle_tile **tile,
         size_t side, size_t subsamples, double octweight) {
     LU_STATUS
     LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
@@ -268,17 +268,17 @@ int lutile_mkhexagon(lulog *log, lutile_tile **tile,
 
 
 // y is inverted here as we're going from (p,q) to raster (top down)
-static inline ludata_ij tri2raster(ludata_ijz tri) {
-    return (ludata_ij){2 * tri.i + tri.j, -tri.j};
+static inline ludat_ij tri2raster(ludat_ijz tri) {
+    return (ludat_ij){2 * tri.i + tri.j, -tri.j};
 }
 
-int lutile_range(lulog *log, luarray_ijz *ijz, ludata_ij *bl, ludata_ij *tr, double *zero) {
+int lutle_range(lulog *log, luary_ijz *ijz, ludat_ij *bl, ludat_ij *tr, double *zero) {
     LU_STATUS
     LU_ASSERT(ijz->mem.used, LU_ERR_ARG, log, "No data");
     *bl = tri2raster(ijz->ijz[0]), *tr = *bl;
     if (zero) *zero = ijz->ijz[0].z;
     for (size_t i = 1; i < ijz->mem.used; ++i) {
-        ludata_ij ij = tri2raster(ijz->ijz[i]);
+        ludat_ij ij = tri2raster(ijz->ijz[i]);
         bl->i = min(bl->i, ij.i); bl->j = min(bl->j, ij.j);
         tr->i = max(tr->i, ij.i); tr->j = max(tr->j, ij.j);
         if (zero) *zero = min(*zero, ijz->ijz[i].z);
@@ -289,18 +289,18 @@ int lutile_range(lulog *log, luarray_ijz *ijz, ludata_ij *bl, ludata_ij *tr, dou
     LU_NO_CLEANUP
 }
 
-int lutile_rasterize(lulog *log, luarray_ijz *ijz, size_t *nx, size_t *ny, double **data) {
+int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double **data) {
     LU_STATUS
-    ludata_ij bl, tr;
+    ludat_ij bl, tr;
     double zero;
     *nx = 0; *ny = 0; *data = NULL;
-    LU_CHECK(lutile_range(log, ijz, &bl, &tr, &zero))
+    LU_CHECK(lutle_range(log, ijz, &bl, &tr, &zero))
     size_t border = 1;
     *nx = tr.i - bl.i + 1 + 2 * border; *ny = tr.j - bl.j + 1 + 2 * border;
     luinfo(log, "Allocating raster area %zu x %zu", *nx, *ny);
     LU_ALLOC(log, *data, *nx * *ny)
     for (size_t i = 0; i < ijz->mem.used; ++i) {
-        ludata_ij ij = tri2raster(ijz->ijz[i]);
+        ludat_ij ij = tri2raster(ijz->ijz[i]);
         ij.i -= bl.i; ij.j -= bl.j;
         (*data)[ij.i + border + (ij.j + border) * *nx] = ijz->ijz[i].z - zero;
     }

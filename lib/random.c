@@ -9,7 +9,7 @@
 #include "lu/random.h"
 
 
-static int generic_free(lurand **rand, int prev_status) {
+static int generic_free(luran **rand, int prev_status) {
     LU_STATUS
     if (*rand) free((*rand)->state);
     free(*rand);
@@ -24,7 +24,7 @@ typedef struct splitmix64_state {
     uint64_t x;
 } splitmix64_state;
 
-static uint64_t splitmix64_next(lurand *rand) {
+static uint64_t splitmix64_next(luran *rand) {
     splitmix64_state *state = (splitmix64_state*)rand->state;
     uint64_t z = (state->x += UINT64_C(0x9E3779B97F4A7C15));
     z = (z ^ (z >> 30)) * UINT64_C(0xBF58476D1CE4E5B9);
@@ -32,7 +32,7 @@ static uint64_t splitmix64_next(lurand *rand) {
     return z ^ (z >> 31);
 }
 
-int lurand_mksplitmix64(lulog *log, lurand **rand, uint64_t seed) {
+int luran_mksplitmix64(lulog *log, luran **rand, uint64_t seed) {
     LU_STATUS
     LU_ALLOC(log, *rand, 1)
     LU_ALLOC_TYPE(log, (*rand)->state, 1, splitmix64_state);
@@ -58,7 +58,7 @@ static inline uint64_t rotl(const uint64_t x, int k) {
     return (x << k) | (x >> (64 - k));
 }
 
-static uint64_t xoroshiro128plus_next(lurand *rand) {
+static uint64_t xoroshiro128plus_next(luran *rand) {
     xoroshiro128plus_state *state = (xoroshiro128plus_state*)rand->state;
     const uint64_t s0 = state->s0;
     uint64_t s1 = state->s1;
@@ -69,7 +69,7 @@ static uint64_t xoroshiro128plus_next(lurand *rand) {
     return result;
 }
 
-static int xoroshiro128plus_free(lurand **rand, int prev_status) {
+static int xoroshiro128plus_free(luran **rand, int prev_status) {
     LU_STATUS
     if (*rand) free((*rand)->state);
     free(*rand);
@@ -79,10 +79,10 @@ static int xoroshiro128plus_free(lurand **rand, int prev_status) {
 
 // seeding is via splitmix64, as recommended at
 // http://xoroshiro.di.unimi.it/
-int lurand_mkxoroshiro128plus(lulog *log, lurand **rand, uint64_t seed) {
+int luran_mkxoroshiro128plus(lulog *log, luran **rand, uint64_t seed) {
     LU_STATUS
-    lurand *srand = NULL;
-    LU_CHECK(lurand_mksplitmix64(log, &srand, seed));
+    luran *srand = NULL;
+    LU_CHECK(luran_mksplitmix64(log, &srand, seed));
     uint64_t seed0 = 0, seed1 = 0;
     while (seed0 == 0) seed0 = srand->next(srand);
     while (seed1 == 0) seed1 = srand->next(srand);
@@ -102,13 +102,13 @@ LU_CLEANUP
 
 
 // http://xoroshiro.di.unimi.it/
-double lurand_double(lurand *rand) {
+double luran_double(luran *rand) {
     const union {uint64_t i; double d;} u = {.i = UINT64_C(0x3FF) << 52 | rand->next(rand) >> 12 };
     return u.d - 1.0;
 }
 
 // http://stackoverflow.com/a/17554531
-uint64_t lurand_uint64_range(lurand *rand, uint64_t lo, uint64_t hi) {
+uint64_t luran_uint64_range(luran *rand, uint64_t lo, uint64_t hi) {
     uint64_t tmp;
     if (lo > hi) {
         tmp = hi; hi = lo; lo = tmp;
@@ -116,11 +116,11 @@ uint64_t lurand_uint64_range(lurand *rand, uint64_t lo, uint64_t hi) {
         return lo;
     }
     uint64_t value = rand->next(rand);
-    if (lo == 0 && hi == LURAND_MAX) {
+    if (lo == 0 && hi == LURAN_MAX) {
         return value;
     } else {
         uint64_t range = hi - lo + 1;
-        uint64_t buckets = LURAND_MAX / range;
+        uint64_t buckets = LURAN_MAX / range;
         uint64_t limit = buckets * range;
         while (value >= limit) value = rand->next(rand);
         return lo + value / buckets;
@@ -129,37 +129,37 @@ uint64_t lurand_uint64_range(lurand *rand, uint64_t lo, uint64_t hi) {
 
 
 // http://stackoverflow.com/a/31203972
-uint64_t lurand_remove_sign(int64_t n) {
+uint64_t luran_remove_sign(int64_t n) {
     uint64_t u = UINT64_C(1) + INT64_MAX;
     u += n;
     return u;
 }
 
-int64_t lurand_add_sign(uint64_t u) {
+int64_t luran_add_sign(uint64_t u) {
     if (u <= INT64_MAX) {
         int64_t n1 = INT64_MIN, n2 = u;
         return n1 + n2;
     } else {
-        uint64_t zero = lurand_remove_sign(0);
+        uint64_t zero = luran_remove_sign(0);
         int64_t n = u - zero;
         return n;
     }
 }
 
-int64_t lurand_int64_range(lurand *rand, int64_t lo, int64_t hi) {
-    return lurand_add_sign(
-            lurand_uint64_range(rand,
-                    lurand_remove_sign(lo), lurand_remove_sign(hi)));
+int64_t luran_int64_range(luran *rand, int64_t lo, int64_t hi) {
+    return luran_add_sign(
+            luran_uint64_range(rand,
+                    luran_remove_sign(lo), luran_remove_sign(hi)));
 }
 
 
 // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-int lurand_shuffle(lulog *log, lurand *rand, void *data, size_t size, size_t n) {
+int luran_shuffle(lulog *log, luran *rand, void *data, size_t size, size_t n) {
     LU_STATUS
     uint64_t i, j, k;
     char *cdata = (char*)data;
     for (i = n-1; i > 0; --i) {
-        j = lurand_uint64_range(rand, 0, i);
+        j = luran_uint64_range(rand, 0, i);
         for (k = 0; k < size; ++k) {
             char tmp = cdata[i*size+k];
             cdata[i*size+k] = cdata[j*size+k];

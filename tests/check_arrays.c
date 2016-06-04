@@ -10,10 +10,10 @@
 START_TEST(test_ijz) {
     lulog *log;
     ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
-    luarray_ijz *ijz;
-    ck_assert(!luarray_mkijzn(log, &ijz, 0));
-    ck_assert(!luarray_pushijz(log, ijz, 1, 2, 3.0));
-    ck_assert(!luarray_pushijz(log, ijz, 4, 5, 6.0));
+    luary_ijz *ijz;
+    ck_assert(!luary_mkijzn(log, &ijz, 0));
+    ck_assert(!luary_pushijz(log, ijz, 1, 2, 3.0));
+    ck_assert(!luary_pushijz(log, ijz, 4, 5, 6.0));
     ck_assert(ijz->mem.used == 2);
     ck_assert(ijz->ijz[0].i == 1);
     ck_assert(ijz->ijz[0].j == 2);
@@ -21,8 +21,8 @@ START_TEST(test_ijz) {
     ck_assert(ijz->ijz[1].i == 4);
     ck_assert(ijz->ijz[1].j == 5);
     ck_assert(ijz->ijz[1].z == 6);
-    ck_assert(luarray_sizeijz(ijz) == ijz->mem.used * sizeof(ludata_ijz));
-    ck_assert(!luarray_freeijz(&ijz, 0));
+    ck_assert(luary_sizeijz(ijz) == ijz->mem.used * sizeof(ludat_ijz));
+    ck_assert(!luary_freeijz(&ijz, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
