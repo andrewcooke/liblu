@@ -17,6 +17,8 @@ typedef float luvec_f4[4];
 
 #define lumat_idx4(i, j)  ({ __typeof__ (i) _i = (i); __typeof__ (j) _j = (j); 4*_j + _i;})
 int lumat_copyf4(lulog *log, lumat_f4 *a, lumat_f4 **b);
+void lumat_zrof4(lumat_f4 *m);
+void lumat_idnf4(lumat_f4 *m);
 void lumat_setf4(
         float a00, float a01, float a02, float a03,
         float a10, float a11, float a12, float a13,
@@ -36,6 +38,7 @@ void lumat_rotf4_z(float theta, lumat_f4 *m);
 void lumat_offf4(float x, float y, float z, lumat_f4 *m);
 
 int luvec_copyf4(lulog *log, luvec_f4 *a, luvec_f4 **b);
+void luvec_zrof4(luvec_f4 *m);
 int luvec_eqf4(luvec_f4 *a, luvec_f4 *b);
 int luvec_eqf4_3(luvec_f4 *a, luvec_f4 *b);
 int luvec_apxf4(luvec_f4 *a, luvec_f4 *b, float delta);
@@ -48,13 +51,5 @@ float luvec_lenf4_3(luvec_f4 *a);
 void luvec_nrmf4_3(luvec_f4 *a, luvec_f4 *c);
 void luvec_mulf4(lumat_f4 *m, luvec_f4 *v, luvec_f4 *c);
 char *luvec_strf4(luvec_f4 *a, int n, char *buffer);
-
-int lueq4(ludta_fxyzw a, ludta_fxyzw b);
-ludta_fxyzw luadd3(ludta_fxyzw a, ludta_fxyzw b);
-ludta_fxyzw lusub3(ludta_fxyzw a, ludta_fxyzw b);
-ludta_fxyzw lucross3(ludta_fxyzw a, ludta_fxyzw b);
-float lulen3(ludta_fxyzw a);
-ludta_fxyzw lunorm3(ludta_fxyzw a);
-ludta_fxyzw lusetw(ludta_fxyzw a, float w);
 
 #endif

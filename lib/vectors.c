@@ -9,41 +9,8 @@
 #include "lu/minmax.h"
 
 
-int lueq4(ludta_fxyzw a, ludta_fxyzw b) {
-    return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
-}
-
-ludta_fxyzw luadd3(ludta_fxyzw a, ludta_fxyzw b) {
-    return (ludta_fxyzw){a.x+b.x, a.y+b.y, a.z+b.z, a.w};
-}
-
-ludta_fxyzw lusub3(ludta_fxyzw a, ludta_fxyzw b) {
-    return (ludta_fxyzw){a.x-b.x, a.y-b.y, a.z-b.z, a.w};
-}
-
-ludta_fxyzw lucross3(ludta_fxyzw a, ludta_fxyzw b) {
-    return (ludta_fxyzw){(a.y*b.z)-(a.z*b.y), -(a.x*b.z)+(a.z*b.x), (a.x*b.y)-(a.y*b.x), a.w};
-}
-
-float lulen3(ludta_fxyzw a) {
-    return sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
-}
-
-ludta_fxyzw lunorm3(ludta_fxyzw a) {
-    float l = lulen3(a);
-    return (ludta_fxyzw){a.x/l, a.y/l, a.z/l, a.w};
-}
-
-ludta_fxyzw lusetw(ludta_fxyzw a, float w) {
-    return (ludta_fxyzw){a.x, a.y, a.z, w};
-}
-
-
-
-
-
-
-
+// the idea here is that if lumat_idx4 is defined correctly, everything
+// else should follow.
 
 int lumat_copyf4(lulog *log, lumat_f4 *a, lumat_f4 **b) {
     LU_STATUS
@@ -52,8 +19,14 @@ int lumat_copyf4(lulog *log, lumat_f4 *a, lumat_f4 **b) {
     LU_NO_CLEANUP
 }
 
-// the idea here is that if lumat_idx4 is defined correctly, everything
-// else should follow.
+void inline lumat_zrof4(lumat_f4 *m) {
+    memset(m, 0, sizeof(*m));
+}
+
+void lumat_idnf4(lumat_f4 *m) {
+    lumat_zrof4(m);
+    for (size_t i = 0; i < 4; ++i) (*m)[lumat_idx4(i, i)] = 1;
+}
 
 void lumat_setf4(
         float a00, float a01, float a02, float a03,
@@ -134,6 +107,10 @@ int luvec_copyf4(lulog *log, luvec_f4 *a, luvec_f4 **b) {
     LU_ALLOC(log, *b, 1)
     memcpy(*b, a, sizeof(*a));
     LU_NO_CLEANUP
+}
+
+void inline luvec_zrof4(luvec_f4 *m) {
+    memset(m, 0, sizeof(*m));
 }
 
 static inline int eqf4_n(luvec_f4 *a, luvec_f4 *b, size_t n) {

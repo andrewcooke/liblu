@@ -7,20 +7,6 @@
 #include "../lib/lu/vectors.h"
 
 
-START_TEST(test_basics) {
-    char buf[100];
-    ludta_fxyzw i = {1, 0, 0, 1};
-    ludta_fxyzw j = {0, 1, 0, 1};
-    ludta_fxyzw k = {0, 0, 1, 1};
-    ck_assert(lueq4(j, luadd3(i, lusub3(j, i))));
-    ck_assert(!lueq4(i, luadd3(i, i)));
-    ck_assert(lueq4(i, lunorm3(luadd3(i, i))));
-    ck_assert_msg(lueq4(lucross3(i, j), k), "%s", ludta_fxyzw2str(lucross3(i, j), 100, buf));
-    ck_assert_msg(lueq4(lucross3(j, k), i), "%s", ludta_fxyzw2str(lucross3(j, k), 100, buf));
-    ck_assert_msg(lueq4(lucross3(k, i), j), "%s", ludta_fxyzw2str(lucross3(k, i), 100, buf));
-} END_TEST
-
-
 START_TEST(test_vec) {
     luvec_f4 a = {1,2,3,1}, b = {5,5,5,1}, c = {}, d = {6,7,8,1}, *e = NULL;
     char buffer[100];
@@ -34,6 +20,9 @@ START_TEST(test_vec) {
     ck_assert(luvec_eqf4(&a, &z));
     float q = luvec_dotf4_3(&b, &y);
     ck_assert(q == 5);
+    luvec_zrof4(&a);
+    luvec_f4 zero = {};
+    ck_assert(luvec_eqf4(&a, &zero));
 } END_TEST
 
 
@@ -54,7 +43,6 @@ int main(void) {
     SRunner *r;
 
     c = tcase_create("case");
-    tcase_add_test(c, test_basics);
     tcase_add_test(c, test_vec);
     tcase_add_test(c, test_mat);
     s = suite_create("suite");
