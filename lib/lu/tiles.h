@@ -29,7 +29,7 @@ struct lutle_tile;
 
 typedef struct lutle_config {
     size_t n_grad;
-    ludat_xy *grad;
+    ludta_xy *grad;
     size_t n_perm;
     size_t *perm;
 } lutle_config;
@@ -85,7 +85,7 @@ int lutle_mktriangle(lulog *log, lutle_tile **tile,
 int lutle_mkhexagon(lulog *log, lutle_tile **tile,
         size_t side, size_t subsamples, double octweight);
 
-int lutle_range(lulog *log, luary_ijz *ijz, ludat_ij *bl, ludat_ij *tr, double *zero);
+int lutle_range(lulog *log, luary_ijz *ijz, ludta_ij *bl, ludta_ij *tr, double *zero);
 
 // this is not geometrically correct.  instead, it uses a pattern like
 //     x x x

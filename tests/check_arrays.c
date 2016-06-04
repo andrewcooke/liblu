@@ -21,7 +21,7 @@ START_TEST(test_ijz) {
     ck_assert(ijz->ijz[1].i == 4);
     ck_assert(ijz->ijz[1].j == 5);
     ck_assert(ijz->ijz[1].z == 6);
-    ck_assert(luary_sizeijz(ijz) == ijz->mem.used * sizeof(ludat_ijz));
+    ck_assert(luary_sizeijz(ijz) == ijz->mem.used * sizeof(ludta_ijz));
     ck_assert(!luary_freeijz(&ijz, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST

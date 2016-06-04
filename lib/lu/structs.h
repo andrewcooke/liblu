@@ -5,35 +5,35 @@
 #include <stdint.h>
 
 
-typedef struct ludat_xy {
+typedef struct ludta_xy {
     double x;
     double y;
-} ludat_xy;
+} ludta_xy;
 
-typedef struct ludat_xyz {
+typedef struct ludta_xyz {
     double x;
     double y;
     double z;
-} ludat_xyz;
+} ludta_xyz;
 
-typedef struct ludat_fxyzw {
+typedef struct ludta_fxyzw {
     float x;
     float y;
     float z;
     float w;
-} ludat_fxyzw;
+} ludta_fxyzw;
 
-typedef struct ludat_ij {
+typedef struct ludta_ij {
     int32_t i;
     int32_t j;
-} ludat_ij;
+} ludta_ij;
 
-typedef struct ludat_ijz {
+typedef struct ludta_ijz {
     int32_t i;
     int32_t j;
     double z;
-} ludat_ijz;
+} ludta_ijz;
 
-char *ludat_fxyzw2str(ludat_fxyzw xyzw, int n, char *buffer);
+char *ludta_fxyzw2str(ludta_fxyzw xyzw, int n, char *buffer);
 
 #endif

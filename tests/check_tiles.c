@@ -163,7 +163,7 @@ START_TEST(test_large_hexagon) {
 
 void append_hexagon(lulog *log, luary_ijz *tiled, luary_ijz *hexagon, int di, int dj) {
     for (size_t i = 0; i < hexagon->mem.used; ++i) {
-        ludat_ijz ijz = hexagon->ijz[i];
+        ludta_ijz ijz = hexagon->ijz[i];
         luary_pushijz(log, tiled, ijz.i + di, ijz.j + dj, ijz.z);
     }
 }

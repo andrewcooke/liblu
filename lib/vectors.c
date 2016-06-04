@@ -9,33 +9,33 @@
 #include "lu/minmax.h"
 
 
-int lueq4(ludat_fxyzw a, ludat_fxyzw b) {
+int lueq4(ludta_fxyzw a, ludta_fxyzw b) {
     return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
 }
 
-ludat_fxyzw luadd3(ludat_fxyzw a, ludat_fxyzw b) {
-    return (ludat_fxyzw){a.x+b.x, a.y+b.y, a.z+b.z, a.w};
+ludta_fxyzw luadd3(ludta_fxyzw a, ludta_fxyzw b) {
+    return (ludta_fxyzw){a.x+b.x, a.y+b.y, a.z+b.z, a.w};
 }
 
-ludat_fxyzw lusub3(ludat_fxyzw a, ludat_fxyzw b) {
-    return (ludat_fxyzw){a.x-b.x, a.y-b.y, a.z-b.z, a.w};
+ludta_fxyzw lusub3(ludta_fxyzw a, ludta_fxyzw b) {
+    return (ludta_fxyzw){a.x-b.x, a.y-b.y, a.z-b.z, a.w};
 }
 
-ludat_fxyzw lucross3(ludat_fxyzw a, ludat_fxyzw b) {
-    return (ludat_fxyzw){(a.y*b.z)-(a.z*b.y), -(a.x*b.z)+(a.z*b.x), (a.x*b.y)-(a.y*b.x), a.w};
+ludta_fxyzw lucross3(ludta_fxyzw a, ludta_fxyzw b) {
+    return (ludta_fxyzw){(a.y*b.z)-(a.z*b.y), -(a.x*b.z)+(a.z*b.x), (a.x*b.y)-(a.y*b.x), a.w};
 }
 
-float lulen3(ludat_fxyzw a) {
+float lulen3(ludta_fxyzw a) {
     return sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
 }
 
-ludat_fxyzw lunorm3(ludat_fxyzw a) {
+ludta_fxyzw lunorm3(ludta_fxyzw a) {
     float l = lulen3(a);
-    return (ludat_fxyzw){a.x/l, a.y/l, a.z/l, a.w};
+    return (ludta_fxyzw){a.x/l, a.y/l, a.z/l, a.w};
 }
 
-ludat_fxyzw lusetw(ludat_fxyzw a, float w) {
-    return (ludat_fxyzw){a.x, a.y, a.z, w};
+ludta_fxyzw lusetw(ludta_fxyzw a, float w) {
+    return (ludta_fxyzw){a.x, a.y, a.z, w};
 }
 
 

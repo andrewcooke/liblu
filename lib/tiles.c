@@ -28,7 +28,7 @@ int lutle_mkconfig(lulog *log, lutle_config **config, luran *rand,
     (*config)->n_perm = n_perm;
     for (i = 0; i < n_grad; ++i) {
         double theta = phase + i*2*M_PI / n_grad;
-        ludat_xy grad = {cos(theta), sin(theta)};
+        ludta_xy grad = {cos(theta), sin(theta)};
         (*config)->grad[i] = grad;
     }
     for (i = 0; i < n_perm; ++i) (*config)->perm[i] = i;
@@ -47,11 +47,11 @@ LU_CLEANUP
 }
 
 
-static inline double dot(ludat_xy g, double x, double y) {
+static inline double dot(ludta_xy g, double x, double y) {
     return g.x * x + g.y * y;
 }
 
-static inline double scale(ludat_xy g, double dx, double dy) {
+static inline double scale(ludta_xy g, double dx, double dy) {
     double t = 0.5 - dx*dx - dy*dy;
     if (t < 0) {
         return 0;
@@ -61,7 +61,7 @@ static inline double scale(ludat_xy g, double dx, double dy) {
     }
 }
 
-static inline ludat_xy lookup_grad(lulog *log, lutle_config *conf,
+static inline ludta_xy lookup_grad(lulog *log, lutle_config *conf,
         lutle_tile *tile, int pi, int qi) {
     if (tile) tile->wrap(tile, log, &pi, &qi);
     return conf->grad[conf->perm[(pi + conf->perm[qi % conf->n_perm]) % conf->n_perm] % conf->n_grad];
@@ -86,11 +86,11 @@ int lutle_noise(lulog *log, lutle_config *conf, lutle_tile *tile,
     int pmod, qmod;
     // lookup below depends on the (p,q) coordinate of the corner
     // g0 is at (pi+1,qi)
-    ludat_xy g0 = lookup_grad(log, conf, tile, pi+1, qi);
+    ludta_xy g0 = lookup_grad(log, conf, tile, pi+1, qi);
     // g1 is at (pi,qi+1)
-    ludat_xy g1 = lookup_grad(log, conf, tile, pi, qi+1);
+    ludta_xy g1 = lookup_grad(log, conf, tile, pi, qi+1);
     // g2 is at (pi+far,qi+far)
-    ludat_xy g2 = lookup_grad(log, conf, tile, pi+far, qi+far);
+    ludta_xy g2 = lookup_grad(log, conf, tile, pi+far, qi+far);
     *noise = (scale(g0, dx0, dy0) + scale(g1, dx1, dy1) + scale(g2, dx2, dy2));
     LU_NO_CLEANUP
 }
@@ -268,17 +268,17 @@ int lutle_mkhexagon(lulog *log, lutle_tile **tile,
 
 
 // y is inverted here as we're going from (p,q) to raster (top down)
-static inline ludat_ij tri2raster(ludat_ijz tri) {
-    return (ludat_ij){2 * tri.i + tri.j, -tri.j};
+static inline ludta_ij tri2raster(ludta_ijz tri) {
+    return (ludta_ij){2 * tri.i + tri.j, -tri.j};
 }
 
-int lutle_range(lulog *log, luary_ijz *ijz, ludat_ij *bl, ludat_ij *tr, double *zero) {
+int lutle_range(lulog *log, luary_ijz *ijz, ludta_ij *bl, ludta_ij *tr, double *zero) {
     LU_STATUS
     LU_ASSERT(ijz->mem.used, LU_ERR_ARG, log, "No data");
     *bl = tri2raster(ijz->ijz[0]), *tr = *bl;
     if (zero) *zero = ijz->ijz[0].z;
     for (size_t i = 1; i < ijz->mem.used; ++i) {
-        ludat_ij ij = tri2raster(ijz->ijz[i]);
+        ludta_ij ij = tri2raster(ijz->ijz[i]);
         bl->i = min(bl->i, ij.i); bl->j = min(bl->j, ij.j);
         tr->i = max(tr->i, ij.i); tr->j = max(tr->j, ij.j);
         if (zero) *zero = min(*zero, ijz->ijz[i].z);
@@ -291,7 +291,7 @@ int lutle_range(lulog *log, luary_ijz *ijz, ludat_ij *bl, ludat_ij *tr, double *
 
 int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double **data) {
     LU_STATUS
-    ludat_ij bl, tr;
+    ludta_ij bl, tr;
     double zero;
     *nx = 0; *ny = 0; *data = NULL;
     LU_CHECK(lutle_range(log, ijz, &bl, &tr, &zero))
@@ -300,7 +300,7 @@ int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double *
     luinfo(log, "Allocating raster area %zu x %zu", *nx, *ny);
     LU_ALLOC(log, *data, *nx * *ny)
     for (size_t i = 0; i < ijz->mem.used; ++i) {
-        ludat_ij ij = tri2raster(ijz->ijz[i]);
+        ludta_ij ij = tri2raster(ijz->ijz[i]);
         ij.i -= bl.i; ij.j -= bl.j;
         (*data)[ij.i + border + (ij.j + border) * *nx] = ijz->ijz[i].z - zero;
     }

@@ -7,36 +7,36 @@
 #include "lu/array_macros.h"
 
 
-LUARY_MKBASE(ijz, luary_ijz, ludat_ijz, ijz)
+LUARY_MKBASE(ijz, luary_ijz, ludta_ijz, ijz)
 
 int luary_pushijz(lulog *log, luary_ijz *ijz, int32_t i, int32_t j, double z) {
     LU_STATUS
     LU_CHECK(luary_reserveijz(log, ijz, 1))
-    ijz->ijz[ijz->mem.used++] = (ludat_ijz){i, j, z};
+    ijz->ijz[ijz->mem.used++] = (ludta_ijz){i, j, z};
     LU_NO_CLEANUP
 }
 
 LUARY_MKDUMP(luary_dumpijz, luary_ijz, "{%d,%d,%g}", ptr->ijz[i].i, ptr->ijz[i].j, ptr->ijz[i].z)
 
 
-LUARY_MKBASE(xyz, luary_xyz, ludat_xyz, xyz)
+LUARY_MKBASE(xyz, luary_xyz, ludta_xyz, xyz)
 
 int luary_pushxyz(lulog *log, luary_xyz *xyz, double x, double y, double z) {
     LU_STATUS
     LU_CHECK(luary_reservexyz(log, xyz, 1))
-    xyz->xyz[xyz->mem.used++] = (ludat_xyz){x, y, z};
+    xyz->xyz[xyz->mem.used++] = (ludta_xyz){x, y, z};
     LU_NO_CLEANUP
 }
 
 LUARY_MKDUMP(luary_dumpxyz, luary_xyz, "{%g,%g,%g}", ptr->xyz[i].z, ptr->xyz[i].y, ptr->xyz[i].z)
 
 
-LUARY_MKBASE(fxyzw, luary_fxyzw, ludat_fxyzw, fxyzw)
+LUARY_MKBASE(fxyzw, luary_fxyzw, ludta_fxyzw, fxyzw)
 
 int luary_pushfxyzw(lulog *log, luary_fxyzw *fxyzw, float x, float y, float z, float w) {
     LU_STATUS
     LU_CHECK(luary_reservefxyzw(log, fxyzw, 1))
-    fxyzw->fxyzw[fxyzw->mem.used++] = (ludat_fxyzw){x, y, z, w};
+    fxyzw->fxyzw[fxyzw->mem.used++] = (ludta_fxyzw){x, y, z, w};
     LU_NO_CLEANUP
 }
 

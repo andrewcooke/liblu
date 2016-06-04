@@ -9,15 +9,15 @@
 
 START_TEST(test_basics) {
     char buf[100];
-    ludat_fxyzw i = {1, 0, 0, 1};
-    ludat_fxyzw j = {0, 1, 0, 1};
-    ludat_fxyzw k = {0, 0, 1, 1};
+    ludta_fxyzw i = {1, 0, 0, 1};
+    ludta_fxyzw j = {0, 1, 0, 1};
+    ludta_fxyzw k = {0, 0, 1, 1};
     ck_assert(lueq4(j, luadd3(i, lusub3(j, i))));
     ck_assert(!lueq4(i, luadd3(i, i)));
     ck_assert(lueq4(i, lunorm3(luadd3(i, i))));
-    ck_assert_msg(lueq4(lucross3(i, j), k), "%s", ludat_fxyzw2str(lucross3(i, j), 100, buf));
-    ck_assert_msg(lueq4(lucross3(j, k), i), "%s", ludat_fxyzw2str(lucross3(j, k), 100, buf));
-    ck_assert_msg(lueq4(lucross3(k, i), j), "%s", ludat_fxyzw2str(lucross3(k, i), 100, buf));
+    ck_assert_msg(lueq4(lucross3(i, j), k), "%s", ludta_fxyzw2str(lucross3(i, j), 100, buf));
+    ck_assert_msg(lueq4(lucross3(j, k), i), "%s", ludta_fxyzw2str(lucross3(j, k), 100, buf));
+    ck_assert_msg(lueq4(lucross3(k, i), j), "%s", ludta_fxyzw2str(lucross3(k, i), 100, buf));
 } END_TEST
 
 

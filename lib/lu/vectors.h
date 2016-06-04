@@ -49,12 +49,12 @@ void luvec_nrmf4_3(luvec_f4 *a, luvec_f4 *c);
 void luvec_mulf4(lumat_f4 *m, luvec_f4 *v, luvec_f4 *c);
 char *luvec_strf4(luvec_f4 *a, int n, char *buffer);
 
-int lueq4(ludat_fxyzw a, ludat_fxyzw b);
-ludat_fxyzw luadd3(ludat_fxyzw a, ludat_fxyzw b);
-ludat_fxyzw lusub3(ludat_fxyzw a, ludat_fxyzw b);
-ludat_fxyzw lucross3(ludat_fxyzw a, ludat_fxyzw b);
-float lulen3(ludat_fxyzw a);
-ludat_fxyzw lunorm3(ludat_fxyzw a);
-ludat_fxyzw lusetw(ludat_fxyzw a, float w);
+int lueq4(ludta_fxyzw a, ludta_fxyzw b);
+ludta_fxyzw luadd3(ludta_fxyzw a, ludta_fxyzw b);
+ludta_fxyzw lusub3(ludta_fxyzw a, ludta_fxyzw b);
+ludta_fxyzw lucross3(ludta_fxyzw a, ludta_fxyzw b);
+float lulen3(ludta_fxyzw a);
+ludta_fxyzw lunorm3(ludta_fxyzw a);
+ludta_fxyzw lusetw(ludta_fxyzw a, float w);
 
 #endif

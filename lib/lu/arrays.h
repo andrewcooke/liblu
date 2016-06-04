@@ -13,7 +13,7 @@
 
 
 typedef struct luary_ijz {
-    ludat_ijz *ijz;
+    ludta_ijz *ijz;
     lumem mem;
 } luary_ijz;
 
@@ -25,7 +25,7 @@ size_t luary_sizeijz(luary_ijz *ijz);
 int luary_dumpijz(lulog *log, luary_ijz *ijz, const char *name, size_t nlines);
 
 typedef struct luary_xyz {
-    ludat_xyz *xyz;
+    ludta_xyz *xyz;
     lumem mem;
 } luary_xyz;
 
@@ -37,7 +37,7 @@ size_t luary_sizexyz(luary_xyz *xyz);
 int luary_dumpxyz(lulog *log, luary_xyz *xyz, const char *name, size_t nlines);
 
 typedef struct luary_fxyzw {
-    ludat_fxyzw *fxyzw;
+    ludta_fxyzw *fxyzw;
     lumem mem;
 } luary_fxyzw;
 
