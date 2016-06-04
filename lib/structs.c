@@ -1,4 +1,6 @@
 
+#include <stdio.h>
+
 #include "lu/structs.h"
 
 char *ludta_fxyzw2str(ludta_fxyzw xyzw, int n, char *buffer) {

@@ -79,3 +79,17 @@ int luary_pushvoid(lulog *log, luary_void *ptrs, void *ptr) {
 
 LUARY_MKDUMP(luary_dumpvoid, luary_void, "%016x", (uint64_t)ptr->ptr[i])
 
+
+LUARY_MKBASE(vecf4, luary_vecf4, luvec_f4, v)
+
+int luary_pushvecf4(lulog *log, luary_vecf4 *v, float x, float y, float z, float w) {
+    LU_STATUS
+    LU_CHECK(luary_reservevecf4(log, v, 1))
+    v->v[v->mem.used][0] = x;
+    v->v[v->mem.used][1] = y;
+    v->v[v->mem.used][2] = z;
+    v->v[v->mem.used][3] = w;
+    v->mem.used++;
+    LU_NO_CLEANUP
+}
+

@@ -6,6 +6,7 @@
 
 #include "dynamic_memory.h"
 #include "structs.h"
+#include "vectors.h"
 
 
 // there's nothing special about which arrays are present here - they are
@@ -83,5 +84,16 @@ int luary_reservevoid(lulog *log, luary_void *ptrs, size_t n);
 int luary_pushvoid(lulog *log, luary_void *ptrs, void *ptr);
 size_t luary_sizevoid(luary_void *ptrs);
 int luary_dumpvoid(lulog *log, luary_void *ptrs, const char *name, size_t nlines);
+
+typedef struct luary_vecf4 {
+    luvec_f4 *v;
+    lumem mem;
+} luary_vecf4;
+
+int luary_mkvecf4n(lulog *log, luary_vecf4 **v, size_t n);
+int luary_freevecf4(luary_vecf4 **v, int prev_status);
+int luary_reservevecf4(lulog *log, luary_vecf4 *v, size_t n);
+int luary_pushvecf4(lulog *log, luary_vecf4 *v, float x, float y, float z, float w);
+size_t luary_sizevecf4(luary_vecf4 *v);
 
 #endif
