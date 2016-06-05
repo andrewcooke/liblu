@@ -16,7 +16,7 @@ typedef float luvec_f4[4];
 // (typically matrices).
 
 #define lumat_idx4(i, j)  ({ __typeof__ (i) _i = (i); __typeof__ (j) _j = (j); 4*_j + _i;})
-int lumat_copyf4(lulog *log, lumat_f4 *a, lumat_f4 **b);
+void lumat_cpyf4(lumat_f4 *a, lumat_f4 *b);
 void lumat_zrof4(lumat_f4 *m);
 void lumat_idnf4(lumat_f4 *m);
 void lumat_setf4(
@@ -36,8 +36,9 @@ void lumat_rotf4_x(float theta, lumat_f4 *m);
 void lumat_rotf4_y(float theta, lumat_f4 *m);
 void lumat_rotf4_z(float theta, lumat_f4 *m);
 void lumat_offf4(float x, float y, float z, lumat_f4 *m);
+void lumat_sclf4(float k, lumat_f4 *m);
 
-int luvec_copyf4(lulog *log, luvec_f4 *a, luvec_f4 **b);
+void luvec_cpyf4(luvec_f4 *a, luvec_f4 *b);
 void luvec_zrof4(luvec_f4 *m);
 int luvec_eqf4(luvec_f4 *a, luvec_f4 *b);
 int luvec_eqf4_3(luvec_f4 *a, luvec_f4 *b);

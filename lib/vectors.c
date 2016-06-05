@@ -12,11 +12,8 @@
 // the idea here is that if lumat_idx4 is defined correctly, everything
 // else should follow.
 
-int lumat_copyf4(lulog *log, lumat_f4 *a, lumat_f4 **b) {
-    LU_STATUS
-    LU_ALLOC(log, *b, 1)
-    memcpy(*b, a, sizeof(*a));
-    LU_NO_CLEANUP
+void lumat_cpyf4(lumat_f4 *a, lumat_f4 *b) {
+    memcpy(b, a, sizeof(*a));
 }
 
 void inline lumat_zrof4(lumat_f4 *m) {
@@ -101,12 +98,16 @@ void lumat_offf4(float x, float y, float z, lumat_f4 *m) {
                 0, 0, 0, 1, m);
 }
 
+void lumat_sclf4(float k, lumat_f4 *m) {
+    lumat_setf4(k, 0, 0, 0,
+                0, k, 0, 0,
+                0, 0, k, 0,
+                0, 0, 0, 1, m);
+}
 
-int luvec_copyf4(lulog *log, luvec_f4 *a, luvec_f4 **b) {
-    LU_STATUS
-    LU_ALLOC(log, *b, 1)
-    memcpy(*b, a, sizeof(*a));
-    LU_NO_CLEANUP
+
+void luvec_cpyf4(luvec_f4 *a, luvec_f4 *b) {
+    memcpy(b, a, sizeof(*a));
 }
 
 void inline luvec_zrof4(luvec_f4 *m) {

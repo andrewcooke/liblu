@@ -8,13 +8,12 @@
 
 
 START_TEST(test_vec) {
-    luvec_f4 a = {1,2,3,1}, b = {5,5,5,1}, c = {}, d = {6,7,8,1}, *e = NULL;
+    luvec_f4 a = {1,2,3,1}, b = {5,5,5,1}, c = {}, d = {6,7,8,1}, e = {};
     char buffer[100];
     luvec_addf4_3(&a, &b, &c);
     ck_assert_msg(luvec_eqf4(&c, &d), luvec_strf4(&c, 100, buffer));
-    ck_assert(!luvec_copyf4(NULL, &d, &e));
-    ck_assert_msg(luvec_eqf4(&c, e), luvec_strf4(e, 100, buffer));
-    free(e);
+    luvec_cpyf4(&d, &e);
+    ck_assert_msg(luvec_eqf4(&c, &e), luvec_strf4(&e, 100, buffer));
     luvec_f4 x = {1,0,0,1}, y = {0,1,0,1}, z = {0,0,1,1};
     luvec_crsf4_3(&x, &y, &a);
     ck_assert(luvec_eqf4(&a, &z));
