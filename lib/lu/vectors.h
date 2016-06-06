@@ -37,8 +37,8 @@ void lumat_trnf4(lumat_f4 *m, lumat_f4 *t);
 void lumat_rotf4_x(float theta, lumat_f4 *m);
 void lumat_rotf4_y(float theta, lumat_f4 *m);
 void lumat_rotf4_z(float theta, lumat_f4 *m);
-void lumat_offf4(float x, float y, float z, lumat_f4 *m);
-void lumat_sclf4(float k, lumat_f4 *m);
+void lumat_offf4_3(float x, float y, float z, lumat_f4 *m);
+void lumat_sclf4_3(float k, lumat_f4 *m);
 
 void luvec_cpyf4(luvec_f4 *a, luvec_f4 *b);
 void luvec_zrof4(luvec_f4 *m);

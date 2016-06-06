@@ -80,31 +80,31 @@ void lumat_trnf4(lumat_f4 *m, lumat_f4 *t) {
 }
 
 void lumat_rotf4_x(float theta, lumat_f4 *m) {
-    lumat_setf4_3(1,          0,           0,
-                  0, cos(theta), -sin(theta),
-                  0, sin(theta),  cos(theta), m);
+    lumat_setf4_3(1,           0,            0,
+                  0, cosf(theta), -sinf(theta),
+                  0, sinf(theta),  cosf(theta), m);
 }
 
 void lumat_rotf4_y(float theta, lumat_f4 *m) {
-    lumat_setf4_3(cos(theta), 0, sin(theta),
-                           0, 1,          0,
-                 -sin(theta), 0, cos(theta), m);
+    lumat_setf4_3(cosf(theta), 0, sinf(theta),
+                            0, 1,           0,
+                 -sinf(theta), 0, cosf(theta), m);
 }
 
 void lumat_rotf4_z(float theta, lumat_f4 *m) {
-    lumat_setf4_3(cos(theta), -sin(theta), 0,
-                  sin(theta),  cos(theta), 0,
-                           0,           0, 1, m);
+    lumat_setf4_3(cosf(theta), -sinf(theta), 0,
+                  sinf(theta),  cosf(theta), 0,
+                            0,            0, 1, m);
 }
 
-void lumat_offf4(float x, float y, float z, lumat_f4 *m) {
+void lumat_offf4_3(float x, float y, float z, lumat_f4 *m) {
     lumat_setf4(1, 0, 0, x,
                 0, 1, 0, y,
                 0, 0, 1, z,
                 0, 0, 0, 1, m);
 }
 
-void lumat_sclf4(float k, lumat_f4 *m) {
+void lumat_sclf4_3(float k, lumat_f4 *m) {
     lumat_setf4(k, 0, 0, 0,
                 0, k, 0, 0,
                 0, 0, k, 0,

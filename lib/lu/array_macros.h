@@ -73,6 +73,7 @@ int name(lulog *log, type *ptr, const char *title, size_t n) {\
 LU_CLEANUP\
     status = lustr_free(&lines, status);\
     status = lustr_free(&word, status);\
+    status = lustr_free(&prefix, status);\
     LU_RETURN\
 }
 
