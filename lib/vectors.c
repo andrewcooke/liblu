@@ -47,7 +47,7 @@ void lumat_setf4_3(
         float a20, float a21, float a22,
         lumat_f4 *m) {
     lumat_setf4(
-            a00, a01, a01, 0,
+            a00, a01, a02, 0,
             a10, a11, a12, 0,
             a20, a21, a22, 0,
               0,   0,   0, 1, m);
@@ -63,6 +63,12 @@ void lumat_mulf4(lumat_f4 *a, lumat_f4 *b, lumat_f4 *c) {
             }
         }
     }
+}
+
+void lumat_mulf4_in(lumat_f4 *a, lumat_f4 *c) {
+    lumat_f4 b;
+    lumat_cpyf4(c, &b);
+    lumat_mulf4(a, &b, c);
 }
 
 void lumat_trnf4(lumat_f4 *m, lumat_f4 *t) {

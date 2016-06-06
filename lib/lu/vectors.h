@@ -7,6 +7,8 @@
 
 
 // https://fgiesen.wordpress.com/2012/02/12/row-major-vs-column-major-row-vectors-vs-column-vectors/
+// column order (fortran), first fastest, so j is scaled
+#define lumat_idx4(i, j)  ({ __typeof__ (i) _i = (i); __typeof__ (j) _j = (j); 4 * _j + _i;})
 
 typedef float lumat_f4[16];
 typedef float luvec_f4[4];
@@ -15,7 +17,6 @@ typedef float luvec_f4[4];
 // operations that return void mutate a result argument
 // (typically matrices).
 
-#define lumat_idx4(i, j)  ({ __typeof__ (i) _i = (i); __typeof__ (j) _j = (j); 4*_j + _i;})
 void lumat_cpyf4(lumat_f4 *a, lumat_f4 *b);
 void lumat_zrof4(lumat_f4 *m);
 void lumat_idnf4(lumat_f4 *m);
@@ -31,6 +32,7 @@ void lumat_setf4_3(
         float a20, float a21, float a22,
         lumat_f4 *m);
 void lumat_mulf4(lumat_f4 *a, lumat_f4 *b, lumat_f4 *c);
+void lumat_mulf4_in(lumat_f4 *a, lumat_f4 *c);
 void lumat_trnf4(lumat_f4 *m, lumat_f4 *t);
 void lumat_rotf4_x(float theta, lumat_f4 *m);
 void lumat_rotf4_y(float theta, lumat_f4 *m);
