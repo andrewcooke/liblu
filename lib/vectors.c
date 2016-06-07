@@ -9,8 +9,27 @@
 #include "lu/minmax.h"
 
 
-// the idea here is that if lumat_idx4 is defined correctly, everything
-// else should follow.
+// the code below is formatted assuming that when multiplying
+// matrices and vectors, the vectors are columns.  the actual
+// memory layout depends only on lumat_idx4.
+
+// the aim is to (1) follow the usual conventions when
+// writing matrix and vector maths and (2) have a memory
+// layout consistent with opengl.
+
+// (if you're looking for a general matrix / vector library this
+// probably isn't it - it is very much intended to support
+// opengl, hence the layout and the use of a fourth (w)
+// component.
+
+
+// memory convention here is that objects are allocated on the
+// stack by the caller:
+//   lumat_f4 m = {}; luvec_f4 v = {};
+// and then passed to these routines using '&'.  this avoids
+// tedious messing around with heap memory (but has consequences
+// for stack use, obviously...)
+
 
 void lumat_cpyf4(lumat_f4 *a, lumat_f4 *b) {
     memcpy(b, a, sizeof(*a));
@@ -18,6 +37,41 @@ void lumat_cpyf4(lumat_f4 *a, lumat_f4 *b) {
 
 void inline lumat_zrof4(lumat_f4 *m) {
     memset(m, 0, sizeof(*m));
+}
+
+static inline int mat_eqf4_n(lumat_f4 *a, lumat_f4 *b, size_t n) {
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            if ((*a)[lumat_idx4(i, j)] != (*b)[lumat_idx4(i, j)]) return 0;
+        }
+    }
+    return 1;
+}
+
+int lumat_eqf4(lumat_f4 *a, lumat_f4 *b) {
+    return mat_eqf4_n(a, b, 4);
+}
+
+int lumat_eqf4_3(lumat_f4 *a, lumat_f4 *b) {
+    return mat_eqf4_n(a, b, 3);
+}
+
+static inline int mat_apxf4_n(lumat_f4 *a, lumat_f4 *b, size_t n, float delta) {
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            float scaled = delta * max(1, max(fabs((*a)[lumat_idx4(i, j)]), fabs((*b)[lumat_idx4(i, j)])));
+            if (fabs((*a)[lumat_idx4(i, j)] - (*b)[lumat_idx4(i, j)]) > delta) return 0;
+        }
+    }
+    return 1;
+}
+
+int lumat_apxf4(lumat_f4 *a, lumat_f4 *b, float delta) {
+    return mat_apxf4_n(a, b, 4, delta);
+}
+
+int lumat_apxf4_3(lumat_f4 *a, lumat_f4 *b, float delta) {
+    return mat_apxf4_n(a, b, 3, delta);
 }
 
 void lumat_idnf4(lumat_f4 *m) {
@@ -79,6 +133,38 @@ void lumat_trnf4(lumat_f4 *m, lumat_f4 *t) {
     }
 }
 
+int lumat_invf4(lulog *log, lumat_f4 *m, lumat_f4 *i) {
+
+    LU_STATUS
+
+    // https://groups.google.com/forum/#!msg/comp.graphics.api.opengl/II36ezVViEI/XwmRKk1aKWkJ
+    (*i)[0] = (*m)[5]*((*m)[10]*(*m)[15] - (*m)[11]*(*m)[14]) - (*m)[9]*((*m)[6]*(*m)[15] - (*m)[7]*(*m)[14]) - (*m)[13]*((*m)[7]*(*m)[10] - (*m)[6]*(*m)[11]);
+    (*i)[1] = (*m)[1]*((*m)[11]*(*m)[14] - (*m)[10]*(*m)[15]) - (*m)[9]*((*m)[3]*(*m)[14] - (*m)[2]*(*m)[15]) - (*m)[13]*((*m)[2]*(*m)[11] - (*m)[3]*(*m)[10]);
+    (*i)[2] = (*m)[1]*((*m)[ 6]*(*m)[15] - (*m)[ 7]*(*m)[14]) - (*m)[5]*((*m)[2]*(*m)[15] - (*m)[3]*(*m)[14]) - (*m)[13]*((*m)[3]*(*m)[ 6] - (*m)[2]*(*m)[ 7]);
+    (*i)[3] = (*m)[1]*((*m)[ 7]*(*m)[10] - (*m)[ 6]*(*m)[11]) - (*m)[5]*((*m)[3]*(*m)[10] - (*m)[2]*(*m)[11]) - (*m)[ 9]*((*m)[2]*(*m)[ 7] - (*m)[3]*(*m)[ 6]);
+
+    (*i)[4] = (*m)[4]*((*m)[11]*(*m)[14] - (*m)[10]*(*m)[15]) - (*m)[8]*((*m)[7]*(*m)[14] - (*m)[6]*(*m)[15]) - (*m)[12]*((*m)[6]*(*m)[11] - (*m)[7]*(*m)[10]);
+    (*i)[5] = (*m)[0]*((*m)[10]*(*m)[15] - (*m)[11]*(*m)[14]) - (*m)[8]*((*m)[2]*(*m)[15] - (*m)[3]*(*m)[14]) - (*m)[12]*((*m)[3]*(*m)[10] - (*m)[2]*(*m)[11]);
+    (*i)[6] = (*m)[0]*((*m)[ 7]*(*m)[14] - (*m)[ 6]*(*m)[15]) - (*m)[4]*((*m)[3]*(*m)[14] - (*m)[2]*(*m)[15]) - (*m)[12]*((*m)[2]*(*m)[ 7] - (*m)[3]*(*m)[ 6]);
+    (*i)[7] = (*m)[0]*((*m)[ 6]*(*m)[11] - (*m)[ 7]*(*m)[10]) - (*m)[4]*((*m)[2]*(*m)[11] - (*m)[3]*(*m)[10]) - (*m)[ 8]*((*m)[3]*(*m)[ 6] - (*m)[2]*(*m)[ 7]);
+
+    (*i)[8]  = (*m)[4]*((*m)[ 9]*(*m)[15] - (*m)[11]*(*m)[13]) - (*m)[8]*((*m)[5]*(*m)[15] - (*m)[7]*(*m)[13]) - (*m)[12]*((*m)[7]*(*m)[ 9] - (*m)[5]*(*m)[11]);
+    (*i)[9]  = (*m)[0]*((*m)[11]*(*m)[13] - (*m)[ 9]*(*m)[15]) - (*m)[8]*((*m)[3]*(*m)[13] - (*m)[1]*(*m)[15]) - (*m)[12]*((*m)[1]*(*m)[11] - (*m)[3]*(*m)[ 9]);
+    (*i)[10] = (*m)[0]*((*m)[ 5]*(*m)[15] - (*m)[ 7]*(*m)[13]) - (*m)[4]*((*m)[1]*(*m)[15] - (*m)[3]*(*m)[13]) - (*m)[12]*((*m)[3]*(*m)[ 5] - (*m)[1]*(*m)[ 7]);
+    (*i)[11] = (*m)[0]*((*m)[ 7]*(*m)[ 9] - (*m)[ 5]*(*m)[11]) - (*m)[4]*((*m)[3]*(*m)[ 9] - (*m)[1]*(*m)[11]) - (*m)[ 8]*((*m)[1]*(*m)[ 7] - (*m)[3]*(*m)[ 5]);
+
+    (*i)[12] = (*m)[4]*((*m)[10]*(*m)[13] - (*m)[ 9]*(*m)[14]) - (*m)[8]*((*m)[6]*(*m)[13] - (*m)[5]*(*m)[14]) - (*m)[12]*((*m)[5]*(*m)[10] - (*m)[6]*(*m)[ 9]);
+    (*i)[13] = (*m)[0]*((*m)[ 9]*(*m)[14] - (*m)[10]*(*m)[13]) - (*m)[8]*((*m)[1]*(*m)[14] - (*m)[2]*(*m)[13]) - (*m)[12]*((*m)[2]*(*m)[ 9] - (*m)[1]*(*m)[10]);
+    (*i)[14] = (*m)[0]*((*m)[ 6]*(*m)[13] - (*m)[ 5]*(*m)[14]) - (*m)[4]*((*m)[2]*(*m)[13] - (*m)[1]*(*m)[14]) - (*m)[12]*((*m)[1]*(*m)[ 6] - (*m)[2]*(*m)[ 5]);
+    (*i)[15] = (*m)[0]*((*m)[ 5]*(*m)[10] - (*m)[ 6]*(*m)[ 9]) - (*m)[4]*((*m)[1]*(*m)[10] - (*m)[2]*(*m)[ 9]) - (*m)[ 8]*((*m)[2]*(*m)[ 5] - (*m)[1]*(*m)[ 6]);
+
+    float det = (*m)[0] * (*i)[0] + (*m)[1] * (*i)[4] + (*m)[2] * (*i)[8] + (*m)[3] * (*i)[12];
+    LU_ASSERT(det, LU_ERR_MAT, log, "Zero determinant - cannot invert")
+    for (size_t j = 0; j < 16; j++) (*i)[j] = (*i)[j] / det;
+
+    LU_NO_CLEANUP
+}
+
 void lumat_rotf4_x(float theta, lumat_f4 *m) {
     lumat_setf4_3(1,           0,            0,
                   0, cosf(theta), -sinf(theta),
@@ -120,7 +206,7 @@ void inline luvec_zrof4(luvec_f4 *m) {
     memset(m, 0, sizeof(*m));
 }
 
-static inline int eqf4_n(luvec_f4 *a, luvec_f4 *b, size_t n) {
+static inline int vec_eqf4_n(luvec_f4 *a, luvec_f4 *b, size_t n) {
     for (size_t i = 0; i < n; ++i) {
         if ((*a)[i] != (*b)[i]) return 0;
     }
@@ -128,14 +214,14 @@ static inline int eqf4_n(luvec_f4 *a, luvec_f4 *b, size_t n) {
 }
 
 int luvec_eqf4(luvec_f4 *a, luvec_f4 *b) {
-    return eqf4_n(a, b, 4);
+    return vec_eqf4_n(a, b, 4);
 }
 
 int luvec_eqf4_3(luvec_f4 *a, luvec_f4 *b) {
-    return eqf4_n(a, b, 3);
+    return vec_eqf4_n(a, b, 3);
 }
 
-static inline int apxf4_n(luvec_f4 *a, luvec_f4 *b, size_t n, float delta) {
+static inline int vec_apxf4_n(luvec_f4 *a, luvec_f4 *b, size_t n, float delta) {
     for (size_t i = 0; i < n; ++i) {
         float scaled = delta * max(1, max(fabs((*a)[i]), fabs((*b)[i])));
         if (fabs((*a)[i] - (*b)[i]) > delta) return 0;
@@ -144,11 +230,11 @@ static inline int apxf4_n(luvec_f4 *a, luvec_f4 *b, size_t n, float delta) {
 }
 
 int luvec_apxf4(luvec_f4 *a, luvec_f4 *b, float delta) {
-    return apxf4_n(a, b, delta, 4);
+    return vec_apxf4_n(a, b, delta, 4);
 }
 
 int luvec_apxf4_3(luvec_f4 *a, luvec_f4 *b, float delta) {
-    return apxf4_n(a, b, delta, 3);
+    return vec_apxf4_n(a, b, delta, 3);
 }
 
 void luvec_addf4_3(luvec_f4 *a, luvec_f4 *b, luvec_f4 *c) {

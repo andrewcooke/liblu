@@ -34,6 +34,28 @@ START_TEST(test_mat) {
 } END_TEST
 
 
+static void assert_inv(lulog *log, lumat_f4 *m, char *name) {
+    lumat_f4 inv = {}, id1 = {}, id2 = {};
+    ck_assert_msg(!lumat_invf4(log, m, &inv), name);
+    lumat_mulf4(&inv, m, &id1);
+    lumat_idnf4(&id2);
+    ck_assert_msg(lumat_apxf4(&id1, &id2, 0.0001), name);
+}
+
+START_TEST(test_inv) {
+    lulog *log;
+    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    lumat_f4 m = {};
+    lumat_idnf4(&m);
+    assert_inv(log, &m, "id");
+    lumat_rotf4_x(0.1, &m);
+    assert_inv(log, &m, "rotn");
+    lumat_setf4(1,2,4,8,9,10,11,12,1,1,1,1,2,3,5,7,&m);
+    assert_inv(log, &m, "count");
+    ck_assert(!log->free(&log, 0));
+} END_TEST
+
+
 int main(void) {
 
     int failed = 0;
@@ -44,6 +66,7 @@ int main(void) {
     c = tcase_create("case");
     tcase_add_test(c, test_vec);
     tcase_add_test(c, test_mat);
+    tcase_add_test(c, test_inv);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);
