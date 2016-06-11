@@ -35,7 +35,7 @@ void lumat_cpyf4(lumat_f4 *a, lumat_f4 *b) {
     memcpy(b, a, sizeof(*a));
 }
 
-void inline lumat_zrof4(lumat_f4 *m) {
+void lumat_zrof4(lumat_f4 *m) {
     memset(m, 0, sizeof(*m));
 }
 
@@ -202,8 +202,8 @@ void luvec_cpyf4(luvec_f4 *a, luvec_f4 *b) {
     memcpy(b, a, sizeof(*a));
 }
 
-void inline luvec_zrof4(luvec_f4 *m) {
-    memset(m, 0, sizeof(*m));
+void luvec_zrof4(luvec_f4 *v) {
+    memset(v, 0, sizeof(*v));
 }
 
 static inline int vec_eqf4_n(luvec_f4 *a, luvec_f4 *b, size_t n) {
@@ -263,7 +263,7 @@ float luvec_dotf4_3(luvec_f4 *a, luvec_f4 *b) {
 }
 
 float luvec_lenf4_3(luvec_f4 *a) {
-    return sqrt((*a)[0] * (*a)[0] + (*a)[1] * (*a)[1] + (*a)[2] * (*a)[2]);
+    return sqrtf((*a)[0] * (*a)[0] + (*a)[1] * (*a)[1] + (*a)[2] * (*a)[2]);
 }
 
 void luvec_nrmf4_3(luvec_f4 *a, luvec_f4 *c) {
@@ -282,9 +282,72 @@ void luvec_mulf4(lumat_f4 *m, luvec_f4 *v, luvec_f4 *c) {
     }
 }
 
+void luvec_rotf4(luqua_f4 *q, luvec_f4 *v, luvec_f4 *c) {
+    luqua_f4 i = {}, w = {}, x = {};
+    luqua_invf4(q, &i);
+    luvec_cpyf4(v, &w); w[3] = 0;
+    luqua_mulf4(q, &w, &x);
+    luqua_mulf4(&x, &i, c);
+    (*c)[3] = (*v)[3];
+}
+
 char *luvec_strf4(luvec_f4 *a, int n, char *buffer) {
     snprintf(buffer, n, "[%g,%g,%g,%g]", (*a)[0], (*a)[1], (*a)[2], (*a)[3]);
     return buffer;
 }
 
+
+void luqua_cpyf4(luqua_f4 *a, luqua_f4 *b) {return luvec_cpyf4(a, b);}
+
+void luqua_zrof4(luqua_f4 *q) {return luvec_zrof4(q);}
+
+void luqua_idnf4(luqua_f4 *q) {
+    luqua_zrof4(q);
+    (*q)[3] = 1;
+}
+
+float luqua_lenf4(luqua_f4 *q) {
+    return sqrtf((*q)[0]*(*q)[0] + (*q)[1]*(*q)[1] + (*q)[2]*(*q)[2] + (*q)[3]*(*q)[3]);
+}
+
+void luqua_nrmf4_in(luvec_f4 *q) {
+    float l = luqua_lenf4(q);
+    (*q)[0] = (*q)[0] / l;
+    (*q)[1] = (*q)[1] / l;
+    (*q)[2] = (*q)[2] / l;
+    (*q)[3] = (*q)[3] / l;
+}
+
+void luqua_mulf4(luqua_f4 *a, luqua_f4 *b, luqua_f4 *c) {
+    (*c)[0] = (*a)[3]*(*b)[0] + (*a)[0]*(*b)[3] + (*a)[1]*(*b)[2] - (*a)[2]*(*b)[1];
+    (*c)[1] = (*a)[3]*(*b)[1] + (*a)[1]*(*b)[3] + (*a)[2]*(*b)[0] - (*a)[0]*(*b)[2];
+    (*c)[2] = (*a)[3]*(*b)[2] + (*a)[2]*(*b)[3] + (*a)[0]*(*b)[1] - (*a)[1]*(*b)[0];
+    (*c)[3] = (*a)[3]*(*b)[3] - (*a)[0]*(*b)[0] - (*a)[1]*(*b)[1] - (*a)[2]*(*b)[2];
+}
+
+void luqua_rotf4_x(float theta, luqua_f4 *q) {
+    (*q)[0] = sinf(theta/2);
+    (*q)[1] = (*q)[2] = 0;
+    (*q)[3] = cosf(theta/2);
+}
+
+void luqua_rotf4_y(float theta, luqua_f4 *q) {
+    (*q)[1] = sinf(theta/2);
+    (*q)[2] = (*q)[0] = 0;
+    (*q)[3] = cosf(theta/2);
+}
+
+void luqua_rotf4_z(float theta, luqua_f4 *q) {
+    (*q)[2] = sinf(theta/2);
+    (*q)[0] = (*q)[1] = 0;
+    (*q)[3] = cosf(theta/2);
+}
+
+void luqua_invf4(luqua_f4 *q, luqua_f4 *i) {
+    float l = luqua_lenf4(q);
+    (*i)[0] = -(*q)[0] / l;
+    (*i)[1] = -(*q)[1] / l;
+    (*i)[2] = -(*q)[2] / l;
+    (*i)[3] = (*q)[3] / l;
+}
 

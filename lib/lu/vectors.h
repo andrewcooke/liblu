@@ -11,6 +11,7 @@
 
 typedef float lumat_f4[16];
 typedef float luvec_f4[4];
+typedef float luqua_f4[4];
 
 // all input arrays passed by pointer.
 // operations that return void mutate a result argument
@@ -53,7 +54,7 @@ int lumat_invf4(lulog *log, lumat_f4 *m, lumat_f4 *i);
 
 void luvec_cpyf4(luvec_f4 *a, luvec_f4 *b);
 
-void luvec_zrof4(luvec_f4 *m);
+void luvec_zrof4(luvec_f4 *v);
 
 int luvec_eqf4(luvec_f4 *a, luvec_f4 *b);
 int luvec_eqf4_3(luvec_f4 *a, luvec_f4 *b);
@@ -67,7 +68,20 @@ float luvec_dotf4_3(luvec_f4 *a, luvec_f4 *b);
 float luvec_lenf4_3(luvec_f4 *a);
 void luvec_nrmf4_3(luvec_f4 *a, luvec_f4 *c);
 void luvec_mulf4(lumat_f4 *m, luvec_f4 *v, luvec_f4 *c);
+void luvec_rotf4(luqua_f4 *q, luvec_f4 *v, luvec_f4 *c);
 
 char *luvec_strf4(luvec_f4 *a, int n, char *buffer);
+
+
+void luqua_cpyf4(luqua_f4 *a, luqua_f4 *b);
+void luqua_zrof4(luqua_f4 *q);
+void luqua_idnf4(luqua_f4 *q);
+float luqua_lenf4(luqua_f4 *q);
+void luqua_nrmf4_in(luvec_f4 *q);
+void luqua_mulf4(luqua_f4 *a, luqua_f4 *b, luqua_f4 *c);
+void luqua_rotf4_x(float theta, luqua_f4 *q);
+void luqua_rotf4_y(float theta, luqua_f4 *q);
+void luqua_rotf4_z(float theta, luqua_f4 *q);
+void luqua_invf4(luqua_f4 *q, luqua_f4 *i);
 
 #endif

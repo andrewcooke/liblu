@@ -55,6 +55,16 @@ START_TEST(test_inv) {
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
+START_TEST(test_qua) {
+    luvec_f4 i = {1,0,0,0}, j = {0,1,0,0}, jk = {sqrtf(2),sqrtf(2),0,0}, x = {};
+    luqua_f4 q = {};
+    luqua_rotf4_x(M_PI/4, &q);
+    luvec_rotf4(&q, &i, &x);
+    ck_assert(luvec_apxf4(&i, &x, 0.001));  // i rotated about i is i
+    luvec_rotf4(&q, &j, &x);
+    ck_assert(luvec_apxf4(&jk, &x, 0.001));  // j rotated about i is jk
+} END_TEST
+
 
 int main(void) {
 
@@ -67,6 +77,7 @@ int main(void) {
     tcase_add_test(c, test_vec);
     tcase_add_test(c, test_mat);
     tcase_add_test(c, test_inv);
+    tcase_add_test(c, test_qua);
     s = suite_create("suite");
     suite_add_tcase(s, c);
     r = srunner_create(s);
