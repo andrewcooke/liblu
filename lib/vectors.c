@@ -251,6 +251,19 @@ void luvec_subf4_3(luvec_f4 *a, luvec_f4 *b, luvec_f4 *c) {
     (*c)[3] = (*a)[3];
 }
 
+void luvec_sclf4_3(float k, luvec_f4 *v, luvec_f4 *c) {
+    (*c)[0] = (*v)[0] * k;
+    (*c)[1] = (*v)[1] * k;
+    (*c)[2] = (*v)[2] * k;
+    (*c)[3] = (*v)[3];
+}
+
+void luvec_sclf4_3in(float k, luvec_f4 *v) {
+    (*v)[0] = (*v)[0] * k;
+    (*v)[1] = (*v)[1] * k;
+    (*v)[2] = (*v)[2] * k;
+}
+
 void luvec_crsf4_3(luvec_f4 *a, luvec_f4 *b, luvec_f4 *c) {
     (*c)[0] = (*a)[1] * (*b)[2] - (*a)[2] * (*b)[1];
     (*c)[1] = (*a)[2] * (*b)[0] - (*a)[0] * (*b)[2];
@@ -272,6 +285,13 @@ void luvec_nrmf4_3(luvec_f4 *a, luvec_f4 *c) {
     (*c)[1] = (*a)[1] / l;
     (*c)[2] = (*a)[2] / l;
     (*c)[3] = (*a)[3];
+}
+
+void luvec_nrmf4_3in(luvec_f4 *v) {
+    float l = luvec_lenf4_3(v);
+    (*v)[0] = (*v)[0] / l;
+    (*v)[1] = (*v)[1] / l;
+    (*v)[2] = (*v)[2] / l;
 }
 
 void luvec_mulf4(lumat_f4 *m, luvec_f4 *v, luvec_f4 *c) {

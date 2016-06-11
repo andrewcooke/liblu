@@ -63,10 +63,13 @@ int luvec_apxf4_3(luvec_f4 *a, luvec_f4 *b, float delta);
 
 void luvec_addf4_3(luvec_f4 *a, luvec_f4 *b, luvec_f4 *c);
 void luvec_subf4_3(luvec_f4 *a, luvec_f4 *b, luvec_f4 *c);
+void luvec_sclf4_3(float k, luvec_f4 *v, luvec_f4 *c);
+void luvec_sclf4_3in(float k, luvec_f4 *v);
 void luvec_crsf4_3(luvec_f4 *a, luvec_f4 *b, luvec_f4 *c);
 float luvec_dotf4_3(luvec_f4 *a, luvec_f4 *b);
 float luvec_lenf4_3(luvec_f4 *a);
 void luvec_nrmf4_3(luvec_f4 *a, luvec_f4 *c);
+void luvec_nrmf4_3in(luvec_f4 *v);
 void luvec_mulf4(lumat_f4 *m, luvec_f4 *v, luvec_f4 *c);
 void luvec_rotf4(luqua_f4 *q, luvec_f4 *v, luvec_f4 *c);
 
