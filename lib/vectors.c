@@ -198,6 +198,11 @@ void lumat_sclf4_3(float k, lumat_f4 *m) {
 }
 
 
+void luvec_cpyf3(luvec_f3 *a, luvec_f3 *b) {
+    memcpy(b, a, sizeof(*a));
+}
+
+
 void luvec_cpyf4(luvec_f4 *a, luvec_f4 *b) {
     memcpy(b, a, sizeof(*a));
 }
