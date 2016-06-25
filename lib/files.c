@@ -12,7 +12,9 @@
 int lufle_exists(lulog *log, const char *path) {
 	struct stat s = {};
 	stat(path, &s);
-	return S_ISREG(s.st_mode);
+	int found = S_ISREG(s.st_mode);
+	ludebug(log, "%s %s", found ? "Found" : "Could not find", path);
+	return found;
 }
 
 int lufle_find(lulog *log, const char *datadir, const char *subdir, const char *filename,
@@ -20,9 +22,10 @@ int lufle_find(lulog *log, const char *datadir, const char *subdir, const char *
 	LU_STATUS
 	lustr_mk(log, path);
 	if (varname) {
-		const char *var = getenv(varname);
-		if (var) {
-			lustr_printf(log, path, "%s/%s/%s", var, subdir, filename);
+		const char *varvalue = getenv(varname);
+		if (varvalue) {
+			ludebug(log, "%s = %s",varname, varvalue);
+			lustr_printf(log, path, "%s/%s", varvalue, filename);
 			if (lufle_exists(log, path->c)) {
 				ludebug(log, "Found %s via %s at %s", filename, varname, path->c);
 				goto exit;
@@ -31,11 +34,11 @@ int lufle_find(lulog *log, const char *datadir, const char *subdir, const char *
 		}
 	}
 	if (datadir) {
-		lustr_printf(log, path, "%s/%s/%s", datadir, subdir, filename);
+		lustr_printf(log, path, "%s/%s", datadir, filename);
 		if (lufle_exists(log, path->c)) goto exit;
 		LU_CHECK(lustr_clear(log, path))
 	}
-	ludebug(log, "Could not find %s via %s, %s", filename, varname, datadir);
+	luerror(log, "Could not find %s via %s, %s/%s", filename, varname, datadir, subdir);
 	LU_CHECK(lustr_free(path, status))
 	status = LU_ERR_IO;
 	LU_NO_CLEANUP
