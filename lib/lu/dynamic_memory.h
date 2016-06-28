@@ -22,6 +22,11 @@ if (!(ptr = calloc(n, sizeof(type)))) {\
     luerror(log, "Cannot allocate %zu bytes", n * sizeof(type));\
     status = LU_ERR_MEM; goto exit;\
 }
+#define LU_ALLOC_SIZE(log, ptr, size)\
+if (!(ptr = calloc(1, size))) {\
+    luerror(log, "Cannot allocate %zu bytes", size);\
+    status = LU_ERR_MEM; goto exit;\
+}
 
 typedef struct lumem {
 	size_t used;
