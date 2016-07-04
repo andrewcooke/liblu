@@ -21,8 +21,11 @@ libtool
 *.la
 *.lo
 *.trs
+*~
 
 tests/*
 !tests/*.h
 !tests/*.c
 !tests/*.am
+
+install
