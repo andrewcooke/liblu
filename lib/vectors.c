@@ -317,7 +317,7 @@ void luvec_rotf4(luqua_f4 *q, luvec_f4 *v, luvec_f4 *c) {
 }
 
 char *luvec_strf4(luvec_f4 *a, int n, char *buffer) {
-    snprintf(buffer, n, "[%g,%g,%g,%g]", (*a)[0], (*a)[1], (*a)[2], (*a)[3]);
+    snprintf(buffer, n, "[%12.6g,%12.6g,%12.6g,%12.6g]", (*a)[0], (*a)[1], (*a)[2], (*a)[3]);
     return buffer;
 }
 
@@ -376,3 +376,19 @@ void luqua_invf4(luqua_f4 *q, luqua_f4 *i) {
     (*i)[3] = (*q)[3] / l;
 }
 
+int luvec_prnf4(lulog *log, lulog_level level, luvec_f4 *v) {
+    return lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]", (*v)[0], (*v)[1], (*v)[2], (*v)[3]);
+}
+
+int lumat_prnf4(lulog *log, lulog_level level, lumat_f4 *m) {
+    LU_STATUS
+    LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
+            (*m)[lumat_idx4(0,0)], (*m)[lumat_idx4(0,1)], (*m)[lumat_idx4(0,2)], (*m)[lumat_idx4(0,3)]))
+    LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
+            (*m)[lumat_idx4(1,0)], (*m)[lumat_idx4(1,1)], (*m)[lumat_idx4(1,2)], (*m)[lumat_idx4(1,3)]))
+    LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
+            (*m)[lumat_idx4(2,0)], (*m)[lumat_idx4(2,1)], (*m)[lumat_idx4(2,2)], (*m)[lumat_idx4(2,3)]))
+    LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
+            (*m)[lumat_idx4(3,0)], (*m)[lumat_idx4(3,1)], (*m)[lumat_idx4(3,2)], (*m)[lumat_idx4(3,3)]))
+    LU_NO_CLEANUP
+}

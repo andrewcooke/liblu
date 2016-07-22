@@ -46,6 +46,7 @@ void lumat_mulf4_in(lumat_f4 *a, lumat_f4 *c);
 void lumat_trnf4(lumat_f4 *m, lumat_f4 *t);
 // this one can fail
 int lumat_invf4(lulog *log, lumat_f4 *m, lumat_f4 *i);
+int lumat_prnf4(lulog *log, lulog_level level, lumat_f4 *m);
 
 void luvec_cpyf3(luvec_f3 *a, luvec_f3 *b);
 
@@ -67,6 +68,7 @@ void luvec_nrmf4_3in(luvec_f4 *v);
 void luvec_mulf4(lumat_f4 *m, luvec_f4 *v, luvec_f4 *c);
 void luvec_rotf4(luqua_f4 *q, luvec_f4 *v, luvec_f4 *c);
 char *luvec_strf4(luvec_f4 *a, int n, char *buffer);
+int luvec_prnf4(lulog *log, lulog_level level, luvec_f4 *v);
 
 void luqua_cpyf4(luqua_f4 *a, luqua_f4 *b);
 void luqua_zrof4(luqua_f4 *q);

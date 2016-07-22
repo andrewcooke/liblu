@@ -177,4 +177,14 @@ LU_CLEANUP
     LU_RETURN
 }
 
-
+int lulog_printf(lulog *log, lulog_level level, const char *format, ...) {
+    LU_STATUS
+    if (log) {
+        va_list ap;
+        va_start(ap, format);
+        LU_CHECK(log->printfv(log, level, format, ap));
+        LU_CLEANUP
+        va_end(ap);
+    }
+    LU_RETURN
+}
