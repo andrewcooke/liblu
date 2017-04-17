@@ -61,39 +61,39 @@ int lustr_add(lulog *log, lustr *str, char c) {
     LU_NO_CLEANUP
 }
 
-int lustr_print(lulog *log, lustr *str, const char *text) {
-    return lustr_nprint(log, str, -1, text);
+int lustr_sprint(lulog *log, lustr *str, const char *text) {
+    return lustr_nsprint(log, str, -1, text);
 }
 
-int lustr_nprint(lulog *log, lustr *str, int max_size, const char *text) {
-    return lustr_nprintf(log, str, max_size, "%s", text);
+int lustr_nsprint(lulog *log, lustr *str, int max_size, const char *text) {
+    return lustr_nsprintf(log, str, max_size, "%s", text);
 }
 
-int lustr_printf(lulog *log, lustr *str, const char *format, ...) {
+int lustr_sprintf(lulog *log, lustr *str, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_printfv(log, str, format, ap));
+    LU_CHECK(lustr_sprintfv(log, str, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
 }
 
-int lustr_nprintf(lulog *log, lustr *str, int max_size, const char *format, ...) {
+int lustr_nsprintf(lulog *log, lustr *str, int max_size, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_nprintfv(log, str, max_size, format, ap));
+    LU_CHECK(lustr_nsprintfv(log, str, max_size, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
 }
 
-int lustr_printfv(lulog *log, lustr *str, const char *format, va_list ap) {
-    return lustr_nprintfv(log, str, -1, format, ap);
+int lustr_sprintfv(lulog *log, lustr *str, const char *format, va_list ap) {
+    return lustr_nsprintfv(log, str, -1, format, ap);
 }
 
-int lustr_nprintfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
+int lustr_nsprintfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
     LU_STATUS
     LU_CHECK(lustr_clear(log, str));
     LU_CHECK(lustr_nappendfv(log, str, max_size, format, ap));

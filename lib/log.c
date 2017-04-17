@@ -39,7 +39,7 @@ int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap
     LU_STATUS
     if (level <= log->threshold) {
         stream_state *state = (stream_state*) log->state;
-        LU_CHECK(lustr_nprintf(NULL, &state->line, log->max_line_length, "%s: ",
+        LU_CHECK(lustr_nsprintf(NULL, &state->line, log->max_line_length, "%s: ",
                  prefixes[level]));
         LU_CHECK(lustr_nappendfv(NULL, &state->line,
                  log->max_line_length - state->line.mem.used, format, ap));

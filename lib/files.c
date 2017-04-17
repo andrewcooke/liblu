@@ -32,7 +32,7 @@ int lufle_find(lulog *log, const char *datadir, const char *subdir, const char *
 		const char *varvalue = getenv(varname);
 		if (varvalue) {
 			ludebug(log, "%s = %s",varname, varvalue);
-			lustr_printf(log, path, "%s/%s", varvalue, filename);
+			lustr_sprintf(log, path, "%s/%s", varvalue, filename);
 			if (lufle_exists(log, path->c)) {
 				ludebug(log, "Found %s via %s at %s", filename, varname, path->c);
 				goto exit;
@@ -41,7 +41,7 @@ int lufle_find(lulog *log, const char *datadir, const char *subdir, const char *
 		}
 	}
 	if (datadir) {
-		lustr_printf(log, path, "%s/%s", datadir, filename);
+		lustr_sprintf(log, path, "%s/%s", datadir, filename);
 		if (lufle_exists(log, path->c)) goto exit;
 		LU_CHECK(lustr_clear(log, path))
 	}

@@ -21,12 +21,12 @@ int lustr_reserve(lulog *log, lustr *str, int n);
 int lustr_clear(lulog *log, lustr *str);
 
 int lustr_add(lulog *log, lustr *str, char c);
-int lustr_print(lulog *log, lustr *str, const char *text);
-int lustr_nprint(lulog *log, lustr *str, int max_size, const char *text);
-int lustr_printf(lulog *log, lustr *str, const char *format, ...);
-int lustr_nprintf(lulog *log, lustr *str, int max_size, const char *format, ...);
-int lustr_printfv(lulog *log, lustr *str, const char *format, va_list ap);
-int lustr_nprintfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap);
+int lustr_sprint(lulog *log, lustr *str, const char *text);
+int lustr_nsprint(lulog *log, lustr *str, int max_size, const char *text);
+int lustr_sprintf(lulog *log, lustr *str, const char *format, ...);
+int lustr_nsprintf(lulog *log, lustr *str, int max_size, const char *format, ...);
+int lustr_sprintfv(lulog *log, lustr *str, const char *format, va_list ap);
+int lustr_nsprintfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap);
 int lustr_append(lulog *log, lustr *str, const char *text);
 int lustr_nappend(lulog *log, lustr *str, int max_size, const char *text);
 int lustr_appendf(lulog *log, lustr *str, const char *format, ...);

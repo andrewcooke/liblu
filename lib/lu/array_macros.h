@@ -56,9 +56,9 @@ int name(lulog *log, type *ptr, const char *title, size_t n) {\
     ludebug(log, "%s - first %zu of %zu (%zu) elements:",\
             title, nused, ptr->mem.used, ptr->mem.capacity);\
     for (size_t i = 0; i < n; ++i) {\
-        lustr_printf(log, &word, format, __VA_ARGS__);\
+        lustr_sprintf(log, &word, format, __VA_ARGS__);\
         if (line > 0 && line + word.mem.used > 77) {\
-            lustr_printf(log, &prefix, "%d: ", i);\
+            lustr_sprintf(log, &prefix, "%d: ", i);\
             lustr_appendf(log, &lines, "\n%s%s", prefix.c, word.c);\
             line = prefix.mem.used + word.mem.used - 2;\
         } else if (line > 0){\
