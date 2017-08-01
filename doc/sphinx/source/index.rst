@@ -10,6 +10,7 @@ Welcome to libLU's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   group__lu__status.rst
 
 
 Indices and tables

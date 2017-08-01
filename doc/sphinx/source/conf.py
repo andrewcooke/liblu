@@ -169,3 +169,7 @@ texinfo_documents = [
 
 
 
+# -- Additions for breathe ------------------------------------------------
+extensions.append('breathe')
+breathe_projects = {"libLU": "../../doxygen/output/xml"}
+breathe_default_project = "libLU"
