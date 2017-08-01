@@ -28,4 +28,6 @@ tests/*
 !tests/*.c
 !tests/*.am
 
+doc/doxygen/output
+
 install
