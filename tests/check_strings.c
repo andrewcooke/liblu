@@ -1,8 +1,8 @@
 
 #include <check.h>
+#include <lib/lu/status_codes.h>
 #include <stdlib.h>
 
-#include "../lib/lu/error_codes.h"
 #include "../lib/lu/strings.h"
 #include "../lib/lu/minmax.h"
 

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <lu/status_codes.h>
 
-#include "lu/error_codes.h"
 #include "lu/dynamic_memory.h"
 #include "lu/status.h"
 #include "lu/random.h"

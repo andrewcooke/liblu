@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <float.h>
+#include <lib/lu/status_codes.h>
 #include <math.h>
 
-#include "../lib/lu/error_codes.h"
 #include "../lib/lu/strings.h"
 #include "../lib/lu/log.h"
 #include "../lib/lu/greyscale.h"

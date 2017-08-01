@@ -29,5 +29,6 @@ tests/*
 !tests/*.am
 
 doc/doxygen/output
+doc/env
 
 install
