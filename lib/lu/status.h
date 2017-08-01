@@ -11,7 +11,7 @@
 #define LU_NO_CLEANUP2(prev) LU_CLEANUP LU_RETURN2(prev)
 
 #define LU_CHECK(stmt) if ((status = stmt)) {goto exit;}
-#define LU_CLEAN(stmt) {int _status = stmt; status = status || _status;}
+#define LU_CLEAN(stmt) {int _status = stmt; status = status ? status : _status;}
 
 #define LU_ASSERT(value, error, log, ...) if (!(value)) {luerror(log, __VA_ARGS__); status = error; goto exit;}
 
