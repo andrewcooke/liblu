@@ -15,4 +15,5 @@ rm -fr output/*
 doxygen
 popd
 
-python -m breathe.apidoc doxygen/output/xml/ -o sphinx -f
+mkdir doxygen/output/rst
+python -m breathe.apidoc doxygen/output/xml/ -o doxygen/output/rst -f
