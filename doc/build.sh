@@ -7,10 +7,10 @@ else
 fi
 
 . env/bin/activate
-pip install --upgrade sphinx
-#pip install --upgrade breathe
+#pip install --upgrade sphinx
+##pip install --upgrade breathe
 # use latest from git to enable breathe_show_define_initializer
-pip install --upgrade -e git+git@github.com:michaeljones/breathe.git#egg=breathe-4.7.0
+#pip install --upgrade -e git+git@github.com:michaeljones/breathe.git#egg=breathe-4.7.0
 
 pushd doxygen
 rm -fr output/*
@@ -23,5 +23,6 @@ python -m breathe.apidoc output/xml/ -o output/rst -f
 popd
 
 pushd sphinx
+rm -fr build/*
 python -m sphinx -a -b html source build/html
 popd

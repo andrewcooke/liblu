@@ -5,8 +5,49 @@
 /**
  * @defgroup lu_status Macros for consistent status and cleanup.
  *
- * kopd floop
- * poop
+ * This module builds on the following common C-language practices:
+ *
+ * * resources that will be freed on exit are declared as `NULL`;
+ *
+ * * most functions have a single exit block where resources are freed;
+ *
+ * * most functions return an integer status;
+ *
+ * * on success, the status returned is "false" (ie zero);
+ *
+ * * if a call returns an error, execution jumps to the exit block;
+ *
+ * * if a call returns an error, that same error is returned from the caller.
+ *
+ * Together these implement a form of "exception handling" (where the status
+ * value is the "exception type") that avoids memory leaks (`free()` can
+ * be called on resources and `NULL` values are ignored).
+ *
+ * Note that macros intended for use on a single line include the trailing
+ * semicolon.
+ *
+ * As with all modules in this library, these features are optional and
+ * can be used or ignored as you desire.
+ *
+ * Here is an example of the most common macros in use:
+ *
+ *     int myfunction(...) {
+ *         LU_STATUS  // declare the status and initialize to zero
+ *         char *resource = NULL;  // a resource used internally
+ *         if (!(resource = malloc(...))) {  // allocate the resource
+ *             status = LU_ERR_MEM;
+ *             goto exit;
+ *         }
+ *         LU_CHECK(subroutine(...))  // call subroutine and check status
+ *         ...  // do more useful work
+ *         LU_EXIT // declare the exit block
+ *         free(resource);
+ *         LU_RETURN  // return the status value
+ *     }
+ *
+ * If `subroutine` returns an error then "do more useful work" is skipped,
+ * the resource is freed, and the error returned from to the caller (because
+ * `LU_CHECK()` updates `status` and jumps to `exit`).
  *
  * @ingroup lu
  */
