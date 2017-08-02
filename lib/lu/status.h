@@ -5,7 +5,8 @@
 /**
  * @defgroup lu_status Macros for consistent status and cleanup.
  *
- * kopd
+ * kopd floop
+ * poop
  *
  * @ingroup lu
  */
@@ -32,9 +33,7 @@
 #define LU_CLEAN(stmt) {int _status = stmt; status = status ? status : _status;}
 
 /// If `value` is not true then set status to `error`, log the message, and go to cleanup.
-#define LU_ASSERT(value, error, log, ...) \
-if (!(value)) {luerror(log, __VA_ARGS__); status = error; goto exit;}\
-more stuff
+#define LU_ASSERT(value, error, log, ...) if (!(value)) {luerror(log, __VA_ARGS__); status = error; goto exit;}
 
 /// @}
 #endif
