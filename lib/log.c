@@ -39,10 +39,8 @@ int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap
     LU_STATUS
     if (level <= log->threshold) {
         stream_state *state = (stream_state*) log->state;
-        LU_CHECK(lustr_nsprintf(NULL, &state->line, log->max_line_length, "%s: ",
-                 prefixes[level]));
-        LU_CHECK(lustr_nappendfv(NULL, &state->line,
-                 log->max_line_length - state->line.mem.used, format, ap));
+        LU_CHECK(lustr_sprintf(NULL, &state->line, "%s: ", prefixes[level]));
+        LU_CHECK(lustr_vappendf(NULL, &state->line, format, ap));
         LU_CHECK(lustr_append(NULL, &state->line, "\n"));
         fprintf(state->stream, "%s", state->line.c);
     }
@@ -58,7 +56,6 @@ int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) 
     state->stream = stream;
     LU_CHECK(lustr_mk(NULL, &state->line));
     (*log)->threshold = threshold;
-    (*log)->max_line_length = LULOG_DEFAULT_MAX_LINE_LENGTH;
     (*log)->printfv = stream_printfv;
     (*log)->free = stream_free;
     LU_NO_CLEANUP
@@ -91,7 +88,6 @@ int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold) {
     LU_STATUS
     LU_ALLOC(NULL, *log, 1);
     (*log)->threshold = threshold;
-    (*log)->max_line_length = LULOG_DEFAULT_MAX_LINE_LENGTH;
     (*log)->printfv = syslog_printfv;
     (*log)->free = syslog_free;
     openlog(ident, 0, LOG_USER);
@@ -115,10 +111,8 @@ int string_printfv(lulog *log, lulog_level level, const char *format, va_list ap
     if (level <= log->threshold) {
         lustr *string = (lustr*)log->state;
         size_t zero = string->mem.used;
-        LU_CHECK(lustr_nappendf(NULL, string, log->max_line_length, "%s: ",
-                 prefixes[level]))
-        LU_CHECK(lustr_nappendfv(NULL, string,
-                log->max_line_length - (string->mem.used - zero), format, ap))
+        LU_CHECK(lustr_appendf(NULL, string, "%s: ", prefixes[level]))
+        LU_CHECK(lustr_vappendf(NULL, string, format, ap))
         LU_CHECK(lustr_append(NULL, string, "\n"))
     }
     LU_NO_CLEANUP
@@ -131,7 +125,6 @@ int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
     LU_ALLOC(NULL, *log, 1)
     (*log)->state = *string;
     (*log)->threshold = threshold;
-    (*log)->max_line_length = LULOG_DEFAULT_MAX_LINE_LENGTH;
     (*log)->printfv = string_printfv;
     (*log)->free = string_free;
     LU_NO_CLEANUP
@@ -141,13 +134,16 @@ int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
 #define MKPRINT(level)\
 int lu ## level(lulog *log, const char *format, ...) {\
     LU_STATUS\
+    va_list ap;\
+    va_start(ap, format);\
     if (log) {\
-        va_list ap;\
-        va_start(ap, format);\
         LU_CHECK(log->printfv(log, lulog_level_ ## level, format, ap));\
-        LU_CLEANUP\
-        va_end(ap);\
+    } else {\
+        fprintf(stderr, "%s: ", prefixes[lulog_level_ ## level]);\
+        vfprintf(stderr, format, ap);\
     }\
+    LU_CLEANUP\
+    va_end(ap);\
     LU_RETURN\
 }
 

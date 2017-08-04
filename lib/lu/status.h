@@ -3,7 +3,9 @@
 #define LU_STATUS_H
 
 /**
- * @defgroup lu_status Macros for consistent status and cleanup.
+ * @defgroup lu_status Status handling.
+ *
+ * Macros for consistent status and cleanup.
  *
  * This module builds on the following common C-language practices:
  *

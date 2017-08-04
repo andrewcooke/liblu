@@ -5,26 +5,33 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-struct lulog;
-
 #include "strings.h"
 
+/**
+ * @defgroup lu_log Logging.
+ * @ingroup lu
+ *
+ * An extensible logging facility.
+ */
+/// @{
+
+/// The different severity levels for log messages.
 typedef enum lulog_level {
-	lulog_level_error,
-	lulog_level_warn,
-	lulog_level_info,
-	lulog_level_debug
+	lulog_level_error,  ///< An error (likely fatal) has occurred.
+	lulog_level_warn,  ///< The user should be aware of this abnormal condition.
+	lulog_level_info,  ///< The user may be interested in this information.
+	lulog_level_debug  ///< A developer may use this information to diagnose a problem.
 } lulog_level;
 
-#define LULOG_DEFAULT_MAX_LINE_LENGTH 1000
-
-typedef int lulog_printfv(struct lulog *log, lulog_level level, const char *format, va_list ap);
+struct lulog;
+typedef int lulog_vprintf(struct lulog *log, lulog_level level, const char *format, va_list ap);
 typedef int lulog_free(struct lulog **log, int status);
 
+/// @public
+/// jiojd
 typedef struct lulog {
-	lulog_level threshold;
-	size_t max_line_length;
-	lulog_printfv *printfv;
+	lulog_level threshold;  ///< dsa
+	lulog_vprintf *printfv;
 	lulog_free *free;
 	void *state;
 } lulog;
@@ -43,4 +50,5 @@ int luerror(lulog *log, const char *format, ...);
 int lulog_lines(lulog *log, lulog_level level, const char *lines);
 int lulog_printf(lulog *log, lulog_level level, const char *format, ...);
 
+/// @}
 #endif

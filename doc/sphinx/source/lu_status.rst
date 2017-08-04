@@ -1,4 +1,5 @@
-lu_status
-=========
+
+status.h
+========
 
 .. doxygengroup:: lu_status

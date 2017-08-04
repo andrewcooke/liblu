@@ -174,3 +174,4 @@ extensions.append('breathe')
 breathe_projects = {"libLU": "../../doxygen/output/xml"}
 breathe_default_project = "libLU"
 breathe_show_define_initializer = False
+breathe_domain_by_extension = {"h" : "c"}

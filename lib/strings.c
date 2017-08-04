@@ -73,7 +73,7 @@ int lustr_sprintf(lulog *log, lustr *str, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_sprintfv(log, str, format, ap));
+    LU_CHECK(lustr_vsprintf(log, str, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
@@ -83,20 +83,20 @@ int lustr_nsprintf(lulog *log, lustr *str, int max_size, const char *format, ...
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_nsprintfv(log, str, max_size, format, ap));
+    LU_CHECK(lustr_vnsprintf(log, str, max_size, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
 }
 
-int lustr_sprintfv(lulog *log, lustr *str, const char *format, va_list ap) {
-    return lustr_nsprintfv(log, str, -1, format, ap);
+int lustr_vsprintf(lulog *log, lustr *str, const char *format, va_list ap) {
+    return lustr_vnsprintf(log, str, -1, format, ap);
 }
 
-int lustr_nsprintfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
+int lustr_vnsprintf(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
     LU_STATUS
     LU_CHECK(lustr_clear(log, str));
-    LU_CHECK(lustr_nappendfv(log, str, max_size, format, ap));
+    LU_CHECK(lustr_vnappendf(log, str, max_size, format, ap));
     LU_NO_CLEANUP
 }
 
@@ -112,7 +112,7 @@ int lustr_appendf(lulog *log, lustr *str, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_appendfv(log, str, format, ap));
+    LU_CHECK(lustr_vappendf(log, str, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
@@ -122,17 +122,17 @@ int lustr_nappendf(lulog *log, lustr *str, int max_size, const char *format, ...
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_nappendfv(log, str, max_size, format, ap));
+    LU_CHECK(lustr_vnappendf(log, str, max_size, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
 }
 
-int lustr_appendfv(lulog *log, lustr *str, const char *format, va_list ap) {
-    return lustr_nappendfv(log, str, -1, format, ap);
+int lustr_vappendf(lulog *log, lustr *str, const char *format, va_list ap) {
+    return lustr_vnappendf(log, str, -1, format, ap);
 }
 
-int lustr_nappendfv(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
+int lustr_vnappendf(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
     LU_STATUS
     va_list working;
     while (1) {
