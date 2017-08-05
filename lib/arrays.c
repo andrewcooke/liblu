@@ -7,7 +7,7 @@
 #include "lu/array_macros.h"
 
 
-LUARY_MKBASE(ijz, luary_ijz, ludta_ijz, ijz)
+LUARY_MKBASE(ijz, ludta_ijz, ijz)
 
 int luary_pushijz(lulog *log, luary_ijz *ijz, int32_t i, int32_t j, double z) {
     LU_STATUS
@@ -19,7 +19,7 @@ int luary_pushijz(lulog *log, luary_ijz *ijz, int32_t i, int32_t j, double z) {
 LUARY_MKDUMP(luary_dumpijz, luary_ijz, "{%d,%d,%g}", ptr->ijz[i].i, ptr->ijz[i].j, ptr->ijz[i].z)
 
 
-LUARY_MKBASE(xyz, luary_xyz, ludta_xyz, xyz)
+LUARY_MKBASE(xyz, ludta_xyz, xyz)
 
 int luary_pushxyz(lulog *log, luary_xyz *xyz, double x, double y, double z) {
     LU_STATUS
@@ -31,7 +31,7 @@ int luary_pushxyz(lulog *log, luary_xyz *xyz, double x, double y, double z) {
 LUARY_MKDUMP(luary_dumpxyz, luary_xyz, "{%g,%g,%g}", ptr->xyz[i].z, ptr->xyz[i].y, ptr->xyz[i].z)
 
 
-LUARY_MKBASE(fxyzw, luary_fxyzw, ludta_fxyzw, fxyzw)
+LUARY_MKBASE(fxyzw, ludta_fxyzw, fxyzw)
 
 int luary_pushfxyzw(lulog *log, luary_fxyzw *fxyzw, float x, float y, float z, float w) {
     LU_STATUS
@@ -44,7 +44,7 @@ LUARY_MKDUMP(luary_dumpfxyzw, luary_fxyzw, "{%g,%g,%g,%g}",
         ptr->fxyzw[i].x, ptr->fxyzw[i].y, ptr->fxyzw[i].z, ptr->fxyzw[i].w)
 
 
-LUARY_MKBASE(int32, luary_int32, int32_t, i)
+LUARY_MKBASE(int32, int32_t, i)
 
 int luary_pushint32(lulog *log, luary_int32 *i, int32_t j) {
     LU_STATUS
@@ -56,7 +56,7 @@ int luary_pushint32(lulog *log, luary_int32 *i, int32_t j) {
 LUARY_MKDUMP(luary_dumpint32, luary_int32, "%d", ptr->i[i])
 
 
-LUARY_MKBASE(uint32, luary_uint32, uint32_t, i)
+LUARY_MKBASE(uint32, uint32_t, i)
 
 int luary_pushuint32(lulog *log, luary_uint32 *i, uint32_t j) {
     LU_STATUS
@@ -68,7 +68,7 @@ int luary_pushuint32(lulog *log, luary_uint32 *i, uint32_t j) {
 LUARY_MKDUMP(luary_dumpuint32, luary_uint32, "%u", ptr->i[i])
 
 
-LUARY_MKBASE(void, luary_void, void *, ptr)
+LUARY_MKBASE(void, void *, ptr)
 
 int luary_pushvoid(lulog *log, luary_void *ptrs, void *ptr) {
     LU_STATUS
@@ -80,7 +80,7 @@ int luary_pushvoid(lulog *log, luary_void *ptrs, void *ptr) {
 LUARY_MKDUMP(luary_dumpvoid, luary_void, "%016x", (uint64_t)ptr->ptr[i])
 
 
-LUARY_MKBASE(vecf4, luary_vecf4, luvec_f4, v)
+LUARY_MKBASE(vecf4, luvec_f4, v)
 
 int luary_pushvecf4(lulog *log, luary_vecf4 *v, float x, float y, float z, float w) {
     LU_STATUS

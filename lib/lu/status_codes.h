@@ -3,8 +3,7 @@
 #define LU_STATUS_CODES_H
 
 /**
- * @defgroup lu_status_codes Status codes.
- * @ingroup lu
+ * @file
  *
  * These are the status codes returned by (almost) all functions in
  * this library (exceptions are generally void and "cannot" fail).

@@ -143,7 +143,7 @@ START_TEST(test_tiled_hexagon) {
     luary_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, 7, &ijz));
     luary_ijz *tiled = NULL;
-    ck_assert(!luary_mkijzn(log, &tiled, 0));
+    ck_assert(!luary_mkijz(log, &tiled, 0));
     append_hexagon(log, tiled, ijz, 0, 0);
     append_hexagon(log, tiled, ijz, n*m, n*m);
     append_hexagon(log, tiled, ijz, 2*n*m, -n*m);

@@ -3,7 +3,7 @@
 #define LU_STATUS_H
 
 /**
- * @defgroup lu_status Status handling.
+ * @file
  *
  * Macros for consistent status and cleanup.
  *
@@ -28,8 +28,9 @@
  * Note that macros intended for use on a single line include the trailing
  * semicolon.
  *
- * As with all modules in this library, these features are optional and
- * can be used or ignored as you desire.
+ * These features are optional, but some macros may assume that they are
+ * used (eg in `dynamic_memory.h`).  In each case these are documented as
+ * assuming these conventions.
  *
  * Here is an example of the most common macros in use:
  *

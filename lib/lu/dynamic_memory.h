@@ -6,35 +6,52 @@
 
 #include "status_codes.h"
 
+/**
+ * @file
+ *
+ * Support for dynamically allocating memory.  In addition to various
+ * helper macros, the `lumem` structure and `LUMEM_MKRESERVE()` macro
+ * support arrays that grow dynamically in amortized linear time (by
+ * doubling allocated size as needed).
+ *
+ * For higher level functionality, see `array_macros.h`.
+ */
 
-// basic support for dynamically allocated memory.  see luarray_mem.h for
-// use in constructing dynamic arrays.
-
-typedef struct lulog lulog;  // avoid dependency loops
-
+/// Allocate (zeroed) memory matching the type of `ptr`.
+/** This assumes that the conventions in `status.h` are followed. */
 #define LU_ALLOC(log, ptr, n)\
 if (!(ptr = calloc(n, sizeof(*ptr)))) {\
     luerror(log, "Cannot allocate %zu bytes", n * sizeof(*ptr));\
     status = LU_ERR_MEM; goto exit;\
 }
+
+/// Allocate (zeroed) memory for the given type.
+/** This assumes that the conventions in `status.h` are followed. */
 #define LU_ALLOC_TYPE(log, ptr, n, type)\
 if (!(ptr = calloc(n, sizeof(type)))) {\
     luerror(log, "Cannot allocate %zu bytes", n * sizeof(type));\
     status = LU_ERR_MEM; goto exit;\
 }
+
+/// Allocate the given amount of (zeroed) memory.
+/** This assumes that the conventions in `status.h` are followed. */
 #define LU_ALLOC_SIZE(log, ptr, size)\
 if (!(ptr = calloc(1, size))) {\
     luerror(log, "Cannot allocate %zu bytes", size);\
     status = LU_ERR_MEM; goto exit;\
 }
 
+/// Data required for dynamic memory management.
 typedef struct lumem {
-	size_t used;
-	size_t capacity;
+	size_t used;  //< The amount of memory currently in use.
+	size_t capacity;  //< The total amount of memory allocated.
 } lumem;
 
+/// An instance of `lumem` with no memory allocated or used.
 #define LUMEM_ZERO (lumem){0, 0}
 
+/// Generate a `free()` function for a given type.
+/** This frees the array and zeroes the associated `lumem` instance. */
 #define LUMEM_MKFREE(name, type)\
 int name(type **ptr, lumem *mem, int prev_status) {\
     free(*ptr); *ptr = NULL;\
@@ -42,9 +59,11 @@ int name(type **ptr, lumem *mem, int prev_status) {\
     return prev_status;\
 }
 
-// this provides ADDITIONAL (unused) space
+/// Generate a `reserve()` function for a given type.
+/** This ensures that memory is available for an additional  `n` instances
+ * of `*ptr`. */
 #define LUMEM_MKRESERVE(name, type)\
-int name(lulog *log, type **ptr, lumem *mem, size_t n) {\
+int name(struct lulog *log, type **ptr, lumem *mem, size_t n) {\
 	LU_STATUS\
 	if (mem->capacity - mem->used < n) {\
         int required = mem->capacity > 0 ? mem->capacity : 1;\

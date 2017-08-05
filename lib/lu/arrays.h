@@ -18,7 +18,7 @@ typedef struct luary_ijz {
     lumem mem;
 } luary_ijz;
 
-int luary_mkijzn(lulog *log, luary_ijz **ijz, size_t n);
+int luary_mkijz(lulog *log, luary_ijz **ijz, size_t n);
 int luary_freeijz(luary_ijz **ijz, int prev_status);
 int luary_reserveijz(lulog *log, luary_ijz *ijz, size_t n);
 int luary_pushijz(lulog *log, luary_ijz *ijz, int32_t i, int32_t j, double z);
@@ -30,7 +30,7 @@ typedef struct luary_xyz {
     lumem mem;
 } luary_xyz;
 
-int luary_mkxyzn(lulog *log, luary_xyz **xyz, size_t n);
+int luary_mkxyz(lulog *log, luary_xyz **xyz, size_t n);
 int luary_freexyz(luary_xyz **xyz, int prev_status);
 int luary_reservexyz(lulog *log, luary_xyz *xyz, size_t n);
 int luary_pushxyz(lulog *log, luary_xyz *xyz, double x, double y, double z);
@@ -42,7 +42,7 @@ typedef struct luary_fxyzw {
     lumem mem;
 } luary_fxyzw;
 
-int luary_mkfxyzwn(lulog *log, luary_fxyzw **fxyzw, size_t n);
+int luary_mkfxyzw(lulog *log, luary_fxyzw **fxyzw, size_t n);
 int luary_freefxyzw(luary_fxyzw **fxyzw, int prev_status);
 int luary_reservefxyzw(lulog *log, luary_fxyzw *fxyzw, size_t n);
 int luary_pushfxyzw(lulog *log, luary_fxyzw *fxyzw, float x, float y, float z, float w);
@@ -54,7 +54,7 @@ typedef struct luary_int32 {
     lumem mem;
 } luary_int32;
 
-int luary_mkint32n(lulog *log, luary_int32 **i, size_t n);
+int luary_mkint32(lulog *log, luary_int32 **i, size_t n);
 int luary_freeint32(luary_int32 **i, int prev_status);
 int luary_reserveint32(lulog *log, luary_int32 *i, size_t n);
 int luary_pushint32(lulog *log, luary_int32 *i, int j);
@@ -66,7 +66,7 @@ typedef struct luary_uint32 {
     lumem mem;
 } luary_uint32;
 
-int luary_mkuint32n(lulog *log, luary_uint32 **i, size_t n);
+int luary_mkuint32(lulog *log, luary_uint32 **i, size_t n);
 int luary_freeuint32(luary_uint32 **i, int prev_status);
 int luary_reserveuint32(lulog *log, luary_uint32 *i, size_t n);
 int luary_pushuint32(lulog *log, luary_uint32 *i, unsigned int j);
@@ -78,7 +78,7 @@ typedef struct luary_void {
     lumem mem;
 } luary_void;
 
-int luary_mkvoidn(lulog *log, luary_void **ptrs, size_t n);
+int luary_mkvoid(lulog *log, luary_void **ptrs, size_t n);
 int luary_freevoid(luary_void **ptrs, int prev_status);
 int luary_reservevoid(lulog *log, luary_void *ptrs, size_t n);
 int luary_pushvoid(lulog *log, luary_void *ptrs, void *ptr);
@@ -90,7 +90,7 @@ typedef struct luary_vecf4 {
     lumem mem;
 } luary_vecf4;
 
-int luary_mkvecf4n(lulog *log, luary_vecf4 **v, size_t n);
+int luary_mkvecf4(lulog *log, luary_vecf4 **v, size_t n);
 int luary_freevecf4(luary_vecf4 **v, int prev_status);
 int luary_reservevecf4(lulog *log, luary_vecf4 *v, size_t n);
 int luary_pushvecf4(lulog *log, luary_vecf4 *v, float x, float y, float z, float w);

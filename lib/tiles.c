@@ -166,7 +166,7 @@ int tri_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
     LU_STATUS
     size_t i, j;
     size_t points = tile->side * tile->subsamples;
-    LU_CHECK(luary_mkijzn(log, ijz, points * (points - 1)))
+    LU_CHECK(luary_mkijz(log, ijz, points * (points - 1)))
     for (j = 0; j <= points; ++j) {
         if ((j == 0 && (edges & 1)) || (j > 0)) {
             for (i = 0; i <= points - j; ++i) {
@@ -231,7 +231,7 @@ int hex_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
         uint edges, luary_ijz **ijz) {
     LU_STATUS
     int points = tile->side * tile->subsamples;
-    LU_CHECK(luary_mkijzn(log, ijz, 6 * points * (points + 1)))
+    LU_CHECK(luary_mkijz(log, ijz, 6 * points * (points + 1)))
     int jlo = !(edges & 1) - points;
     int jhi = points - !(edges & 8);
     for (int j = jlo; j <= jhi; ++j) {
