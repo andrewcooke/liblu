@@ -32,9 +32,9 @@ START_TEST(test_print) {
 
     ck_assert(!lustr_mk(NULL, &str));
     assert_str(str, "");
-    ck_assert(!lustr_sprint(NULL, &str, "abc"));
+    ck_assert(!lustr_print(NULL, &str, "abc"));
     assert_str(str, "abc");
-    ck_assert(!lustr_sprint(NULL, &str, "def"));
+    ck_assert(!lustr_print(NULL, &str, "def"));
     assert_str(str, "def");
     ck_assert(!lustr_free(&str, 0));
 
@@ -45,15 +45,15 @@ START_TEST(test_scaling) {
     lustr str;
 
     ck_assert(!lustr_mk(NULL, &str));
-    ck_assert(!lustr_sprint(NULL, &str, ""));
+    ck_assert(!lustr_print(NULL, &str, ""));
     ck_assert_msg(str.mem.capacity == 1, "%d != %zu", 1, str.mem.capacity);
-    ck_assert(!lustr_sprint(NULL, &str, "a"));
+    ck_assert(!lustr_print(NULL, &str, "a"));
     ck_assert_msg(str.mem.capacity == 2, "%d != %zu", 2, str.mem.capacity);
-    ck_assert(!lustr_sprint(NULL, &str, "aa"));
+    ck_assert(!lustr_print(NULL, &str, "aa"));
     ck_assert_msg(str.mem.capacity == 4, "%d != %zu", 4, str.mem.capacity);
-    ck_assert(!lustr_sprint(NULL, &str, "aaa"));
+    ck_assert(!lustr_print(NULL, &str, "aaa"));
     ck_assert_msg(str.mem.capacity == 4, "%d != %zu", 4, str.mem.capacity);
-    ck_assert(!lustr_sprint(NULL, &str, "aaaa"));
+    ck_assert(!lustr_print(NULL, &str, "aaaa"));
     ck_assert_msg(str.mem.capacity == 8, "%d != %zu", 8, str.mem.capacity);
     ck_assert(!lustr_free(&str, 0));
 
@@ -63,6 +63,7 @@ void max_size_test(size_t max_size, size_t chars) {
 
     lustr str1, str2;
     size_t i;
+    int n;
 
     ck_assert(!lustr_mk(NULL, &str1));
     ck_assert(!lustr_mk(NULL, &str2));
@@ -71,10 +72,11 @@ void max_size_test(size_t max_size, size_t chars) {
     }
     ck_assert(strlen(str2.c) == chars);
 
-    ck_assert(!lustr_nsprint(NULL, &str1, max_size, str2.c));
+    ck_assert(!lustr_nprint(NULL, &str1, max_size, &n, str2.c));
     ck_assert_msg(strlen(str1.c) == min(max_size, chars), "'%s' %d -> '%s'",
             str2.c, max_size, str1.c);
     ck_assert(str1.mem.used * 2 >= str1.mem.capacity);
+    ck_assert(n == chars);
 
     ck_assert(!lustr_free(&str1, 0));
     ck_assert(!lustr_free(&str2, 0));

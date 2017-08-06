@@ -3,6 +3,7 @@
 #define LU_FILES_H
 
 #include <stdio.h>
+#include "log.h"
 #include "strings.h"
 
 int lufle_exists(lulog *log, const char *path);

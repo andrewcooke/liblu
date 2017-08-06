@@ -14,10 +14,10 @@
  * support arrays that grow dynamically in amortized linear time (by
  * doubling allocated size as needed).
  *
- * For higher level functionality, see `array_macros.h`.
+ * For higher level functionality, see `array_macros.h` and `strings.h`.
  */
 
-/// Allocate (zeroed) memory matching the type of `ptr`.
+/// (Generate code to) Allocate (zeroed) memory matching the type of `ptr`.
 /** This assumes that the conventions in `status.h` are followed. */
 #define LU_ALLOC(log, ptr, n)\
 if (!(ptr = calloc(n, sizeof(*ptr)))) {\
@@ -25,7 +25,7 @@ if (!(ptr = calloc(n, sizeof(*ptr)))) {\
     status = LU_ERR_MEM; goto exit;\
 }
 
-/// Allocate (zeroed) memory for the given type.
+/// (Generate code to) Allocate (zeroed) memory for the given type.
 /** This assumes that the conventions in `status.h` are followed. */
 #define LU_ALLOC_TYPE(log, ptr, n, type)\
 if (!(ptr = calloc(n, sizeof(type)))) {\
@@ -33,7 +33,7 @@ if (!(ptr = calloc(n, sizeof(type)))) {\
     status = LU_ERR_MEM; goto exit;\
 }
 
-/// Allocate the given amount of (zeroed) memory.
+/// A(Generate code to) llocate the given amount of (zeroed) memory.
 /** This assumes that the conventions in `status.h` are followed. */
 #define LU_ALLOC_SIZE(log, ptr, size)\
 if (!(ptr = calloc(1, size))) {\
@@ -43,14 +43,14 @@ if (!(ptr = calloc(1, size))) {\
 
 /// Data required for dynamic memory management.
 typedef struct lumem {
-	size_t used;  //< The amount of memory currently in use.
-	size_t capacity;  //< The total amount of memory allocated.
+	size_t used;  ///< The amount of memory currently in use.
+	size_t capacity;  ///< The total amount of memory allocated.
 } lumem;
 
 /// An instance of `lumem` with no memory allocated or used.
 #define LUMEM_ZERO (lumem){0, 0}
 
-/// Generate a `free()` function for a given type.
+/// (Generate code to) Free memory for a given type.
 /** This frees the array and zeroes the associated `lumem` instance. */
 #define LUMEM_MKFREE(name, type)\
 int name(type **ptr, lumem *mem, int prev_status) {\
@@ -59,7 +59,7 @@ int name(type **ptr, lumem *mem, int prev_status) {\
     return prev_status;\
 }
 
-/// Generate a `reserve()` function for a given type.
+/// (Generate code to) Reserve memory for a given type.
 /** This ensures that memory is available for an additional  `n` instances
  * of `*ptr`. */
 #define LUMEM_MKRESERVE(name, type)\

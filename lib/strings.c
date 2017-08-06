@@ -61,51 +61,51 @@ int lustr_add(lulog *log, lustr *str, char c) {
     LU_NO_CLEANUP
 }
 
-int lustr_sprint(lulog *log, lustr *str, const char *text) {
-    return lustr_nsprint(log, str, -1, text);
+int lustr_print(lulog *log, lustr *str, const char *text) {
+    return lustr_nprint(log, str, -1, NULL, text);
 }
 
-int lustr_nsprint(lulog *log, lustr *str, int max_size, const char *text) {
-    return lustr_nsprintf(log, str, max_size, "%s", text);
+int lustr_nprint(lulog *log, lustr *str, int max_size, int *all_chars, const char *text) {
+    return lustr_nprintf(log, str, max_size, all_chars, "%s", text);
 }
 
-int lustr_sprintf(lulog *log, lustr *str, const char *format, ...) {
+int lustr_printf(lulog *log, lustr *str, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_vsprintf(log, str, format, ap));
+    LU_CHECK(lustr_vprintf(log, str, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
 }
 
-int lustr_nsprintf(lulog *log, lustr *str, int max_size, const char *format, ...) {
+int lustr_nprintf(lulog *log, lustr *str, int max_size, int *all_chars, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_vnsprintf(log, str, max_size, format, ap));
+    LU_CHECK(lustr_vnprintf(log, str, max_size, all_chars, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
 }
 
-int lustr_vsprintf(lulog *log, lustr *str, const char *format, va_list ap) {
-    return lustr_vnsprintf(log, str, -1, format, ap);
+int lustr_vprintf(lulog *log, lustr *str, const char *format, va_list ap) {
+    return lustr_vnprintf(log, str, -1, NULL, format, ap);
 }
 
-int lustr_vnsprintf(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
+int lustr_vnprintf(lulog *log, lustr *str, int max_size, int *all_chars, const char *format, va_list ap) {
     LU_STATUS
     LU_CHECK(lustr_clear(log, str));
-    LU_CHECK(lustr_vnappendf(log, str, max_size, format, ap));
+    LU_CHECK(lustr_vnappendf(log, str, max_size, all_chars, format, ap));
     LU_NO_CLEANUP
 }
 
 int lustr_append(lulog *log, lustr *str, const char *text) {
-    return lustr_nappend(log, str, -1, text);
+    return lustr_nappend(log, str, -1, NULL, text);
 }
 
-int lustr_nappend(lulog *log, lustr *str, int max_size, const char *text) {
-    return lustr_nappendf(log, str, max_size, "%s", text);
+int lustr_nappend(lulog *log, lustr *str, int max_size, int *all_chars, const char *text) {
+    return lustr_nappendf(log, str, max_size, all_chars, "%s", text);
 }
 
 int lustr_appendf(lulog *log, lustr *str, const char *format, ...) {
@@ -118,47 +118,46 @@ int lustr_appendf(lulog *log, lustr *str, const char *format, ...) {
     LU_RETURN
 }
 
-int lustr_nappendf(lulog *log, lustr *str, int max_size, const char *format, ...) {
+int lustr_nappendf(lulog *log, lustr *str, int max_size, int *all_chars, const char *format, ...) {
     LU_STATUS
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_vnappendf(log, str, max_size, format, ap));
+    LU_CHECK(lustr_vnappendf(log, str, max_size, all_chars, format, ap));
     LU_CLEANUP
     va_end(ap);
     LU_RETURN
 }
 
 int lustr_vappendf(lulog *log, lustr *str, const char *format, va_list ap) {
-    return lustr_vnappendf(log, str, -1, format, ap);
+    return lustr_vnappendf(log, str, -1, NULL, format, ap);
 }
 
-int lustr_vnappendf(lulog *log, lustr *str, int max_size, const char *format, va_list ap) {
+int lustr_vnappendf(lulog *log, lustr *str, int max_chars, int *all_chars, const char *format, va_list ap) {
     LU_STATUS
     va_list working;
+    int null_present = str->mem.used > 0;
     while (1) {
+        // this must be inside the loop because str->c is reallocated
+        // also, the offset is never negative because null_present is 0 if mem.used is 0
+        char *c = str->c + str->mem.used - null_present;
         va_copy(working, ap);
-        int null_fix = str->mem.used ? 1 : 0;
-        char *c = str->c + str->mem.used - null_fix;
-        size_t space = str->mem.capacity - str->mem.used;
-        size_t max_space = max_size < 0 ? space : min((size_t)max_size, space);
-        int total = vsnprintf(c, max_space + null_fix, format, working);
+        int space_for_chars = str->mem.capacity - str->mem.used - !null_present;
+        int max_space_for_chars = max_chars < 0 ? space_for_chars : min((size_t)max_chars, space_for_chars);
+        int total_chars = vsnprintf(c, max_space_for_chars + 1, format, working);
         va_end(working);
-//        ludebug(log, "Want to write %zu, have space for %zu, max is %d",
-//                total, space, max_size);
-        if (total < 0) {
+        if (total_chars < 0) {
             luerror(log, "Error formatting '%s': %s", format, strerror(errno));
             status = LU_ERR_IO;
             goto exit;
-        } else if ((size_t)total <= max_space || (max_size >= 0 && space >= (size_t)max_size)) {
-            str->mem.used += total;
-            break;
-        } else {
-            size_t max_total = max_size < 0 ? total : min(max_size, total);
-            LU_CHECK(lustr_reserve(log, str, max_total));
-//            ludebug(log, "Requested %zu; received %zu (used %zu)",
-//                    max_total, str->mem.capacity - str->mem.used, str->mem.used);
         }
+        int truncated = total_chars > max_space_for_chars;
+        int memory_limited = max_chars > -1 && max_chars <= space_for_chars;
+        if (!truncated || memory_limited) {
+            if (all_chars) *all_chars = total_chars;
+            str->mem.used += total_chars + !null_present;
+            break;
+        }
+        LU_CHECK(lustr_reserve(log, str, total_chars + !null_present));
     }
     LU_NO_CLEANUP
 }
-
