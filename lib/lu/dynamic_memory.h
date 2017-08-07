@@ -33,7 +33,7 @@ if (!(ptr = calloc(n, sizeof(type)))) {\
     status = LU_ERR_MEM; goto exit;\
 }
 
-/// A(Generate code to) llocate the given amount of (zeroed) memory.
+/// (Generate code to) Allocate the given amount of (zeroed) memory.
 /** This assumes that the conventions in `status.h` are followed. */
 #define LU_ALLOC_SIZE(log, ptr, size)\
 if (!(ptr = calloc(1, size))) {\

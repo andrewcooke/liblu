@@ -32,7 +32,7 @@ typedef enum {
 struct lulog;
 /// The interface for printing log messages that any implementation must provide.
 typedef int lulog_vprintf(struct lulog *log, lulog_level level, const char *format, va_list ap);
-/// The interface for freeing the log struct that any implementation must provide.
+/// The interface for freeing the `lulog` struct that any implementation must provide.
 typedef int lulog_free(struct lulog **log, int status);
 
 /// Any log implementation must provide an instance of this struct with appropriate members.
