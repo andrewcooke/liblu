@@ -2,7 +2,7 @@
 #ifndef LU_VECTORS_H
 #define LU_VECTORS_H
 
-#include "log.h"
+#include "../log.h"
 
 
 // https://fgiesen.wordpress.com/2012/02/12/row-major-vs-column-major-row-vectors-vs-column-vectors/

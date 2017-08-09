@@ -4,7 +4,7 @@
 #include <math.h>
 
 #include "../lib/lu/structs.h"
-#include "../lib/lu/vectors.h"
+#include "../lib/lu/gl/vectors.h"
 
 
 START_TEST(test_vec) {

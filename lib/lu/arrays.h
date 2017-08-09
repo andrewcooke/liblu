@@ -6,7 +6,7 @@
 
 #include "dynamic_memory.h"
 #include "structs.h"
-#include "vectors.h"
+#include "gl/vectors.h"
 
 
 // there's nothing special about which arrays are present here - they are

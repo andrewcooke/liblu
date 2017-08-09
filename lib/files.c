@@ -24,14 +24,14 @@ int lufle_open(lulog *log, const char *path, const char *mode, FILE **file) {
     LU_NO_CLEANUP
 }
 
-int lufle_find(lulog *log, const char *datadir, const char *subdir, const char *filename,
+int lufle_find_config(lulog *log, const char *datadir, const char *subdir, const char *filename,
 		const char *varname, lustr *path) {
 	LU_STATUS
-	lustr_mk(log, path);
+	LU_CHECK(lustr_mk(log, path))
 	if (varname) {
 		const char *varvalue = getenv(varname);
 		if (varvalue) {
-			ludebug(log, "%s = %s",varname, varvalue);
+			ludebug(log, "%s = %s", varname, varvalue);
 			lustr_printf(log, path, "%s/%s", varvalue, filename);
 			if (lufle_exists(log, path->c)) {
 				ludebug(log, "Found %s via %s at %s", filename, varname, path->c);
@@ -41,7 +41,11 @@ int lufle_find(lulog *log, const char *datadir, const char *subdir, const char *
 		}
 	}
 	if (datadir) {
-		lustr_printf(log, path, "%s/%s", datadir, filename);
+	    if (subdir) {
+            lustr_printf(log, path, "%s/%s/%s", datadir, subdir, filename);
+	    } else {
+	        lustr_printf(log, path, "%s/%s", datadir, filename);
+	    }
 		if (lufle_exists(log, path->c)) goto exit;
 		LU_CHECK(lustr_clear(log, path))
 	}
@@ -65,11 +69,11 @@ int lufle_read(lulog *log, const char *path, lustr *contents) {
 	LU_NO_CLEANUP
 }
 
-int lufle_find_and_read(lulog *log, const char *datadir, const char *subdir, const char *filename,
+int lufle_find_and_read_config(lulog *log, const char *datadir, const char *subdir, const char *filename,
 		const char *varname, lustr *contents) {
 	LU_STATUS
 	lustr path = {};
-	LU_CHECK(lufle_find(log, datadir, subdir, filename, varname, &path))
+	LU_CHECK(lufle_find_config(log, datadir, subdir, filename, varname, &path))
 	LU_CHECK(lufle_read(log, path.c, contents))
 	LU_NO_CLEANUP
 }
