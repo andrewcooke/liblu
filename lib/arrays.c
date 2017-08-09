@@ -80,7 +80,7 @@ int luary_pushvoid(lulog *log, luary_void *ptrs, void *ptr) {
 LUARY_MKDUMP(luary_dumpvoid, luary_void, "%016x", (uint64_t)ptr->ptr[i])
 
 
-LUARY_MKBASE(vecf4, luvec_f4, v)
+LUARY_MKBASE(vecf4, luglv, v)
 
 int luary_pushvecf4(lulog *log, luary_vecf4 *v, float x, float y, float z, float w) {
     LU_STATUS

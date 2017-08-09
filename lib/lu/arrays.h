@@ -5,8 +5,8 @@
 #include <stdint.h>
 
 #include "dynamic_memory.h"
+#include "gl_vectors.h"
 #include "structs.h"
-#include "gl/vectors.h"
 
 
 // there's nothing special about which arrays are present here - they are
@@ -86,7 +86,7 @@ size_t luary_sizevoid(luary_void *ptrs);
 int luary_dumpvoid(lulog *log, luary_void *ptrs, const char *name, size_t nlines);
 
 typedef struct luary_vecf4 {
-    luvec_f4 *v;
+    luglv *v;
     lumem mem;
 } luary_vecf4;
 
