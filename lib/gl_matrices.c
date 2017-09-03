@@ -197,7 +197,7 @@ void luglm_scale(float k, luglm *m) {
                 0, 0, 0, 1, m);
 }
 
-int lumat_print(lulog *log, lulog_level level, luglm *m) {
+int lumat_log(lulog *log, lulog_level level, luglm *m) {
     LU_STATUS
     LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
             (*m)[luglm_idx(0,0)], (*m)[luglm_idx(0,1)], (*m)[luglm_idx(0,2)], (*m)[luglm_idx(0,3)]))

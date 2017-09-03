@@ -5,11 +5,17 @@
 #include "log.h"
 #include "gl_types.h"
 
+/**
+ * @file
+ *
+ * Colour operations to support OpenGL programs.
+ *
+ * All input and output arrays passed by pointer.
+ */
+/// @{
 
-// all input arrays passed by pointer.
-// operations that return void mutate a result argument
-// (typically matrices).
-
+/// Copy a colour (from a to b).
 void luglc_copy(luglc *a, luglc *b);
 
+/// @}
 #endif

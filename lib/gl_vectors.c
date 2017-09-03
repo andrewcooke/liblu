@@ -5,6 +5,7 @@
 #include "lu/log.h"
 #include "lu/status.h"
 #include "lu/dynamic_memory.h"
+#include "lu/gl_quaternions.h"
 #include "lu/gl_vectors.h"
 #include "lu/minmax.h"
 
@@ -154,7 +155,7 @@ char *luglv_str(luglv *a, int n, char *buffer) {
     return buffer;
 }
 
-int luvec_prnf4(lulog *log, lulog_level level, luglv *v) {
+int luvec_log(lulog *log, lulog_level level, luglv *v) {
     return lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]", (*v)[0], (*v)[1], (*v)[2], (*v)[3]);
 }
 

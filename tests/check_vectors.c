@@ -50,7 +50,7 @@ START_TEST(test_inv) {
     assert_inv(log, &m, "id");
     luglm_rotx(0.1, &m);
     assert_inv(log, &m, "rotn");
-    lumat_print(log, lulog_level_info, &m);
+    lumat_log(log, lulog_level_info, &m);
     luglm_set(1,2,4,8,9,10,11,12,1,1,1,1,2,3,5,7,&m);
     assert_inv(log, &m, "count");
     ck_assert(!log->free(&log, 0));
