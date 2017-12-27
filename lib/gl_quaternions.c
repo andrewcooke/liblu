@@ -5,8 +5,8 @@
 #include "lu/log.h"
 #include "lu/status.h"
 #include "lu/dynamic_memory.h"
-#include "lu/gl_quaternions.h"
 #include "lu/minmax.h"
+#include "lu/gl/quaternions.h"
 
 
 // the code below is formatted assuming that when multiplying

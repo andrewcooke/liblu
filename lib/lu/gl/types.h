@@ -2,7 +2,7 @@
 #ifndef LU_GL_TYPES_H
 #define LU_GL_TYPES_H
 
-#include "log.h"
+#include "../log.h"
 
 
 /**

@@ -1,14 +1,14 @@
 
-#include "gl_types.h"
-#include "gl_vectors.h"
-#include "gl_matrices.h"
-#include "gl_quaternions.h"
-#include "gl_colours.h"
+#include "gl/types.h"
+#include "gl/vectors.h"
+#include "gl/matrices.h"
+#include "gl/quaternions.h"
+#include "gl/colours.h"
 
 /**
  * @file
  *
- * A single header file that imports all the OpenGL headers.
+ * @brief A single header file that imports all the OpenGL related liblu headers.
  *
  * The code is formatted assuming that when multiplying matrices and vectors,
  * the vectors are columns.  The actual memory layout depends only on

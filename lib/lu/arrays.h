@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "dynamic_memory.h"
-#include "gl_vectors.h"
+#include "gl/vectors.h"
 #include "structs.h"
 
 

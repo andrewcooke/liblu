@@ -2,8 +2,8 @@
 #ifndef LU_GL_QUATERNIONS_H
 #define LU_GL_QUATERNIONS_H
 
-#include "log.h"
-#include "gl_types.h"
+#include "../log.h"
+#include "types.h"
 
 /**
  * @file

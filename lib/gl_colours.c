@@ -2,7 +2,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "lu/gl_colours.h"
+#include "lu/gl/colours.h"
 
 
 // the code below is formatted assuming that when multiplying

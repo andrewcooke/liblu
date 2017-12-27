@@ -5,9 +5,9 @@
 #include "lu/log.h"
 #include "lu/status.h"
 #include "lu/dynamic_memory.h"
-#include "lu/gl_quaternions.h"
-#include "lu/gl_vectors.h"
 #include "lu/minmax.h"
+#include "lu/gl/quaternions.h"
+#include "lu/gl/vectors.h"
 
 
 // the code below is formatted assuming that when multiplying
@@ -45,7 +45,7 @@ void luglv_zero(luglv *v) {
     memset(v, 0, sizeof(*v));
 }
 
-static inline int vec_eqf4_n(luglv *a, luglv *b, size_t n) {
+static inline int vec_eqf_n(luglv *a, luglv *b, size_t n) {
     for (size_t i = 0; i < n; ++i) {
         if ((*a)[i] != (*b)[i]) return 0;
     }
@@ -53,14 +53,14 @@ static inline int vec_eqf4_n(luglv *a, luglv *b, size_t n) {
 }
 
 int luglv_eq(luglv *a, luglv *b) {
-    return vec_eqf4_n(a, b, 4);
+    return vec_eqf_n(a, b, 4);
 }
 
 int luglv_eq3(luglv *a, luglv *b) {
-    return vec_eqf4_n(a, b, 3);
+    return vec_eqf_n(a, b, 3);
 }
 
-static inline int vec_apxf4_n(luglv *a, luglv *b, size_t n, float delta) {
+static inline int vec_apxf_n(luglv *a, luglv *b, size_t n, float delta) {
     for (size_t i = 0; i < n; ++i) {
         float scaled = delta * max(1, max(fabs((*a)[i]), fabs((*b)[i])));
         if (fabs((*a)[i] - (*b)[i]) > delta) return 0;
@@ -69,11 +69,11 @@ static inline int vec_apxf4_n(luglv *a, luglv *b, size_t n, float delta) {
 }
 
 int luglv_approx(luglv *a, luglv *b, float delta) {
-    return vec_apxf4_n(a, b, delta, 4);
+    return vec_apxf_n(a, b, delta, 4);
 }
 
 int luglv_approx3(luglv *a, luglv *b, float delta) {
-    return vec_apxf4_n(a, b, delta, 3);
+    return vec_apxf_n(a, b, delta, 3);
 }
 
 void luglv_add(luglv *a, luglv *b, luglv *c) {
@@ -158,4 +158,3 @@ char *luglv_str(luglv *a, int n, char *buffer) {
 int luvec_log(lulog *log, lulog_level level, luglv *v) {
     return lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]", (*v)[0], (*v)[1], (*v)[2], (*v)[3]);
 }
-
