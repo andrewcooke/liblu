@@ -8,7 +8,7 @@ liblu_la_SOURCES = files.c greyscale.c log.c random.c	\
 	vectors.c matrices.c quaternions.c colours.c \
 	fxyzw.c ijz.c int32.c void.c
 
-nobase_include_HEADERS = lu/array_macros.h \
+nobase_include_HEADERS = lu/arrays.h \
 	lu/dynamic_memory.h lu/status.h lu/files.h \
 	lu/greyscale.h lu/log.h lu/minmax.h lu/random.h lu/simplex.h \
 	lu/internal.h lu/strings.h lu/structs.h lu/tiles.h lu/gl.h \
