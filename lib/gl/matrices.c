@@ -135,7 +135,7 @@ void luglm_trans(luglm *m, luglm *t) {
 
 int lumat_inv(lulog *log, luglm *m, luglm *i) {
 
-    LU_STATUS
+    int status = LU_OK;
 
     // https://groups.google.com/forum/#!msg/comp.graphics.api.opengl/II36ezVViEI/XwmRKk1aKWkJ
     (*i)[0] = (*m)[5]*((*m)[10]*(*m)[15] - (*m)[11]*(*m)[14]) - (*m)[9]*((*m)[6]*(*m)[15] - (*m)[7]*(*m)[14]) - (*m)[13]*((*m)[7]*(*m)[10] - (*m)[6]*(*m)[11]);
@@ -162,7 +162,7 @@ int lumat_inv(lulog *log, luglm *m, luglm *i) {
     LU_ASSERT(det, LU_ERR_MAT, log, "Zero determinant - cannot invert")
     for (size_t j = 0; j < 16; j++) (*i)[j] = (*i)[j] / det;
 
-    LU_NO_CLEANUP
+    exit:return status;
 }
 
 void luglm_rotx(float theta, luglm *m) {
@@ -198,14 +198,14 @@ void luglm_scale(float k, luglm *m) {
 }
 
 int lumat_log(lulog *log, lulog_level level, luglm *m) {
-    LU_STATUS
-    LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
+    int status = LU_OK;
+    try(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
             (*m)[luglm_idx(0,0)], (*m)[luglm_idx(0,1)], (*m)[luglm_idx(0,2)], (*m)[luglm_idx(0,3)]))
-    LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
+    try(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
             (*m)[luglm_idx(1,0)], (*m)[luglm_idx(1,1)], (*m)[luglm_idx(1,2)], (*m)[luglm_idx(1,3)]))
-    LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
+    try(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
             (*m)[luglm_idx(2,0)], (*m)[luglm_idx(2,1)], (*m)[luglm_idx(2,2)], (*m)[luglm_idx(2,3)]))
-    LU_CHECK(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
+    try(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
             (*m)[luglm_idx(3,0)], (*m)[luglm_idx(3,1)], (*m)[luglm_idx(3,2)], (*m)[luglm_idx(3,3)]))
-    LU_NO_CLEANUP
+    exit:return status;
 }

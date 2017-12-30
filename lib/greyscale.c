@@ -11,7 +11,7 @@
 
 
 int lugry_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, lustr *out) {
-    LU_STATUS
+    int status = LU_OK;
     size_t i, j, warn = 0;
     int n = strlen(scale) - 1;
     for (j = 0; j < ny; ++j) {
@@ -22,16 +22,16 @@ int lugry_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, lu
                     warn = 1;
                 }
             }
-            LU_CHECK(lustr_appendf(log, out, "%c", scale[min(n, max(0, *data))]))
+            try(lustr_appendf(log, out, "%c", scale[min(n, max(0, *data))]))
             data++;
         }
-        LU_CHECK(lustr_append(log, out, "\n"))
+        try(lustr_append(log, out, "\n"))
     }
-    LU_NO_CLEANUP
+    exit:return status;
 }
 
 int lugry_quantize(lulog *log, double *data, int n, int levels, int **out) {
-    LU_STATUS;
+    int status = LU_OK;;
     int i;
     double lo = *data, hi = *data, delta;
     for (i = 0; i < n; ++i) {
@@ -45,5 +45,5 @@ int lugry_quantize(lulog *log, double *data, int n, int levels, int **out) {
     for (i = 0; i < n; ++i) {
         (*out)[i] = min(levels-1, max(0, floor((data[i] - lo) / delta)));
     }
-    LU_NO_CLEANUP
+    exit:return status;
 }

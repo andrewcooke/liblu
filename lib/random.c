@@ -10,11 +10,11 @@
 
 
 static int generic_free(luran **rand, int prev_status) {
-    LU_STATUS
+    int status = LU_OK;
     if (*rand) free((*rand)->state);
     free(*rand);
     *rand = NULL;
-    LU_NO_CLEANUP2(prev_status)
+    return status;
 }
 
 // code from http://xoroshiro.di.unimi.it/splitmix64.c
@@ -33,7 +33,7 @@ static uint64_t splitmix64_next(luran *rand) {
 }
 
 int luran_mksplitmix64(lulog *log, luran **rand, uint64_t seed) {
-    LU_STATUS
+    int status = LU_OK;
     LU_ALLOC(log, *rand, 1)
     LU_ALLOC_TYPE(log, (*rand)->state, 1, splitmix64_state);
     splitmix64_state *state = (splitmix64_state*)(*rand)->state;
@@ -41,7 +41,7 @@ int luran_mksplitmix64(lulog *log, luran **rand, uint64_t seed) {
     (*rand)->next = splitmix64_next;
     (*rand)->free = generic_free;
     ludebug(log, "Allocated splitmix64 with seed %" PRIu64, seed);
-    LU_NO_CLEANUP
+    exit:return status;
 }
 
 
@@ -70,19 +70,19 @@ static uint64_t xoroshiro128plus_next(luran *rand) {
 }
 
 static int xoroshiro128plus_free(luran **rand, int prev_status) {
-    LU_STATUS
+    int status = LU_OK;
     if (*rand) free((*rand)->state);
     free(*rand);
     *rand = NULL;
-    LU_NO_CLEANUP2(prev_status)
+    return status;
 }
 
 // seeding is via splitmix64, as recommended at
 // http://xoroshiro.di.unimi.it/
 int luran_mkxoroshiro128plus(lulog *log, luran **rand, uint64_t seed) {
-    LU_STATUS
+    int status = LU_OK;
     luran *srand = NULL;
-    LU_CHECK(luran_mksplitmix64(log, &srand, seed));
+    try(luran_mksplitmix64(log, &srand, seed));
     uint64_t seed0 = 0, seed1 = 0;
     while (seed0 == 0) seed0 = srand->next(srand);
     while (seed1 == 0) seed1 = srand->next(srand);
@@ -95,9 +95,9 @@ int luran_mkxoroshiro128plus(lulog *log, luran **rand, uint64_t seed) {
     (*rand)->free = xoroshiro128plus_free;
     ludebug(log, "Allocated xoroshiro128plus with seeds %" PRIu64
             " and %" PRIu64, seed0, seed1);
-LU_CLEANUP
+exit:
     if (srand) status = srand->free(&srand, status);
-    LU_RETURN
+    return status;
 }
 
 
@@ -155,7 +155,7 @@ int64_t luran_int64_range(luran *rand, int64_t lo, int64_t hi) {
 
 // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 int luran_shuffle(lulog *log, luran *rand, void *data, size_t size, size_t n) {
-    LU_STATUS
+    int status = LU_OK;
     uint64_t i, j, k;
     char *cdata = (char*)data;
     for (i = n-1; i > 0; --i) {
@@ -166,5 +166,5 @@ int luran_shuffle(lulog *log, luran *rand, void *data, size_t size, size_t n) {
             cdata[j*size+k] = tmp;
         }
     }
-    LU_NO_CLEANUP
+    exit:return status;
 }

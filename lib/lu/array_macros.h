@@ -70,10 +70,10 @@ int name(lulog *log, type *ptr, size_t n) {\
 /// (Generate code to) Create an array of a given type.
 #define LUARY_MKMAKE(name, type, reserve)\
 int name(lulog *log, type **ptr, size_t n) {\
-    LU_STATUS\
+    int status = LU_OK;\
     LU_ALLOC(log, *ptr, 1)\
-    LU_CHECK(reserve(log, *ptr, n))\
-    LU_NO_CLEANUP\
+    try(reserve(log, *ptr, n))\
+    exit:return status;\
 }
 
 /// (Generate code to) Free an array of a given type.
@@ -97,12 +97,12 @@ LUARY_MKFREE(luary_free##stem, luary_##stem, stem##_free, member)
 /// (Generate code to) Dump the contents of an array to the log.
 #define LUARY_MKDUMP(name, type, format, ...)\
 int name(lulog *log, type *ptr, const char *title, size_t n) {\
-    LU_STATUS\
+    int status = LU_OK;\
     size_t line = 0, nused = min(n, ptr->mem.used);\
     lustr lines = {}, word = {}, prefix = {};\
-    LU_CHECK(lustr_mk(log, &lines))\
-    LU_CHECK(lustr_mk(log, &word))\
-    LU_CHECK(lustr_mk(log, &prefix))\
+    try(lustr_mk(log, &lines))\
+    try(lustr_mk(log, &word))\
+    try(lustr_mk(log, &prefix))\
     ludebug(log, "%s - first %zu of %zu (%zu) elements:",\
             title, nused, ptr->mem.used, ptr->mem.capacity);\
     for (size_t i = 0; i < n; ++i) {\
@@ -120,11 +120,11 @@ int name(lulog *log, type *ptr, const char *title, size_t n) {\
         }\
     }\
     lulog_lines(log, lulog_level_debug, lines.c);\
-LU_CLEANUP\
+exit:\
     status = lustr_free(&lines, status);\
     status = lustr_free(&word, status);\
     status = lustr_free(&prefix, status);\
-    LU_RETURN\
+    return status;\
 }
 
 #endif

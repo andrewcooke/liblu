@@ -23,12 +23,12 @@ int lustr_reserve(lulog *log, lustr *str, int n) {
 }
 
 int lustr_mkn(lulog *log, lustr *str, size_t n) {
-    LU_STATUS
+    int status = LU_OK;
     LU_ASSERT(n > 0, LU_ERR_ARG, log, "Cannot alloc zero-length string")
     *str = (lustr){NULL, .mem = LUMEM_ZERO};
-    LU_CHECK(lustr_reserve(log, str, n));
+    try(lustr_reserve(log, str, n));
     str->mem.used = 1;  // no need to set value as reserved is zeroed
-    LU_NO_CLEANUP
+    exit:return status;
 }
 
 int lustr_mk(lulog *log, lustr *str) {
@@ -36,29 +36,29 @@ int lustr_mk(lulog *log, lustr *str) {
 }
 
 int lustr_mkstr(lulog *log, lustr *str, const char *c) {
-    LU_STATUS
+    int status = LU_OK;
     *str = (lustr){NULL, .mem = LUMEM_ZERO};
     int len = strlen(c);
-    LU_CHECK(lustr_reserve(log, str, len + 1));
+    try(lustr_reserve(log, str, len + 1));
     memcpy(str->c, c, len);
-    LU_NO_CLEANUP
+    exit:return status;
 }
 
 int lustr_clear(lulog *log, lustr *str) {
-    LU_STATUS
-    if (!str->mem.capacity) LU_CHECK(lustr_mk(log, str));
+    int status = LU_OK;
+    if (!str->mem.capacity) try(lustr_mk(log, str));
     str->c[0] = '\0';
     str->mem.used = 1;
-    LU_NO_CLEANUP
+    exit:return status;
 }
 
 
 int lustr_add(lulog *log, lustr *str, char c) {
-    LU_STATUS
-    LU_CHECK(lustr_reserve(log, str, 1))
+    int status = LU_OK;
+    try(lustr_reserve(log, str, 1))
     str->c[str->mem.used-1] = c;
     str->c[str->mem.used++] = '\0';
-    LU_NO_CLEANUP
+    exit:return status;
 }
 
 int lustr_print(lulog *log, lustr *str, const char *text) {
@@ -70,23 +70,23 @@ int lustr_nprint(lulog *log, lustr *str, int max_size, int *all_chars, const cha
 }
 
 int lustr_printf(lulog *log, lustr *str, const char *format, ...) {
-    LU_STATUS
+    int status = LU_OK;
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_vprintf(log, str, format, ap));
-    LU_CLEANUP
+    try(lustr_vprintf(log, str, format, ap));
+    exit:
     va_end(ap);
-    LU_RETURN
+    return status;
 }
 
 int lustr_nprintf(lulog *log, lustr *str, int max_size, int *all_chars, const char *format, ...) {
-    LU_STATUS
+    int status = LU_OK;
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_vnprintf(log, str, max_size, all_chars, format, ap));
-    LU_CLEANUP
+    try(lustr_vnprintf(log, str, max_size, all_chars, format, ap));
+    exit:
     va_end(ap);
-    LU_RETURN
+    return status;
 }
 
 int lustr_vprintf(lulog *log, lustr *str, const char *format, va_list ap) {
@@ -94,10 +94,10 @@ int lustr_vprintf(lulog *log, lustr *str, const char *format, va_list ap) {
 }
 
 int lustr_vnprintf(lulog *log, lustr *str, int max_size, int *all_chars, const char *format, va_list ap) {
-    LU_STATUS
-    LU_CHECK(lustr_clear(log, str));
-    LU_CHECK(lustr_vnappendf(log, str, max_size, all_chars, format, ap));
-    LU_NO_CLEANUP
+    int status = LU_OK;
+    try(lustr_clear(log, str));
+    try(lustr_vnappendf(log, str, max_size, all_chars, format, ap));
+    exit:return status;
 }
 
 int lustr_append(lulog *log, lustr *str, const char *text) {
@@ -109,23 +109,23 @@ int lustr_nappend(lulog *log, lustr *str, int max_size, int *all_chars, const ch
 }
 
 int lustr_appendf(lulog *log, lustr *str, const char *format, ...) {
-    LU_STATUS
+    int status = LU_OK;
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_vappendf(log, str, format, ap));
-    LU_CLEANUP
+    try(lustr_vappendf(log, str, format, ap));
+    exit:
     va_end(ap);
-    LU_RETURN
+    return status;
 }
 
 int lustr_nappendf(lulog *log, lustr *str, int max_size, int *all_chars, const char *format, ...) {
-    LU_STATUS
+    int status = LU_OK;
     va_list ap;
     va_start(ap, format);
-    LU_CHECK(lustr_vnappendf(log, str, max_size, all_chars, format, ap));
-    LU_CLEANUP
+    try(lustr_vnappendf(log, str, max_size, all_chars, format, ap));
+    exit:
     va_end(ap);
-    LU_RETURN
+    return status;
 }
 
 int lustr_vappendf(lulog *log, lustr *str, const char *format, va_list ap) {
@@ -133,7 +133,7 @@ int lustr_vappendf(lulog *log, lustr *str, const char *format, va_list ap) {
 }
 
 int lustr_vnappendf(lulog *log, lustr *str, int max_chars, int *all_chars, const char *format, va_list ap) {
-    LU_STATUS
+    int status = LU_OK;
     va_list working;
     int null_present = str->mem.used > 0;
     while (1) {
@@ -157,7 +157,7 @@ int lustr_vnappendf(lulog *log, lustr *str, int max_chars, int *all_chars, const
             str->mem.used += total_chars + !null_present;
             break;
         }
-        LU_CHECK(lustr_reserve(log, str, total_chars + !null_present));
+        try(lustr_reserve(log, str, total_chars + !null_present));
     }
-    LU_NO_CLEANUP
+    exit:return status;
 }

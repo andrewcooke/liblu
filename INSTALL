@@ -6,5 +6,5 @@
 
 for debug build:
 
-> ./configure CFLAGS="-g -O0 -Wextra"
-> make clean check
+> ./configure --prefix=`pwd`/install
+> make CFLAGS="-Werror -Wall" clean check

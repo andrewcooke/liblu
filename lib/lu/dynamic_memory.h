@@ -64,7 +64,7 @@ int name(type **ptr, lumem *mem, int prev_status) {\
  * of `*ptr`. */
 #define LUMEM_MKRESERVE(name, type)\
 int name(struct lulog *log, type **ptr, lumem *mem, size_t n) {\
-	LU_STATUS\
+	int status = LU_OK;\
 	if (mem->capacity - mem->used < n) {\
         int required = mem->capacity > 0 ? mem->capacity : 1;\
         size_t unit = sizeof(type);\
@@ -78,7 +78,7 @@ int name(struct lulog *log, type **ptr, lumem *mem, size_t n) {\
         /* no need for unit on left as ptr typed!!! */\
         memset(*ptr + mem->used, 0, unit * (required - mem->used));\
 	}\
-	LU_NO_CLEANUP\
+	exit:return status;\
 }
 
 #endif
