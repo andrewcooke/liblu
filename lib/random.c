@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <lu/status.h>
 
 #include "lu/internal.h"
-#include "lu/status_codes.h"
 #include "lu/dynamic_memory.h"
 #include "lu/random.h"
 
@@ -34,8 +34,8 @@ static uint64_t splitmix64_next(luran *rand) {
 
 int luran_mksplitmix64(lulog *log, luran **rand, uint64_t seed) {
 	int status = LU_OK;
-	lu_alloc(log, *rand, 1)
-	lu_alloc_type(log, (*rand)->state, 1, splitmix64_state);
+	LU_ALLOC(log, *rand, 1)
+	LU_ALLOC_TYPE(log, (*rand)->state, 1, splitmix64_state);
 	splitmix64_state *state = (splitmix64_state*)(*rand)->state;
 	state->x = seed;
 	(*rand)->next = splitmix64_next;
@@ -87,8 +87,8 @@ int luran_mkxoroshiro128plus(lulog *log, luran **rand, uint64_t seed) {
 	uint64_t seed0 = 0, seed1 = 0;
 	while (seed0 == 0) seed0 = srand->next(srand);
 	while (seed1 == 0) seed1 = srand->next(srand);
-	lu_alloc(log, *rand, 1)
-	lu_alloc_type(log, (*rand)->state, 1, xoroshiro128plus_state);
+	LU_ALLOC(log, *rand, 1)
+	LU_ALLOC_TYPE(log, (*rand)->state, 1, xoroshiro128plus_state);
 	xoroshiro128plus_state *state = (xoroshiro128plus_state*)(*rand)->state;
 	state->s0 = seed0;
 	state->s1 = seed1;

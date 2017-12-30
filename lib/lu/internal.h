@@ -5,7 +5,7 @@
 /**
  * @file
  *
- * Macros for consistent status and cleanup.
+ * @brief Intrusive support for consistent status and cleanup.
  *
  * This module builds on the following common C-language practices:
  *
@@ -25,14 +25,11 @@
  * value is the "exception type") that avoids memory leaks (`free()` can
  * be called on resources and `NULL` values are ignored).
  *
- * Note that macros intended for use on a single line include the trailing
- * semicolon.
+ * The macros here assume that the exit block is labelled "finally".  They
+ * have short, non-namespaced names because, if used, they will be ubiquitous
+ * and reflect a wholesale adoption of the entire library.
  *
- * These features are optional, but some macros may assume that they are
- * used (eg in `dynamic_memory.h`).  In each case these are documented as
- * assuming these conventions.
- *
- * Here is an example of the most common macros in use:
+ * Here is an example of the macros in use:
  *
  *     int myfunction(...) {
  *         int status = LU_OK;  // declare the status and initialize to zero

@@ -1,6 +1,6 @@
 
-#ifndef LU_STATUS_CODES_H
-#define LU_STATUS_CODES_H
+#ifndef LU_STATUS_H
+#define LU_STATUS_H
 
 /**
  * @file

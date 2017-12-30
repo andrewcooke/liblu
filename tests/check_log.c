@@ -1,9 +1,10 @@
 
 #include <check.h>
-#include <lib/lu/status_codes.h>
+#include <lib/lu/status.h>
 #include <stdlib.h>
 
 #include "../lib/lu/log.h"
+#include "../lib/lu/strings.h"
 
 
 START_TEST(test_stderr) {

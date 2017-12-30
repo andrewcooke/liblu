@@ -3,6 +3,7 @@
 #define LU_ARRAY_MACROS_H
 
 #include "dynamic_memory.h"
+#include "strings.h"
 #include "internal.h"
 #include "minmax.h"
 
@@ -71,7 +72,7 @@ int name(lulog *log, type *ptr, size_t n) {\
 #define LUARY_MKMAKE(name, type, reserve)\
 int name(lulog *log, type **ptr, size_t n) {\
     int status = LU_OK;\
-    lu_alloc(log, *ptr, 1)\
+    LU_ALLOC(log, *ptr, 1)\
     try(reserve(log, *ptr, n))\
     finally:return status;\
 }

@@ -2,7 +2,7 @@
 #include <check.h>
 #include <stdlib.h>
 #include <float.h>
-#include <lib/lu/status_codes.h>
+#include <lib/lu/status.h>
 #include <math.h>
 
 #include "../lib/lu/arrays.h"

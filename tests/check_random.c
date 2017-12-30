@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <float.h>
-#include <lib/lu/status_codes.h>
-
+#include <lib/lu/status.h>
 #include "../lib/lu/random.h"
 
 

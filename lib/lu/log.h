@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "strings.h"
-
 /**
  * @file
  *
@@ -30,6 +28,7 @@ typedef enum {
 } lulog_level;
 
 struct lulog;
+struct lustr;
 /// The interface for printing log messages that any implementation must provide.
 typedef int lulog_vprintf(struct lulog *log, lulog_level level, const char *format, va_list ap);
 /// The interface for freeing the `lulog` struct that any implementation must provide.
@@ -52,7 +51,7 @@ int lulog_mkstdout(lulog **log, lulog_level threshold);
 /// Create a new `lulog` instance that logs to syslog.
 int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold);
 /// Create a new `lulog` instance that logs to a `lustr`.
-int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold);
+int lulog_mkstring(lulog **log, struct lustr **string, lulog_level threshold);
 
 /// Log a (single line) message at the debug level.
 int ludebug(lulog *log, const char *format, ...);

@@ -1,10 +1,10 @@
 
 #include <check.h>
-#include <lib/lu/status_codes.h>
+#include <lib/lu/status.h>
 #include <stdlib.h>
 
 #include "../lib/lu/log.h"
-#include "../lib/lu/arrays.h"
+#include "../lib/lu/data/ijz.h"
 #include "../lib/lu/array_macros.h"
 
 typedef double type;
