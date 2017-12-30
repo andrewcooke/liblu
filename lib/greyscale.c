@@ -1,8 +1,8 @@
 
+#include <lu/internal.h>
 #include <string.h>
 #include <math.h>
 
-#include "lu/status.h"
 #include "lu/minmax.h"
 #include "lu/strings.h"
 #include "lu/log.h"
@@ -27,7 +27,7 @@ int lugry_str(lulog *log, int *data, size_t nx, size_t ny, const char *scale, lu
         }
         try(lustr_append(log, out, "\n"))
     }
-    exit:return status;
+    finally:return status;
 }
 
 int lugry_quantize(lulog *log, double *data, int n, int levels, int **out) {
@@ -38,12 +38,12 @@ int lugry_quantize(lulog *log, double *data, int n, int levels, int **out) {
         lo = min(lo, data[i]);
         hi = max(hi, data[i]);
     }
-    LU_ASSERT(lo != hi, LU_ERR, log, "Constant data")
+    assert(lo != hi, LU_ERR, log, "Constant data")
     luinfo(log, "Scaling %5.4g - %5.4g to 0 - %d", lo, hi, levels-1);
     delta = (hi - lo) / levels;
     LU_ALLOC(log, *out, n)
     for (i = 0; i < n; ++i) {
         (*out)[i] = min(levels-1, max(0, floor((data[i] - lo) / delta)));
     }
-    exit:return status;
+    finally:return status;
 }

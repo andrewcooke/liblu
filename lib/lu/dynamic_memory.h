@@ -22,7 +22,7 @@
 #define LU_ALLOC(log, ptr, n)\
 if (!(ptr = calloc(n, sizeof(*ptr)))) {\
     luerror(log, "Cannot allocate %zu bytes", n * sizeof(*ptr));\
-    status = LU_ERR_MEM; goto exit;\
+    status = LU_ERR_MEM; goto finally;\
 }
 
 /// (Generate code to) Allocate (zeroed) memory for the given type.
@@ -30,7 +30,7 @@ if (!(ptr = calloc(n, sizeof(*ptr)))) {\
 #define LU_ALLOC_TYPE(log, ptr, n, type)\
 if (!(ptr = calloc(n, sizeof(type)))) {\
     luerror(log, "Cannot allocate %zu bytes", n * sizeof(type));\
-    status = LU_ERR_MEM; goto exit;\
+    status = LU_ERR_MEM; goto finally;\
 }
 
 /// (Generate code to) Allocate the given amount of (zeroed) memory.
@@ -38,7 +38,7 @@ if (!(ptr = calloc(n, sizeof(type)))) {\
 #define LU_ALLOC_SIZE(log, ptr, size)\
 if (!(ptr = calloc(1, size))) {\
     luerror(log, "Cannot allocate %zu bytes", size);\
-    status = LU_ERR_MEM; goto exit;\
+    status = LU_ERR_MEM; goto finally;\
 }
 
 /// Data required for dynamic memory management.
@@ -72,13 +72,13 @@ int name(struct lulog *log, type **ptr, lumem *mem, size_t n) {\
         if (!(*ptr = realloc(*ptr, unit * required))) {\
             luerror(log, "Cannot reallocate %zu bytes", unit * required);\
             status = LU_ERR_MEM;\
-            goto exit;\
+            goto finally;\
         }\
         mem->capacity = required;\
         /* no need for unit on left as ptr typed!!! */\
         memset(*ptr + mem->used, 0, unit * (required - mem->used));\
 	}\
-	exit:return status;\
+	finally:return status;\
 }
 
 #endif

@@ -1,9 +1,9 @@
 
+#include <lu/internal.h>
 #include <math.h>
 #include <string.h>
 
 #include "lu/log.h"
-#include "lu/status.h"
 #include "lu/dynamic_memory.h"
 #include "lu/minmax.h"
 #include "lu/gl/quaternions.h"

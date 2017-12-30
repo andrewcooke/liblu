@@ -1,9 +1,9 @@
 
+#include <lu/internal.h>
 #include <math.h>
 #include <string.h>
 
 #include "lu/log.h"
-#include "lu/status.h"
 #include "lu/dynamic_memory.h"
 #include "lu/minmax.h"
 #include "lu/gl/matrices.h"
@@ -159,10 +159,10 @@ int lumat_inv(lulog *log, luglm *m, luglm *i) {
     (*i)[15] = (*m)[0]*((*m)[ 5]*(*m)[10] - (*m)[ 6]*(*m)[ 9]) - (*m)[4]*((*m)[1]*(*m)[10] - (*m)[2]*(*m)[ 9]) - (*m)[ 8]*((*m)[2]*(*m)[ 5] - (*m)[1]*(*m)[ 6]);
 
     float det = (*m)[0] * (*i)[0] + (*m)[1] * (*i)[4] + (*m)[2] * (*i)[8] + (*m)[3] * (*i)[12];
-    LU_ASSERT(det, LU_ERR_MAT, log, "Zero determinant - cannot invert")
+    assert(det, LU_ERR_MAT, log, "Zero determinant - cannot invert")
     for (size_t j = 0; j < 16; j++) (*i)[j] = (*i)[j] / det;
 
-    exit:return status;
+    finally:return status;
 }
 
 void luglm_rotx(float theta, luglm *m) {
@@ -207,5 +207,5 @@ int lumat_log(lulog *log, lulog_level level, luglm *m) {
             (*m)[luglm_idx(2,0)], (*m)[luglm_idx(2,1)], (*m)[luglm_idx(2,2)], (*m)[luglm_idx(2,3)]))
     try(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
             (*m)[luglm_idx(3,0)], (*m)[luglm_idx(3,1)], (*m)[luglm_idx(3,2)], (*m)[luglm_idx(3,3)]))
-    exit:return status;
+    finally:return status;
 }

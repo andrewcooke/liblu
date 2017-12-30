@@ -2,8 +2,8 @@
 #ifndef LU_ARRAY_MACROS_H
 #define LU_ARRAY_MACROS_H
 
-#include "status.h"
 #include "dynamic_memory.h"
+#include "internal.h"
 #include "minmax.h"
 
 /**
@@ -73,7 +73,7 @@ int name(lulog *log, type **ptr, size_t n) {\
     int status = LU_OK;\
     LU_ALLOC(log, *ptr, 1)\
     try(reserve(log, *ptr, n))\
-    exit:return status;\
+    finally:return status;\
 }
 
 /// (Generate code to) Free an array of a given type.
@@ -120,7 +120,7 @@ int name(lulog *log, type *ptr, const char *title, size_t n) {\
         }\
     }\
     lulog_lines(log, lulog_level_debug, lines.c);\
-exit:\
+finally:\
     status = lustr_free(&lines, status);\
     status = lustr_free(&word, status);\
     status = lustr_free(&prefix, status);\

@@ -1,6 +1,6 @@
 
-#ifndef LU_STATUS_H
-#define LU_STATUS_H
+#ifndef LU_INTERNAL_H
+#define LU_INTERNAL_H
 
 /**
  * @file
@@ -38,8 +38,8 @@
  *         int status = LU_OK;  // declare the status and initialize to zero
  *         char *resource = NULL;  // a resource used internally
  *         assert(resource = malloc(...),
- *                LU_ERR_MEM, log, "Could not allocate resource")
- *         try(subroutine(...))  // call subroutine and check status
+ *                LU_ERR_MEM, log, "Could not allocate resource");
+ *         try(subroutine(...));  // call subroutine and check status
  *         ...  // do more useful work
  *         finally:
  *         free(resource);
@@ -55,13 +55,13 @@
 /// @{
 
 /// If `stmt` fails (ie returns a status that is true) then go to cleanup.
-#define try(stmt) if ((status = stmt)) {goto exit;}
-
-/// Update status only if it was not already set; typically used to handle errors in the cleanup block.
-#define LU_CLEAN(stmt) {int _status = stmt; status = status ? status : _status;}
+#define try(stmt) if ((status = stmt)) {goto finally;}
 
 /// If `value` is not true then set status to `error`, log the message, and go to cleanup.
-#define LU_ASSERT(value, error, log, ...) if (!(value)) {luerror(log, __VA_ARGS__); status = error; goto exit;}
+#define assert(value, error, log, ...) if (!(value)) {luerror(log, __VA_ARGS__); status = error; goto finally;}
+
+/// Return the previous state, if it was not OK, otherwise the latest.
+int lu_both(int prev_status, int status);
 
 /// @}
 #endif

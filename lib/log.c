@@ -1,10 +1,10 @@
 
+#include <lu/internal.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <syslog.h>
 
-#include "lu/status.h"
 #include "lu/dynamic_memory.h"
 #include "lu/strings.h"
 #include "lu/log.h"
@@ -44,7 +44,7 @@ int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap
         try(lustr_append(NULL, &state->line, "\n"));
         fprintf(state->stream, "%s", state->line.c);
     }
-    exit:return status;
+    finally:return status;
 }
 
 int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) {
@@ -58,7 +58,7 @@ int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) 
     (*log)->threshold = threshold;
     (*log)->printfv = stream_printfv;
     (*log)->free = stream_free;
-    exit:return status;
+    finally:return status;
 }
 
 int lulog_mkstderr(lulog **log, lulog_level threshold) {
@@ -81,7 +81,7 @@ int syslog_free(lulog **log, int prev_status) {
 int syslog_printfv(lulog *log, lulog_level level, const char *format, va_list ap) {
     int status = LU_OK;
     if (level <= log->threshold) vsyslog(priorities[level], format, ap);
-    exit:return status;
+    finally:return status;
 }
 
 int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold) {
@@ -91,7 +91,7 @@ int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold) {
     (*log)->printfv = syslog_printfv;
     (*log)->free = syslog_free;
     openlog(ident, 0, LOG_USER);
-    exit:return status;
+    finally:return status;
 }
 
 
@@ -115,7 +115,7 @@ int string_printfv(lulog *log, lulog_level level, const char *format, va_list ap
         try(lustr_vappendf(NULL, string, format, ap))
         try(lustr_append(NULL, string, "\n"))
     }
-    exit:return status;
+    finally:return status;
 }
 
 int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
@@ -127,7 +127,7 @@ int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
     (*log)->threshold = threshold;
     (*log)->printfv = string_printfv;
     (*log)->free = string_free;
-    exit:return status;
+    finally:return status;
 }
 
 
@@ -142,7 +142,7 @@ int lu ## level(lulog *log, const char *format, ...) {\
         fprintf(stderr, "%s: ", prefixes[lulog_level_ ## level]);\
         vfprintf(stderr, format, ap);\
     }\
-    exit:\
+    finally:\
     va_end(ap);\
     return status;\
 }
@@ -168,7 +168,7 @@ int lulog_lines(lulog *log, lulog_level level, const char *lines) {
         }
         if (*src == '\n') src++;
     }
-exit:
+finally:
     status = lustr_free(&line, status);
     return status;
 }
@@ -179,7 +179,7 @@ int lulog_printf(lulog *log, lulog_level level, const char *format, ...) {
         va_list ap;
         va_start(ap, format);
         try(log->printfv(log, level, format, ap));
-        exit:
+        finally:
         va_end(ap);
     }
     return status;

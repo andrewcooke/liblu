@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <lu/internal.h>
 #include <lu/status_codes.h>
 
 #include "lu/dynamic_memory.h"
-#include "lu/status.h"
 #include "lu/random.h"
 
 
@@ -41,7 +41,7 @@ int luran_mksplitmix64(lulog *log, luran **rand, uint64_t seed) {
     (*rand)->next = splitmix64_next;
     (*rand)->free = generic_free;
     ludebug(log, "Allocated splitmix64 with seed %" PRIu64, seed);
-    exit:return status;
+    finally:return status;
 }
 
 
@@ -95,7 +95,7 @@ int luran_mkxoroshiro128plus(lulog *log, luran **rand, uint64_t seed) {
     (*rand)->free = xoroshiro128plus_free;
     ludebug(log, "Allocated xoroshiro128plus with seeds %" PRIu64
             " and %" PRIu64, seed0, seed1);
-exit:
+finally:
     if (srand) status = srand->free(&srand, status);
     return status;
 }
@@ -166,5 +166,5 @@ int luran_shuffle(lulog *log, luran *rand, void *data, size_t size, size_t n) {
             cdata[j*size+k] = tmp;
         }
     }
-    exit:return status;
+    finally:return status;
 }

@@ -1,8 +1,8 @@
 
+#include <lu/internal.h>
 #include <string.h>
 #include <math.h>
 
-#include "lu/status.h"
 #include "lu/minmax.h"
 #include "lu/tiles.h"
 
@@ -33,7 +33,7 @@ int lutle_mkconfig(lulog *log, lutle_config **config, luran *rand,
     }
     for (i = 0; i < n_perm; ++i) (*config)->perm[i] = i;
     try(luran_shuffle(log, rand, (*config)->perm, sizeof(*(*config)->perm), n_perm))
-    exit:return status;
+    finally:return status;
 }
 
 int lutle_defaultconfig(lulog *log, lutle_config **config, uint64_t seed) {
@@ -41,7 +41,7 @@ int lutle_defaultconfig(lulog *log, lutle_config **config, uint64_t seed) {
     int status = LU_OK;
     try(luran_mkxoroshiro128plus(log, &rand, seed));
     try(lutle_mkconfig(log, config, rand, 12, 0, 256))
-exit:
+finally:
     if (rand) status = rand->free(&rand, status);
     return status;
 }
@@ -92,7 +92,7 @@ int lutle_noise(lulog *log, lutle_config *conf, lutle_tile *tile,
     // g2 is at (pi+far,qi+far)
     ludta_xy g2 = lookup_grad(log, conf, tile, pi+far, qi+far);
     *noise = (scale(g0, dx0, dy0) + scale(g1, dx1, dy1) + scale(g2, dx2, dy2));
-    exit:return status;
+    finally:return status;
 }
 
 
@@ -145,7 +145,7 @@ static inline int octave(lutle_tile *tile, lulog *log,
         z += dz / pow(2 / tile->octweight, tile->octave);
     }
     try(luary_pushijz(log, *ijz, i, j, z))
-    exit:return status;
+    finally:return status;
 }
 
 
@@ -178,14 +178,14 @@ int tri_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
             }
         }
     }
-    exit:return status;
+    finally:return status;
 }
 
 int lutle_mktriangle(lulog *log, lutle_tile **tile,
         size_t side, size_t subsamples, double octweight) {
     int status = LU_OK;
-    LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
-    LU_ASSERT(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
+    assert(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
+    assert(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
     if (side * subsamples == 1) luwarn(log, "Only zero outer points visible");
     LU_ALLOC(log, *tile, 1)
     LU_ALLOC_TYPE(log, (*tile)->state, 1, tri_state);
@@ -195,7 +195,7 @@ int lutle_mktriangle(lulog *log, lutle_tile **tile,
     (*tile)->enumerate = tri_enumerate;
     (*tile)->wrap = tri_wrap;
     (*tile)->free = generic_free;
-    exit:return status;
+    finally:return status;
 }
 
 
@@ -247,14 +247,14 @@ int hex_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
             try(octave(tile, log, config, i, j, ijz))
         }
     }
-    exit:return status;
+    finally:return status;
 }
 
 int lutle_mkhexagon(lulog *log, lutle_tile **tile,
         size_t side, size_t subsamples, double octweight) {
     int status = LU_OK;
-    LU_ASSERT(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
-    LU_ASSERT(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
+    assert(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
+    assert(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
     if (side * subsamples == 1) luwarn(log, "Only zero outer points visible");
     LU_ALLOC(log, *tile, 1)
     (*tile)->side = side;
@@ -263,7 +263,7 @@ int lutle_mkhexagon(lulog *log, lutle_tile **tile,
     (*tile)->enumerate = hex_enumerate;
     (*tile)->wrap = hex_wrap;
     (*tile)->free = generic_free;
-    exit:return status;
+    finally:return status;
 }
 
 
@@ -274,7 +274,7 @@ static inline ludta_ij tri2raster(ludta_ijz tri) {
 
 int lutle_range(lulog *log, luary_ijz *ijz, ludta_ij *bl, ludta_ij *tr, double *zero) {
     int status = LU_OK;
-    LU_ASSERT(ijz->mem.used, LU_ERR_ARG, log, "No data");
+    assert(ijz->mem.used, LU_ERR_ARG, log, "No data");
     *bl = tri2raster(ijz->ijz[0]), *tr = *bl;
     if (zero) *zero = ijz->ijz[0].z;
     for (size_t i = 1; i < ijz->mem.used; ++i) {
@@ -286,7 +286,7 @@ int lutle_range(lulog *log, luary_ijz *ijz, ludta_ij *bl, ludta_ij *tr, double *
     ludebug(log, "Data extend from (%d, %d) bottom left to (%d, %d) top right",
             bl->i, bl->j, tr->i, tr->j);
     if (zero) ludebug(log, "Zero level is %.2g", *zero);
-    exit:return status;
+    finally:return status;
 }
 
 int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double **data) {
@@ -310,5 +310,5 @@ int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double *
             (*data)[i + 1 + j * *nx] = 0.5 * ((*data)[i + 0 + j * *nx] + (*data)[i + 2 + j * *nx]);
         }
     }
-    exit:return status;
+    finally:return status;
 }

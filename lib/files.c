@@ -1,10 +1,10 @@
 
+#include <lu/internal.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "lu/status.h"
 #include "lu/files.h"
 #include "lu/log.h"
 
@@ -19,9 +19,9 @@ int lufle_exists(lulog *log, const char *path) {
 
 int lufle_open(lulog *log, const char *path, const char *mode, FILE **file) {
     int status = LU_OK;;
-    LU_ASSERT(*file = fopen(path, mode), LU_ERR_IO, log, "Could not open %s", path)
+    assert(*file = fopen(path, mode), LU_ERR_IO, log, "Could not open %s", path)
     ludebug(log, "Opened %s (%s)", path, mode);
-    exit:return status;
+    finally:return status;
 }
 
 int lufle_find_config(lulog *log, const char *datadir, const char *subdir, const char *filename,
@@ -35,7 +35,7 @@ int lufle_find_config(lulog *log, const char *datadir, const char *subdir, const
 			lustr_printf(log, path, "%s/%s", varvalue, filename);
 			if (lufle_exists(log, path->c)) {
 				ludebug(log, "Found %s via %s at %s", filename, varname, path->c);
-				goto exit;
+				goto finally;
 			}
 			try(lustr_clear(log, path))
 		}
@@ -46,27 +46,27 @@ int lufle_find_config(lulog *log, const char *datadir, const char *subdir, const
 	    } else {
 	        lustr_printf(log, path, "%s/%s", datadir, filename);
 	    }
-		if (lufle_exists(log, path->c)) goto exit;
+		if (lufle_exists(log, path->c)) goto finally;
 		try(lustr_clear(log, path))
 	}
 	luerror(log, "Could not find %s via %s, %s/%s", filename, varname, datadir, subdir);
 	try(lustr_free(path, status))
 	status = LU_ERR_IO;
-	exit:return status;
+	finally:return status;
 }
 
 int lufle_read(lulog *log, const char *path, lustr *contents) {
 	int status = LU_OK;
 	FILE * f;
-	LU_ASSERT(f = fopen(path, "r"), LU_ERR_IO, log, "Could not open %s", path)
-	LU_ASSERT(!fseek(f, 0, SEEK_END), LU_ERR_IO, log, "Could not seek %s", path)
+	assert(f = fopen(path, "r"), LU_ERR_IO, log, "Could not open %s", path)
+	assert(!fseek(f, 0, SEEK_END), LU_ERR_IO, log, "Could not seek %s", path)
 	long int fsize = ftell(f);
 	rewind(f);
 	try(lustr_mkn(log, contents, fsize+1))
 	size_t read = fread(contents->c, 1, fsize, f);
 	contents->mem.used = read + 1;
-	LU_ASSERT(read == fsize, LU_ERR_IO, log, "Could not read %s", path)
-	exit:return status;
+	assert(read == fsize, LU_ERR_IO, log, "Could not read %s", path)
+	finally:return status;
 }
 
 int lufle_find_and_read_config(lulog *log, const char *datadir, const char *subdir, const char *filename,
@@ -75,6 +75,6 @@ int lufle_find_and_read_config(lulog *log, const char *datadir, const char *subd
 	lustr path = {};
 	try(lufle_find_config(log, datadir, subdir, filename, varname, &path))
 	try(lufle_read(log, path.c, contents))
-	exit:return status;
+	finally:return status;
 }
 
