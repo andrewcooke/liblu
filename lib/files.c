@@ -1,10 +1,10 @@
 
-#include <lu/internal.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "lu/internal.h"
 #include "lu/files.h"
 #include "lu/log.h"
 
@@ -21,7 +21,8 @@ int lufle_open(lulog *log, const char *path, const char *mode, FILE **file) {
     int status = LU_OK;;
     assert(*file = fopen(path, mode), LU_ERR_IO, log, "Could not open %s", path)
     ludebug(log, "Opened %s (%s)", path, mode);
-    finally:return status;
+    finally:
+	return status;
 }
 
 int lufle_find_config(lulog *log, const char *datadir, const char *subdir, const char *filename,
@@ -52,7 +53,8 @@ int lufle_find_config(lulog *log, const char *datadir, const char *subdir, const
 	luerror(log, "Could not find %s via %s, %s/%s", filename, varname, datadir, subdir);
 	try(lustr_free(path, status))
 	status = LU_ERR_IO;
-	finally:return status;
+	finally:
+	return status;
 }
 
 int lufle_read(lulog *log, const char *path, lustr *contents) {
@@ -66,7 +68,8 @@ int lufle_read(lulog *log, const char *path, lustr *contents) {
 	size_t read = fread(contents->c, 1, fsize, f);
 	contents->mem.used = read + 1;
 	assert(read == fsize, LU_ERR_IO, log, "Could not read %s", path)
-	finally:return status;
+	finally:
+	return status;
 }
 
 int lufle_find_and_read_config(lulog *log, const char *datadir, const char *subdir, const char *filename,
@@ -75,6 +78,7 @@ int lufle_find_and_read_config(lulog *log, const char *datadir, const char *subd
 	lustr path = {};
 	try(lufle_find_config(log, datadir, subdir, filename, varname, &path))
 	try(lufle_read(log, path.c, contents))
-	finally:return status;
+	finally:
+	return status;
 }
 

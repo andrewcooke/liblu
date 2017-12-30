@@ -1,8 +1,8 @@
 
-#include <lu/internal.h>
 #include <math.h>
 #include <string.h>
 
+#include "lu/internal.h"
 #include "lu/log.h"
 #include "lu/dynamic_memory.h"
 #include "lu/minmax.h"
@@ -162,7 +162,8 @@ int lumat_inv(lulog *log, luglm *m, luglm *i) {
     assert(det, LU_ERR_MAT, log, "Zero determinant - cannot invert")
     for (size_t j = 0; j < 16; j++) (*i)[j] = (*i)[j] / det;
 
-    finally:return status;
+    finally:
+	return status;
 }
 
 void luglm_rotx(float theta, luglm *m) {
@@ -207,5 +208,6 @@ int lumat_log(lulog *log, lulog_level level, luglm *m) {
             (*m)[luglm_idx(2,0)], (*m)[luglm_idx(2,1)], (*m)[luglm_idx(2,2)], (*m)[luglm_idx(2,3)]))
     try(lulog_printf(log, level, "[%12.6g,%12.6g,%12.6g,%12.6g]",
             (*m)[luglm_idx(3,0)], (*m)[luglm_idx(3,1)], (*m)[luglm_idx(3,2)], (*m)[luglm_idx(3,3)]))
-    finally:return status;
+    finally:
+	return status;
 }

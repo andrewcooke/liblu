@@ -33,7 +33,8 @@ int lutle_mkconfig(lulog *log, lutle_config **config, luran *rand,
     }
     for (i = 0; i < n_perm; ++i) (*config)->perm[i] = i;
     try(luran_shuffle(log, rand, (*config)->perm, sizeof(*(*config)->perm), n_perm))
-    finally:return status;
+    finally:
+	return status;
 }
 
 int lutle_defaultconfig(lulog *log, lutle_config **config, uint64_t seed) {
@@ -145,7 +146,8 @@ static inline int octave(lutle_tile *tile, lulog *log,
         z += dz / pow(2 / tile->octweight, tile->octave);
     }
     try(luary_pushijz(log, *ijz, i, j, z))
-    finally:return status;
+    finally:
+	return status;
 }
 
 
@@ -195,7 +197,8 @@ int lutle_mktriangle(lulog *log, lutle_tile **tile,
     (*tile)->enumerate = tri_enumerate;
     (*tile)->wrap = tri_wrap;
     (*tile)->free = generic_free;
-    finally:return status;
+    finally:
+	return status;
 }
 
 
@@ -263,7 +266,8 @@ int lutle_mkhexagon(lulog *log, lutle_tile **tile,
     (*tile)->enumerate = hex_enumerate;
     (*tile)->wrap = hex_wrap;
     (*tile)->free = generic_free;
-    finally:return status;
+    finally:
+	return status;
 }
 
 
@@ -286,7 +290,8 @@ int lutle_range(lulog *log, luary_ijz *ijz, ludta_ij *bl, ludta_ij *tr, double *
     ludebug(log, "Data extend from (%d, %d) bottom left to (%d, %d) top right",
             bl->i, bl->j, tr->i, tr->j);
     if (zero) ludebug(log, "Zero level is %.2g", *zero);
-    finally:return status;
+    finally:
+	return status;
 }
 
 int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double **data) {
@@ -310,5 +315,6 @@ int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double *
             (*data)[i + 1 + j * *nx] = 0.5 * ((*data)[i + 0 + j * *nx] + (*data)[i + 2 + j * *nx]);
         }
     }
-    finally:return status;
+    finally:
+	return status;
 }

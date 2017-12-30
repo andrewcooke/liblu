@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <lu/internal.h>
 
+#include "lu/internal.h"
 #include "lu/dynamic_memory.h"
 #include "lu/log.h"
 #include "lu/minmax.h"
@@ -28,7 +28,8 @@ int lustr_mkn(lulog *log, lustr *str, size_t n) {
     *str = (lustr){NULL, .mem = LUMEM_ZERO};
     try(lustr_reserve(log, str, n));
     str->mem.used = 1;  // no need to set value as reserved is zeroed
-    finally:return status;
+    finally:
+	return status;
 }
 
 int lustr_mk(lulog *log, lustr *str) {
@@ -41,7 +42,8 @@ int lustr_mkstr(lulog *log, lustr *str, const char *c) {
     int len = strlen(c);
     try(lustr_reserve(log, str, len + 1));
     memcpy(str->c, c, len);
-    finally:return status;
+    finally:
+	return status;
 }
 
 int lustr_clear(lulog *log, lustr *str) {
@@ -49,7 +51,8 @@ int lustr_clear(lulog *log, lustr *str) {
     if (!str->mem.capacity) try(lustr_mk(log, str));
     str->c[0] = '\0';
     str->mem.used = 1;
-    finally:return status;
+    finally:
+	return status;
 }
 
 
@@ -97,7 +100,8 @@ int lustr_vnprintf(lulog *log, lustr *str, int max_size, int *all_chars, const c
     int status = LU_OK;
     try(lustr_clear(log, str));
     try(lustr_vnappendf(log, str, max_size, all_chars, format, ap));
-    finally:return status;
+    finally:
+	return status;
 }
 
 int lustr_append(lulog *log, lustr *str, const char *text) {
@@ -159,5 +163,6 @@ int lustr_vnappendf(lulog *log, lustr *str, int max_chars, int *all_chars, const
         }
         try(lustr_reserve(log, str, total_chars + !null_present));
     }
-    finally:return status;
+    finally:
+	return status;
 }
