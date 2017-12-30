@@ -71,7 +71,7 @@ int name(lulog *log, type *ptr, size_t n) {\
 #define LUARY_MKMAKE(name, type, reserve)\
 int name(lulog *log, type **ptr, size_t n) {\
     int status = LU_OK;\
-    LU_ALLOC(log, *ptr, 1)\
+    lu_alloc(log, *ptr, 1)\
     try(reserve(log, *ptr, n))\
     finally:return status;\
 }

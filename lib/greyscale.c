@@ -41,7 +41,7 @@ int lugry_quantize(lulog *log, double *data, int n, int levels, int **out) {
     assert(lo != hi, LU_ERR, log, "Constant data")
     luinfo(log, "Scaling %5.4g - %5.4g to 0 - %d", lo, hi, levels-1);
     delta = (hi - lo) / levels;
-    LU_ALLOC(log, *out, n)
+    lu_alloc(log, *out, n)
     for (i = 0; i < n; ++i) {
         (*out)[i] = min(levels-1, max(0, floor((data[i] - lo) / delta)));
     }

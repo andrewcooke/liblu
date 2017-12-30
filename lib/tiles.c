@@ -21,9 +21,9 @@ int lutle_mkconfig(lulog *log, lutle_config **config, luran *rand,
         size_t n_grad, double phase, size_t n_perm) {
     size_t i;
     int status = LU_OK;
-    LU_ALLOC(log, *config, 1)
-    LU_ALLOC(log, (*config)->grad, n_grad)
-    LU_ALLOC(log, (*config)->perm, n_perm)
+    lu_alloc(log, *config, 1)
+    lu_alloc(log, (*config)->grad, n_grad)
+    lu_alloc(log, (*config)->perm, n_perm)
     (*config)->n_grad = n_grad;
     (*config)->n_perm = n_perm;
     for (i = 0; i < n_grad; ++i) {
@@ -189,8 +189,8 @@ int lutle_mktriangle(lulog *log, lutle_tile **tile,
     assert(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
     assert(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
     if (side * subsamples == 1) luwarn(log, "Only zero outer points visible");
-    LU_ALLOC(log, *tile, 1)
-    LU_ALLOC_TYPE(log, (*tile)->state, 1, tri_state);
+    lu_alloc(log, *tile, 1)
+    lu_alloc_type(log, (*tile)->state, 1, tri_state);
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
     (*tile)->octweight = octweight;
@@ -259,7 +259,7 @@ int lutle_mkhexagon(lulog *log, lutle_tile **tile,
     assert(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
     assert(subsamples > 0, LU_ERR_ARG, log, "Subsamples must be non-zero")
     if (side * subsamples == 1) luwarn(log, "Only zero outer points visible");
-    LU_ALLOC(log, *tile, 1)
+    lu_alloc(log, *tile, 1)
     (*tile)->side = side;
     (*tile)->subsamples = subsamples;
     (*tile)->octweight = octweight;
@@ -303,7 +303,7 @@ int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double *
     size_t border = 1;
     *nx = tr.i - bl.i + 1 + 2 * border; *ny = tr.j - bl.j + 1 + 2 * border;
     luinfo(log, "Allocating raster area %zu x %zu", *nx, *ny);
-    LU_ALLOC(log, *data, *nx * *ny)
+    lu_alloc(log, *data, *nx * *ny)
     for (size_t i = 0; i < ijz->mem.used; ++i) {
         ludta_ij ij = tri2raster(ijz->ijz[i]);
         ij.i -= bl.i; ij.j -= bl.j;

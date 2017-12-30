@@ -19,7 +19,7 @@
 
 /// (Generate code to) Allocate (zeroed) memory matching the type of `ptr`.
 /** This assumes that the conventions in `status.h` are followed. */
-#define LU_ALLOC(log, ptr, n)\
+#define lu_alloc(log, ptr, n)\
 if (!(ptr = calloc(n, sizeof(*ptr)))) {\
     luerror(log, "Cannot allocate %zu bytes", n * sizeof(*ptr));\
     status = LU_ERR_MEM; goto finally;\
@@ -27,7 +27,7 @@ if (!(ptr = calloc(n, sizeof(*ptr)))) {\
 
 /// (Generate code to) Allocate (zeroed) memory for the given type.
 /** This assumes that the conventions in `status.h` are followed. */
-#define LU_ALLOC_TYPE(log, ptr, n, type)\
+#define lu_alloc_type(log, ptr, n, type)\
 if (!(ptr = calloc(n, sizeof(type)))) {\
     luerror(log, "Cannot allocate %zu bytes", n * sizeof(type));\
     status = LU_ERR_MEM; goto finally;\
@@ -35,7 +35,7 @@ if (!(ptr = calloc(n, sizeof(type)))) {\
 
 /// (Generate code to) Allocate the given amount of (zeroed) memory.
 /** This assumes that the conventions in `status.h` are followed. */
-#define LU_ALLOC_SIZE(log, ptr, size)\
+#define lu_alloc_size(log, ptr, size)\
 if (!(ptr = calloc(1, size))) {\
     luerror(log, "Cannot allocate %zu bytes", size);\
     status = LU_ERR_MEM; goto finally;\

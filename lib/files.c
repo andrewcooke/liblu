@@ -59,7 +59,7 @@ int lufle_find_config(lulog *log, const char *datadir, const char *subdir, const
 
 int lufle_read(lulog *log, const char *path, lustr *contents) {
 	int status = LU_OK;
-	FILE * f;
+	FILE *f;
 	assert(f = fopen(path, "r"), LU_ERR_IO, log, "Could not open %s", path)
 	assert(!fseek(f, 0, SEEK_END), LU_ERR_IO, log, "Could not seek %s", path)
 	long int fsize = ftell(f);

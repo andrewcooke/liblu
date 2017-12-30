@@ -50,8 +50,8 @@ int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap
 
 int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) {
 	int status = LU_OK;
-	LU_ALLOC(NULL, *log, 1);
-	LU_ALLOC_TYPE(NULL, (*log)->state, 1, stream_state);
+	lu_alloc(NULL, *log, 1);
+	lu_alloc_type(NULL, (*log)->state, 1, stream_state);
 	stream_state *state = (stream_state*) (*log)->state;
 	state->close = close;
 	state->stream = stream;
@@ -88,7 +88,7 @@ int syslog_printfv(lulog *log, lulog_level level, const char *format, va_list ap
 
 int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold) {
 	int status = LU_OK;
-	LU_ALLOC(NULL, *log, 1);
+	lu_alloc(NULL, *log, 1);
 	(*log)->threshold = threshold;
 	(*log)->printfv = syslog_printfv;
 	(*log)->free = syslog_free;
@@ -124,9 +124,9 @@ int string_printfv(lulog *log, lulog_level level, const char *format, va_list ap
 
 int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
 	int status = LU_OK;
-	LU_ALLOC_TYPE(NULL, *string, 1, lustr)
+	lu_alloc_type(NULL, *string, 1, lustr)
 	try(lustr_mk(NULL, *string))
-	LU_ALLOC(NULL, *log, 1)
+	lu_alloc(NULL, *log, 1)
 	(*log)->state = *string;
 	(*log)->threshold = threshold;
 	(*log)->printfv = string_printfv;
