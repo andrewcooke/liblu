@@ -1,6 +1,6 @@
 
+#include <lu/arrays.h>
 #include "lu/data/fxyzw.h"
-#include "lu/array_macros.h"
 
 LUARY_MKBASE(fxyzw, ludta_fxyzw, fxyzw)
 

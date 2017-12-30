@@ -1,8 +1,8 @@
 
+#include <lu/arrays.h>
 #include <stdint.h>
 
 #include "lu/data/void.h"
-#include "lu/array_macros.h"
 
 LUARY_MKBASE(void, void *, ptr)
 

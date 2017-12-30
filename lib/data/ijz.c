@@ -1,6 +1,6 @@
 
+#include <lu/arrays.h>
 #include "lu/data/ijz.h"
-#include "lu/array_macros.h"
 
 LUARY_MKBASE(ijz, ludta_ijz, ijz)
 

@@ -1,6 +1,6 @@
 
+#include <lu/arrays.h>
 #include "lu/data/int32.h"
-#include "lu/array_macros.h"
 
 LUARY_MKBASE(int32, int32_t, i)
 
