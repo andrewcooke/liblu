@@ -5,7 +5,6 @@
 #include <lib/lu/status.h>
 #include <math.h>
 
-#include "../lib/lu/arrays.h"
 #include "../lib/lu/greyscale.h"
 #include "../lib/lu/tiles.h"
 #include "../lib/lu/minmax.h"

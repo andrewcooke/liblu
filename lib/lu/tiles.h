@@ -4,8 +4,8 @@
 
 #include "log.h"
 #include "random.h"
-#include "arrays.h"
 #include "data/ijz.h"
+#include "structs.h"
 
 
 // a re-implementation of perlin's simplex noise that:
