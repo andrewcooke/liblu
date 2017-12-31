@@ -8,9 +8,10 @@
 /**
  * @file
  *
- * Types used in the support libraries for OpenGL programs.  These are
- * collected here so that the support libraries can easily refer to each
- * other's types as necessary.  All are currently aliases for arrays of
+ * @brief Types used to support OpenGL programs.
+ *
+ * These are collected here so that the support libraries can easily refer
+ * to each other's types as necessary.  All are currently aliases for arrays of
  * `float` values.
  */
 /// @{

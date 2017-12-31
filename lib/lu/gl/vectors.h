@@ -1,6 +1,6 @@
 
-#ifndef LU_VECTORS_H
-#define LU_VECTORS_H
+#ifndef LU_GL_VECTORS_H
+#define LU_GL_VECTORS_H
 
 #include "../log.h"
 #include "types.h"
@@ -8,7 +8,7 @@
 /**
  * @file
  *
- * Vector operations to support OpenGL programs.
+ * @brief Vector operations to support OpenGL programs.
  *
  * All input and output arrays passed by pointer.
  */

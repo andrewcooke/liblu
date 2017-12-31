@@ -5,7 +5,7 @@
 #include <lu/status.h>
 
 #include "lu/internal.h"
-#include "lu/dynamic_memory.h"
+#include "lu/memory.h"
 #include "lu/random.h"
 
 

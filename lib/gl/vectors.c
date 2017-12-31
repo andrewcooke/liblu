@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "lu/log.h"
-#include "lu/dynamic_memory.h"
+#include "lu/memory.h"
 #include "lu/minmax.h"
 #include "lu/gl/quaternions.h"
 #include "lu/gl/vectors.h"

@@ -6,7 +6,7 @@
 #include "lu/minmax.h"
 #include "lu/strings.h"
 #include "lu/log.h"
-#include "lu/dynamic_memory.h"
+#include "lu/memory.h"
 #include "lu/greyscale.h"
 
 

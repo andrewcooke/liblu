@@ -1,6 +1,6 @@
 
-#ifndef LU_DYNAMIC_MEMORY_H
-#define LU_DYNAMIC_MEMORY_H
+#ifndef LU_MEMORY_H
+#define LU_MEMORY_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +15,7 @@
  * support arrays that grow dynamically in amortized linear time (by
  * doubling allocated size as needed).
  *
- * For higher level functionality, see `array_macros.h` and `strings.h`.
+ * For higher level functionality, see `arrays.h` and `strings.h`.
  */
 
 /// (Generate code to) Allocate (zeroed) memory matching the type of `ptr`.

@@ -8,7 +8,7 @@
 /**
  * @file
  *
- * Quaternion operations to support OpenGL programs.
+ * @brief Quaternion operations to support OpenGL programs.
  *
  * All input and output arrays passed by pointer.
  */

@@ -1,16 +1,16 @@
 
-#ifndef LU_ARRAY_MACROS_H
-#define LU_ARRAY_MACROS_H
+#ifndef LU_arrays_H
+#define LU_arrays_H
 
-#include "dynamic_memory.h"
 #include "strings.h"
 #include "internal.h"
+#include "memory.h"
 #include "minmax.h"
 
 /**
  * @file
  *
- * Macros that extend `dynamic_memory.h` to support dynamic arrays that grow
+ * Macros that extend `memory.h` to support dynamic arrays that grow
  * in amortized linear time.
  *
  * The main entry point is `LUARY_MKBASE(stem, type, member)` where:
@@ -121,7 +121,7 @@ int name(lulog *log, type *ptr, const char *title, size_t n) {\
         }\
     }\
     lulog_lines(log, lulog_level_debug, lines.c);\
-finally:\
+    finally:\
     status = lustr_free(&lines, status);\
     status = lustr_free(&word, status);\
     status = lustr_free(&prefix, status);\

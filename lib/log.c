@@ -5,7 +5,7 @@
 #include <syslog.h>
 
 #include "lu/internal.h"
-#include "lu/dynamic_memory.h"
+#include "lu/memory.h"
 #include "lu/strings.h"
 #include "lu/log.h"
 

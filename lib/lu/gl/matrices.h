@@ -8,7 +8,7 @@
 /**
  * @file
  *
- * Vector operations to support OpenGL programs.
+ * @brief Matrix operations to support OpenGL programs.
  *
  * All input and output arrays passed by pointer.
  */

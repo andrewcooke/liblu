@@ -1,6 +1,6 @@
 
-#ifndef LU_COLOURS_H
-#define LU_COLOURS_H
+#ifndef LU_GL_COLOURS_H
+#define LU_GL_COLOURS_H
 
 #include "../log.h"
 #include "types.h"

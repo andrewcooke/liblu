@@ -4,7 +4,7 @@
 
 #include <stdarg.h>
 
-#include "dynamic_memory.h"
+#include "memory.h"
 
 /**
  * @file
