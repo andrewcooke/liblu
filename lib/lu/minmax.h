@@ -5,7 +5,9 @@
 /**
  * @file
  *
- * Implementations of `min()` and `max` from
+ * @brief Implementations of `min()` and `max()`
+ *
+ * Taken from
  * http://stackoverflow.com/questions/3437404/min-and-max-in-c
  *
  * If these cause conflicts they can be excluded by defining `LU_NOMINMAX`.

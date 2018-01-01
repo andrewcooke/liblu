@@ -10,10 +10,11 @@
 /**
  * @file
  *
- * Support for dynamically allocating memory.  In addition to various
- * helper macros, the `lumem` structure and `LUMEM_MKRESERVE()` macro
- * support arrays that grow dynamically in amortized linear time (by
- * doubling allocated size as needed).
+ * @brief Support for dynamically allocating memory.
+ *
+ * In addition to various helper macros, the `lumem` structure and
+ * `LUMEM_MKRESERVE()` macro support arrays that grow dynamically
+ * in amortized linear time (by doubling allocated size as needed).
  *
  * For higher level functionality, see `arrays.h` and `strings.h`.
  */

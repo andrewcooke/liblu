@@ -8,11 +8,12 @@
 /**
  * @file
  *
- * An extensible logging facility.  New `lulog` instances are created by
- * the `lulog_mk...` functions, which provide different implementations (to
- * a file, stderr, a string, etc).  The user can provide their own
- * implementation by returning a `lulog` instance with `lulog_vprintf` and
- * `lulog_free` functions.
+ * @brief An extensible logging facility.
+ *
+ * New `lulog` instances are created by the `lulog_mk...` functions, which
+ * provide different implementations (to a file, stderr, a string, etc).
+ * The user can provide their own implementation by returning a `lulog`
+ * instance with `lulog_vprintf` and `lulog_free` functions.
  *
  * Once a `lulog` instance is available, functions like `ludebug`, `luinfo`,
  * etc can be used to log messages at the appropriate level.

@@ -9,7 +9,7 @@
 /**
  * @file
  *
- * Dynamically allocated strings with common print and append functions.
+ * @brief Dynamically allocated strings with common print and append functions.
  *
  * A `lustr` instance is intended to be declared directly (not as a pointer).
  * To initialise as empty (so that `lustr_free()` can be called safely

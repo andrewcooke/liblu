@@ -12,7 +12,7 @@
  */
 /// @{
 
-/// An {i,j,z) tuple - typically height at a 2D coordinate.
+/// An (i,j,z) tuple - typically height at a 2D coordinate.
 typedef struct ludta_ijz {
     int32_t i;
     int32_t j;

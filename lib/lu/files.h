@@ -9,7 +9,7 @@
 /**
  * @file
  *
- * Various utilities for accessing files.
+ * @brief Various utilities for accessing files.
  */
 
 /// Check if file exists (return value is check - no status).

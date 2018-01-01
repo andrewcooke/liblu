@@ -10,7 +10,7 @@
 /**
  * @file
  *
- * Macros that extend `memory.h` to support dynamic arrays that grow
+ * @brief Macros that extend `memory.h` to support dynamic arrays that grow
  * in amortized linear time.
  *
  * The main entry point is `LUARY_MKBASE(stem, type, member)` where:
@@ -44,7 +44,7 @@
  *   A constructor function that creates a `luary_stem` instance with space
  *   pre-allocated for `n` instances.
  *
- * * int luary_freestem(luary_stem **ptr, int status)`
+ * * `int luary_freestem(luary_stem **ptr, int status)`
  *
  *   A function to free the associated data.
  *

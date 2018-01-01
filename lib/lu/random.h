@@ -10,7 +10,7 @@
 /**
  * @file
  *
- * Pseudo-random number generators.
+ * @brief Pseudo-random number generators.
  *
  * Because these share a common interface the generator used can be changed
  * by simply changing the constructor.

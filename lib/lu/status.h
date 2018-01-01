@@ -5,6 +5,8 @@
 /**
  * @file
  *
+ * @brief Status codes.
+ *
  * These are the status codes returned by (almost) all functions in
  * this library (exceptions are generally void and "cannot" fail).
  */
