@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "../lib/lu/structs.h"
 #include "../lib/lu/gl.h"
 
 

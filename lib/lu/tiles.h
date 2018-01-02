@@ -5,7 +5,8 @@
 #include "log.h"
 #include "random.h"
 #include "data/ijz.h"
-#include "structs.h"
+#include "data/xy.h"
+#include "data/ij.h"
 
 /**
  * @file
@@ -28,12 +29,13 @@
  * I arbitrarily pick the following two (of three) coordinates:
  * - p is along the x axis
  * - q is rotated 60 degrees anti-clock from p
+ *
+ * The main routine is `lutle_noise()`.  To call that you typically
+ * construct a `lutle_config` instance that fixes the noise parameters
+ * and a `lutle_tile` instance that describes the tiling.
  */
 /// @{
 
-
-struct lutle_xy;
-struct lutle_tile;
 
 /// The structure used to configure a tile.
 typedef struct {
@@ -78,6 +80,7 @@ int lutle_defaultconfig(lulog *log, lutle_config **config, uint64_t seed);
  * fine details are progressively smaller).  A larger value emphasises the
  * high frequency noise.
  */
+struct lutle_tile;
 
 /// Given a tile and noise configuration generate the (i,j,z) noise for all points.
 typedef int lutle_enumerate(struct lutle_tile *tile, lulog *log,
@@ -87,7 +90,7 @@ typedef void lutle_wrap(struct lutle_tile *tile, lulog *log, int *p, int *q);
 /// Free the tile.
 typedef int lutle_freetile(struct lutle_tile **tile, size_t prev_status);
 
-typedef struct {
+typedef struct lutle_tile {
     size_t side;  ///< The number of triangle edges on a (typical?) side.
     size_t subsamples;  ///< The degree of oversampling of the noise.
     size_t octave;  ///< Used internally while rendering
@@ -119,9 +122,9 @@ int lutle_range(lulog *log, luary_ijz *ijz, ludta_ij *bl, ludta_ij *tr, double *
  */
 int lutle_rasterize(lulog *log, luary_ijz *ijz, size_t *nx, size_t *ny, double **data);
 
-/// Calculate the height (noise)
+/// Calculate the height (noise).
 int lutle_noise(lulog *log, lutle_config *conf,
-        struct lutle_tile *tile, double pin, double qin, double *noise);
+        lutle_tile *tile, double pin, double qin, double *noise);
 
 /// @}
 #endif
