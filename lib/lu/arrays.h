@@ -26,12 +26,12 @@
  *
  * The call to `LUARY_MKBASE(stem, type, member)` generates:
  *
- * * `static int stem_free(type **ptr, lumem *mem, int status)`
+ * * `static int lumem_stem_free(type **ptr, lumem *mem, int status)`
  *
  *   An internal (static scoped) helper that frees the array and zeroes
  *   the associated `lumem` instance.
  *
- * * `static int stem_reserve(lulog *log, type **ptr, lumem *mem, size_t n)`
+ * * `static int lumem_stem_reserve(lulog *log, type **ptr, lumem *mem, size_t n)`
  *
  *   An internal (static scoped) helper that reserves space in the array.
  *
