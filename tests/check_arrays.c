@@ -18,25 +18,25 @@ LUARY_MKBASE(stem, type, member)
 
 START_TEST(test_atype) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     luary_stem *array;
-    ck_assert(!luary_mkstem(log, &array, 0));
+    ck_assert(!luary_stem_mk(log, &array, 0));
     ck_assert(!array->mem.capacity);
     ck_assert(!array->mem.used);
-    ck_assert(!luary_reservestem(log, array, 10));
+    ck_assert(!luary_stem_res(log, array, 10));
     ck_assert(array->mem.capacity >= 10);
     ck_assert(!array->mem.used);
-    ck_assert(!luary_freestem(&array, 0));
+    ck_assert(!luary_stem_free(&array, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
 START_TEST(test_ijz) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     luary_ijz *ijz;
-    ck_assert(!luary_mkijz(log, &ijz, 0));
-    ck_assert(!luary_pushijz(log, ijz, 1, 2, 3.0));
-    ck_assert(!luary_pushijz(log, ijz, 4, 5, 6.0));
+    ck_assert(!luary_ijz_mk(log, &ijz, 0));
+    ck_assert(!luary_ijz_push(log, ijz, 1, 2, 3.0));
+    ck_assert(!luary_ijz_push(log, ijz, 4, 5, 6.0));
     ck_assert(ijz->mem.used == 2);
     ck_assert(ijz->ijz[0].i == 1);
     ck_assert(ijz->ijz[0].j == 2);
@@ -44,7 +44,7 @@ START_TEST(test_ijz) {
     ck_assert(ijz->ijz[1].i == 4);
     ck_assert(ijz->ijz[1].j == 5);
     ck_assert(ijz->ijz[1].z == 6);
-    ck_assert(!luary_freeijz(&ijz, 0));
+    ck_assert(!luary_ijz_free(&ijz, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 

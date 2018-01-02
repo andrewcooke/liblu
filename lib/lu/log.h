@@ -10,7 +10,7 @@
  *
  * @brief An extensible logging facility.
  *
- * New `lulog` instances are created by the `lulog_mk...` functions, which
+ * New `lulog` instances are created by the `lulog_..._mk` functions, which
  * provide different implementations (to a file, stderr, a string, etc).
  * The user can provide their own implementation by returning a `lulog`
  * instance with `lulog_vprintf` and `lulog_free` functions.
@@ -44,15 +44,15 @@ typedef struct lulog {
 } lulog;
 
 /// Create a new `lulog` instance that logs to a `FILE`.
-int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close);
+int lulog_stream_mk(lulog **log, FILE *stream, lulog_level threshold, int close);
 /// Create a new `lulog` instance that logs to `stderr`.
-int lulog_mkstderr(lulog **log, lulog_level threshold);
+int lulog_stderr_mk(lulog **log, lulog_level threshold);
 /// Create a new `lulog` instance that logs to `stdout`.
-int lulog_mkstdout(lulog **log, lulog_level threshold);
+int lulog_stdout_mk(lulog **log, lulog_level threshold);
 /// Create a new `lulog` instance that logs to syslog.
-int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold);
+int lulog_syslog_mk(lulog **log, const char *ident, lulog_level threshold);
 /// Create a new `lulog` instance that logs to a `lustr`.
-int lulog_mkstring(lulog **log, struct lustr **string, lulog_level threshold);
+int lulog_string_mk(lulog **log, struct lustr **string, lulog_level threshold);
 
 /// Log a (single line) message at the debug level.
 int ludebug(lulog *log, const char *format, ...);

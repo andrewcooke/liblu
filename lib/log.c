@@ -48,7 +48,7 @@ int stream_printfv(lulog *log, lulog_level level, const char *format, va_list ap
 	return status;
 }
 
-int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) {
+int lulog_stream_mk(lulog **log, FILE *stream, lulog_level threshold, int close) {
 	int status = LU_OK;
 	LU_ALLOC(NULL, *log, 1);
 	LU_ALLOC_TYPE(NULL, (*log)->state, 1, stream_state);
@@ -62,12 +62,12 @@ int lulog_mkstream(lulog **log, FILE *stream, lulog_level threshold, int close) 
 	finally:return status;
 }
 
-int lulog_mkstderr(lulog **log, lulog_level threshold) {
-	return lulog_mkstream(log, stderr, threshold, 0);
+int lulog_stderr_mk(lulog **log, lulog_level threshold) {
+	return lulog_stream_mk(log, stderr, threshold, 0);
 }
 
-int lulog_mkstdout(lulog **log, lulog_level threshold) {
-	return lulog_mkstream(log, stdout, threshold, 0);
+int lulog_stdout_mk(lulog **log, lulog_level threshold) {
+	return lulog_stream_mk(log, stdout, threshold, 0);
 }
 
 
@@ -86,7 +86,7 @@ int syslog_printfv(lulog *log, lulog_level level, const char *format, va_list ap
 	return status;
 }
 
-int lulog_mksyslog(lulog **log, const char *ident, lulog_level threshold) {
+int lulog_syslog_mk(lulog **log, const char *ident, lulog_level threshold) {
 	int status = LU_OK;
 	LU_ALLOC(NULL, *log, 1);
 	(*log)->threshold = threshold;
@@ -122,7 +122,7 @@ int string_printfv(lulog *log, lulog_level level, const char *format, va_list ap
 	return status;
 }
 
-int lulog_mkstring(lulog **log, lustr **string, lulog_level threshold) {
+int lulog_string_mk(lulog **log, lustr **string, lulog_level threshold) {
 	int status = LU_OK;
 	LU_ALLOC_TYPE(NULL, *string, 1, lustr)
 	try(lustr_mk(NULL, *string))

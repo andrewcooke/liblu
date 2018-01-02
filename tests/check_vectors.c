@@ -43,7 +43,7 @@ static void assert_inv(lulog *log, luglm *m, char *name) {
 
 START_TEST(test_inv) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     luglm m = {};
     luglm_id(&m);
     assert_inv(log, &m, "id");

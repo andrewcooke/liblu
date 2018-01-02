@@ -19,15 +19,15 @@ typedef struct luary_int32 {
 } luary_int32;
 
 /// Create an array of int32_t values.
-int luary_mkint32(lulog *log, luary_int32 **i, size_t n);
+int luary_int32_mk(lulog *log, luary_int32 **i, size_t n);
 /// Free an array of int32_t values.
-int luary_freeint32(luary_int32 **i, int prev_status);
+int luary_int32_free(luary_int32 **i, int prev_status);
 /// Allocate space in an array of int32_t values.
-int luary_reserveint32(lulog *log, luary_int32 *i, size_t n);
+int luary_int32_res(lulog *log, luary_int32 *i, size_t n);
 /// Append a value to an array of int32_t values.
-int luary_pushint32(lulog *log, luary_int32 *i, int32_t j);
+int luary_int32_push(lulog *log, luary_int32 *i, int32_t j);
 /// Dump an array of int32_t values to the log.
-int luary_dumpint32(lulog *log, luary_int32 *i, const char *name, size_t nlines);
+int luary_int32_dump(lulog *log, luary_int32 *i, const char *name, size_t nlines);
 
 /// }@
 #endif

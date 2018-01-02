@@ -46,12 +46,12 @@ typedef struct {
 } lutle_config;
 
 /// Free a configuration.
-int lutle_freeconfig(lutle_config **config, int prev_status);
+int lutle_config_free(lutle_config **config, int prev_status);
 /// Generate a configuration from the given parameters and random number source.
-int lutle_mkconfig(lulog *log, lutle_config **config, luran *rand,
+int lutle_config_mk(lulog *log, lutle_config **config, luran *rand,
         size_t n_grad, double phase, size_t n_perm);
 /// Generate a configuration with fixed parameters and random number algorithm, using the given random seed.
-int lutle_defaultconfig(lulog *log, lutle_config **config, uint64_t seed);
+int lutle_config_default(lulog *log, lutle_config **config, uint64_t seed);
 
 
 /**
@@ -88,7 +88,7 @@ typedef int lutle_enumerate(struct lutle_tile *tile, lulog *log,
 /// Modify `p` and `q` so that they refer to a canonical tile instance.
 typedef void lutle_wrap(struct lutle_tile *tile, lulog *log, int *p, int *q);
 /// Free the tile.
-typedef int lutle_freetile(struct lutle_tile **tile, size_t prev_status);
+typedef int lutle_tile_free(struct lutle_tile **tile, size_t prev_status);
 
 typedef struct lutle_tile {
     size_t side;  ///< The number of triangle edges on a (typical?) side.
@@ -97,15 +97,15 @@ typedef struct lutle_tile {
     double octweight;  ///< Weight for octave noise.
     lutle_enumerate *enumerate;  ///< Function to generate noise at all points.
     lutle_wrap *wrap;  ///< Function to wrap coordinates to a canonincal tile.
-    lutle_freetile *free;  ///< Function to free tile.
+    lutle_tile_free *free;  ///< Function to free tile.
     void *state;  ///< Opaque state used by the tile.
 } lutle_tile;
 
 /// Generate a triangular tile.
-int lutle_mktriangle(lulog *log, lutle_tile **tile,
+int lutle_triangle_mk(lulog *log, lutle_tile **tile,
         size_t side, size_t subsamples, double octweight);
 /// Generate a hexagonal tile.
-int lutle_mkhexagon(lulog *log, lutle_tile **tile,
+int lutle_hexagon_mk(lulog *log, lutle_tile **tile,
         size_t side, size_t subsamples, double octweight);
 /// Find extent of coordinates in (i,j,z) array.
 int lutle_range(lulog *log, luary_ijz *ijz, ludta_ij *bl, ludta_ij *tr, double *zero);

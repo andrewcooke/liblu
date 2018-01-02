@@ -7,7 +7,7 @@
 #include "lu/tiles.h"
 
 
-int lutle_freeconfig(lutle_config **config, int prev_status) {
+int lutle_config_free(lutle_config **config, int prev_status) {
 	if (*config) {
 		free((*config)->grad);
 		free((*config)->perm);
@@ -17,7 +17,7 @@ int lutle_freeconfig(lutle_config **config, int prev_status) {
 	return prev_status;
 }
 
-int lutle_mkconfig(lulog *log, lutle_config **config, luran *rand,
+int lutle_config_mk(lulog *log, lutle_config **config, luran *rand,
 		size_t n_grad, double phase, size_t n_perm) {
 	size_t i;
 	int status = LU_OK;
@@ -37,11 +37,11 @@ int lutle_mkconfig(lulog *log, lutle_config **config, luran *rand,
 	return status;
 }
 
-int lutle_defaultconfig(lulog *log, lutle_config **config, uint64_t seed) {
+int lutle_config_default(lulog *log, lutle_config **config, uint64_t seed) {
 	luran *rand = NULL;
 	int status = LU_OK;
 	try(luran_mkxoroshiro128plus(log, &rand, seed));
-	try(lutle_mkconfig(log, config, rand, 12, 0, 256));
+	try(lutle_config_mk(log, config, rand, 12, 0, 256));
 	finally:
 	if (rand) status = rand->free(&rand, status);
 	return status;
@@ -146,7 +146,7 @@ static inline int octave(lutle_tile *tile, lulog *log,
 		try(lutle_noise(log, config, tile, po, qo, &dz));
 		z += dz / pow(2 / tile->octweight, tile->octave);
 	}
-	try(luary_pushijz(log, *ijz, i, j, z));
+	try(luary_ijz_push(log, *ijz, i, j, z));
 	finally:
 	return status;
 }
@@ -169,7 +169,7 @@ int tri_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
 	int status = LU_OK;
 	size_t i, j;
 	size_t points = tile->side * tile->subsamples;
-	try(luary_mkijz(log, ijz, points * (points - 1)));
+	try(luary_ijz_mk(log, ijz, points * (points - 1)));
 	for (j = 0; j <= points; ++j) {
 		if ((j == 0 && (edges & 1)) || (j > 0)) {
 			for (i = 0; i <= points - j; ++i) {
@@ -185,7 +185,7 @@ int tri_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
 	return status;
 }
 
-int lutle_mktriangle(lulog *log, lutle_tile **tile,
+int lutle_triangle_mk(lulog *log, lutle_tile **tile,
 		size_t side, size_t subsamples, double octweight) {
 	int status = LU_OK;
 	assert(side > 0, LU_ERR_ARG, log, "Side must be non-zero")
@@ -236,7 +236,7 @@ int hex_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
 		uint edges, luary_ijz **ijz) {
 	int status = LU_OK;
 	int points = tile->side * tile->subsamples;
-	try(luary_mkijz(log, ijz, 6 * points * (points + 1)));
+	try(luary_ijz_mk(log, ijz, 6 * points * (points + 1)));
 	int jlo = !(edges & 1) - points;
 	int jhi = points - !(edges & 8);
 	for (int j = jlo; j <= jhi; ++j) {
@@ -252,10 +252,11 @@ int hex_enumerate(lutle_tile *tile, lulog *log, lutle_config *config,
 			try(octave(tile, log, config, i, j, ijz))
 		}
 	}
-	finally:return status;
+	finally:
+	return status;
 }
 
-int lutle_mkhexagon(lulog *log, lutle_tile **tile,
+int lutle_hexagon_mk(lulog *log, lutle_tile **tile,
 		size_t side, size_t subsamples, double octweight) {
 	int status = LU_OK;
 	assert(side > 0, LU_ERR_ARG, log, "Side must be non-zero")

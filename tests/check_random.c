@@ -21,7 +21,7 @@ void assert_double(luran *rand, double target) {
 
 START_TEST(test_xoroshiro128plus) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     luran *rand;
     ck_assert(!luran_mkxoroshiro128plus(log, &rand, 0));
     assert_next(rand, UINT64_C(5807750865143411619));
@@ -51,7 +51,7 @@ void assert_rangeu(luran *rand, uint64_t lo, uint64_t hi, int n) {
 
 START_TEST(test_rangeu) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     luran *rand;
     ck_assert(!luran_mkxoroshiro128plus(log, &rand, 0));
     assert_rangeu(rand, 1234, 5678, 10000);
@@ -105,7 +105,7 @@ void assert_rangen(luran *rand, int64_t lo, int64_t hi, int n) {
 
 START_TEST(test_rangen) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     luran *rand;
     ck_assert(!luran_mkxoroshiro128plus(log, &rand, 0));
     assert_rangen(rand, -5678, -1234, 10000);
@@ -120,7 +120,7 @@ START_TEST(test_shuffle) {
     int data1[] = {1,2,3}, target1[] = {2,3,1}, i;
     char data2[] = "hello world", target2[] = "dol roewllh";
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     luran *rand;
     ck_assert(!luran_mkxoroshiro128plus(log, &rand, 0));
 

@@ -10,7 +10,7 @@
 START_TEST(test_stderr) {
 
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_info));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_info));
     ck_assert(!ludebug(log, "this should not be displayed"));
     ck_assert(!luinfo(log, "this should be displayed"));
     ck_assert(!log->free(&log, LU_OK));
@@ -22,7 +22,7 @@ START_TEST(test_output) {
 
     lulog *log;
     FILE *stream = tmpfile();
-    ck_assert(!lulog_mkstream(&log, stream, lulog_level_info, 0));
+    ck_assert(!lulog_stream_mk(&log, stream, lulog_level_info, 0));
     ck_assert(!ludebug(log, "this should not be displayed"));
     ck_assert(!luinfo(log, "this should be displayed"));
     ck_assert(!log->free(&log, LU_OK));
@@ -41,7 +41,7 @@ START_TEST(test_output) {
 START_TEST(test_string) {
     lulog *log;
     lustr *str;
-    ck_assert(!lulog_mkstring(&log, &str, lulog_level_debug));
+    ck_assert(!lulog_string_mk(&log, &str, lulog_level_debug));
     ck_assert(!ludebug(log, "hello world"));
     ck_assert(!strcmp(str->c, "debug: hello world\n"));
     ck_assert(!log->free(&log, 0));
@@ -49,7 +49,7 @@ START_TEST(test_string) {
 
 START_TEST(test_syslog) {
     lulog *log;
-    ck_assert(!lulog_mksyslog(&log, "lulib", lulog_level_debug));
+    ck_assert(!lulog_syslog_mk(&log, "lulib", lulog_level_debug));
     ck_assert(!ludebug(log, "test message"));
     // check that message appears in system log
     ck_assert(!log->free(&log, 0));
@@ -58,7 +58,7 @@ START_TEST(test_syslog) {
 START_TEST(test_lines) {
     lulog *log;
     lustr *str;
-    ck_assert(!lulog_mkstring(&log, &str, lulog_level_debug));
+    ck_assert(!lulog_string_mk(&log, &str, lulog_level_debug));
     ck_assert(!lulog_lines(log, lulog_level_info, "a\nb\nc"));
     ck_assert_msg(!strcmp(str->c, "info: a\ninfo: b\ninfo: c\n"), "%s", str->c);
     ck_assert(!log->free(&log, 0));

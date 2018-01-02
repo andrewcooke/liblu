@@ -26,15 +26,15 @@ typedef struct luary_ijz {
 } luary_ijz;
 
 /// Create an array of (i,j,z) tuples.
-int luary_mkijz(lulog *log, luary_ijz **ijz, size_t n);
+int luary_ijz_mk(lulog *log, luary_ijz **ijz, size_t n);
 /// Free an array of (i,j,z) tuples.
-int luary_freeijz(luary_ijz **ijz, int prev_status);
+int luary_ijz_free(luary_ijz **ijz, int prev_status);
 /// Allocate space in an array of (i,j,z) tuples.
-int luary_reserveijz(lulog *log, luary_ijz *ijz, size_t n);
+int luary_ijz_res(lulog *log, luary_ijz *ijz, size_t n);
 /// Append a value to an array of (i,j,z) tuples.
-int luary_pushijz(lulog *log, luary_ijz *ijz, int32_t i, int32_t j, double z);
+int luary_ijz_push(lulog *log, luary_ijz *ijz, int32_t i, int32_t j, double z);
 /// Dump an array of (i,j,z) tuples to the log.
-int luary_dumpijz(lulog *log, luary_ijz *ijz, const char *name, size_t nlines);
+int luary_ijz_dump(lulog *log, luary_ijz *ijz, const char *name, size_t nlines);
 
 /// @}
 #endif

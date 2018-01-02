@@ -15,9 +15,9 @@ static char *scale2 = " '.\",-=+*:;ijcoebmIJCOEBM#@";
 
 START_TEST(test_config) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     lutle_config *config;
-    ck_assert(!lutle_defaultconfig(log, &config, 0));
+    ck_assert(!lutle_config_default(log, &config, 0));
     ck_assert(config->n_perm == 256);
     for (int i = 0; i < 256; ++i) {
         ck_assert(config->perm[i] < 256);
@@ -34,18 +34,18 @@ START_TEST(test_config) {
     ck_assert_msg(config->grad[0].y == 0.0, "%.*f", DECIMAL_DIG, config->grad[0].y);
     ck_assert_msg(config->grad[1].x == 0.866025403784438707611, "%.*f", DECIMAL_DIG, config->grad[1].x);
     ck_assert_msg(config->grad[1].y == 0.499999999999999944489, "%.*f", DECIMAL_DIG, config->grad[1].y);
-    ck_assert(!lutle_freeconfig(&config, 0));
+    ck_assert(!lutle_config_free(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
 
 START_TEST(test_triangle) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     lutle_config *config;
-    ck_assert(!lutle_defaultconfig(log, &config, 0));
+    ck_assert(!lutle_config_default(log, &config, 0));
     lutle_tile *triangle;
-    ck_assert(!lutle_mktriangle(log, &triangle, 4, 9, 1.0));
+    ck_assert(!lutle_triangle_mk(log, &triangle, 4, 9, 1.0));
     luary_ijz *ijz = NULL;
     ck_assert(!triangle->enumerate(triangle, log, config, -1, &ijz));
     size_t nx, ny; int *grey; double *data;
@@ -57,54 +57,54 @@ START_TEST(test_triangle) {
     printf(s.c);
     ck_assert(!lustr_free(&s, 0));
     free(grey); free(data);
-    ck_assert(!luary_freeijz(&ijz, 0));
+    ck_assert(!luary_ijz_free(&ijz, 0));
     ck_assert(!triangle->free(&triangle, 0));
-    ck_assert(!lutle_freeconfig(&config, 0));
+    ck_assert(!lutle_config_free(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
 
 START_TEST(test_small_hexagon) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     lutle_config *config;
-    ck_assert(!lutle_defaultconfig(log, &config, 0));
+    ck_assert(!lutle_config_default(log, &config, 0));
     lutle_tile *hexagon;
-    ck_assert(!lutle_mkhexagon(log, &hexagon, 1, 1, 1.0));
+    ck_assert(!lutle_hexagon_mk(log, &hexagon, 1, 1, 1.0));
     luary_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     ck_assert_msg(ijz->mem.used == 7, "Expected 7 points, found %zu", ijz->mem.used);
-    ck_assert(!luary_freeijz(&ijz, 0));
+    ck_assert(!luary_ijz_free(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
-    ck_assert(!lutle_freeconfig(&config, 0));
+    ck_assert(!lutle_config_free(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
 
 START_TEST(test_medium_hexagon) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     lutle_config *config;
-    ck_assert(!lutle_defaultconfig(log, &config, 0));
+    ck_assert(!lutle_config_default(log, &config, 0));
     lutle_tile *hexagon;
-    ck_assert(!lutle_mkhexagon(log, &hexagon, 2, 1, 1.0));
+    ck_assert(!lutle_hexagon_mk(log, &hexagon, 2, 1, 1.0));
     luary_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     ck_assert_msg(ijz->mem.used == 19, "Expected 19 points, found %zu", ijz->mem.used);
-    ck_assert(!luary_freeijz(&ijz, 0));
+    ck_assert(!luary_ijz_free(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
-    ck_assert(!lutle_freeconfig(&config, 0));
+    ck_assert(!lutle_config_free(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
 
 START_TEST(test_large_hexagon) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     lutle_config *config;
-    ck_assert(!lutle_defaultconfig(log, &config, 0));
+    ck_assert(!lutle_config_default(log, &config, 0));
     lutle_tile *hexagon;
-    ck_assert(!lutle_mkhexagon(log, &hexagon, 4, 13, 1));
+    ck_assert(!lutle_hexagon_mk(log, &hexagon, 4, 13, 1));
     luary_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, -1, &ijz));
     size_t nx, ny; int *grey; double *data;
@@ -117,9 +117,9 @@ START_TEST(test_large_hexagon) {
     printf(s.c);
     ck_assert(!lustr_free(&s, 0));
     free(grey); free(data);
-    ck_assert(!luary_freeijz(&ijz, 0));
+    ck_assert(!luary_ijz_free(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
-    ck_assert(!lutle_freeconfig(&config, 0));
+    ck_assert(!lutle_config_free(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
@@ -127,22 +127,22 @@ START_TEST(test_large_hexagon) {
 void append_hexagon(lulog *log, luary_ijz *tiled, luary_ijz *hexagon, int di, int dj) {
     for (size_t i = 0; i < hexagon->mem.used; ++i) {
         ludta_ijz ijz = hexagon->ijz[i];
-        luary_pushijz(log, tiled, ijz.i + di, ijz.j + dj, ijz.z);
+        luary_ijz_push(log, tiled, ijz.i + di, ijz.j + dj, ijz.z);
     }
 }
 
 START_TEST(test_tiled_hexagon) {
     lulog *log;
-    ck_assert(!lulog_mkstderr(&log, lulog_level_debug));
+    ck_assert(!lulog_stderr_mk(&log, lulog_level_debug));
     lutle_config *config;
-    ck_assert(!lutle_defaultconfig(log, &config, 0));
+    ck_assert(!lutle_config_default(log, &config, 0));
     lutle_tile *hexagon;
     size_t n = 3, m = 2;
-    ck_assert(!lutle_mkhexagon(log, &hexagon, n, m, 1.0));
+    ck_assert(!lutle_hexagon_mk(log, &hexagon, n, m, 1.0));
     luary_ijz *ijz = NULL;
     ck_assert(!hexagon->enumerate(hexagon, log, config, 7, &ijz));
     luary_ijz *tiled = NULL;
-    ck_assert(!luary_mkijz(log, &tiled, 0));
+    ck_assert(!luary_ijz_mk(log, &tiled, 0));
     append_hexagon(log, tiled, ijz, 0, 0);
     append_hexagon(log, tiled, ijz, n*m, n*m);
     append_hexagon(log, tiled, ijz, 2*n*m, -n*m);
@@ -157,10 +157,10 @@ START_TEST(test_tiled_hexagon) {
     printf(s.c);
     ck_assert(!lustr_free(&s, 0));
     free(grey); free(data);
-    ck_assert(!luary_freeijz(&tiled, 0));
-    ck_assert(!luary_freeijz(&ijz, 0));
+    ck_assert(!luary_ijz_free(&tiled, 0));
+    ck_assert(!luary_ijz_free(&ijz, 0));
     ck_assert(!hexagon->free(&hexagon, 0));
-    ck_assert(!lutle_freeconfig(&config, 0));
+    ck_assert(!lutle_config_free(&config, 0));
     ck_assert(!log->free(&log, 0));
 } END_TEST
 
