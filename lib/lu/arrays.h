@@ -90,11 +90,11 @@ int name(type **ptr, int status) {\
 
 /// (Generate code to) Create, reserve and free an array of a given type.
 #define LUARY_MKBASE(stem, type, member)\
-static LUMEM_MKFREE(stem##_free, type)\
-static LUMEM_MKRESERVE(stem##_res, type)\
-LUARY_MKRESERVE(luary_##stem##_res, luary_##stem, stem##_res, member)\
+static LUMEM_MKFREE(lumem_##stem##_free, type)\
+static LUMEM_MKRESERVE(lumem_##stem##_res, type)\
+LUARY_MKRESERVE(luary_##stem##_res, luary_##stem, lumem_##stem##_res, member)\
 LUARY_MKMAKE(luary_##stem##_mk, luary_##stem, luary_##stem##_res)\
-LUARY_MKFREE(luary_##stem##_free, luary_##stem, stem##_free, member)
+LUARY_MKFREE(luary_##stem##_free, luary_##stem, lumem_##stem##_free, member)
 
 /// (Generate code to) Dump the contents of an array to the log.
 #define LUARY_MKDUMP(name, type, format, ...)\
