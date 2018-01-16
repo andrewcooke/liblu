@@ -69,16 +69,17 @@ int lustr_print(struct lulog *log, lustr *str, const char *text);
 int lustr_nprint(struct lulog *log, lustr *str, int max_size, int *all_chars, const char *text);
 /// Replace a string with formatted data.
 int lustr_printf(struct lulog *log, lustr *str, const char *format, ...);
+
 /// Replace a string with formatted data adding at most `max_size` characters.
-/**
- * @param[in] log Destination for error messages.
- * @param[in,out] str The string to modify.
- * @param[in] max_size The maximum number of characters to add (the string is always null-terminated), or -1 for no limit.
- * @param[out] all_chars The maximum number of characters that would be written if max_size had no effect (so output is truncated if this is larger than max_size), or `NULL`.
- * @param[in] format The format to use.
- * @param[in] ... The data to format.
- */
-int lustr_nprintf(struct lulog *log, lustr *str, int max_size, int *all_chars, const char *format, ...);
+int lustr_nprintf(
+		struct lulog *log,  ///< [in] Destination for error messages.
+		lustr *str,  ///< [in,out] The string to modify.
+		int max_size,  ///< [in] The maximum number of characters to add (the string is always null-terminated), or -1 for no limit.
+		int *all_chars,  ///< [out] The maximum number of characters that would be written if max_size had no effect (so output is truncated if this is larger than max_size), or `NULL`.
+		const char *format,  ///< [in] The format to use.
+		... ///< [in] The data to format.
+		);
+
 /// Replace a string with formatted varags data.
 int lustr_vprintf(struct lulog *log, lustr *str, const char *format, va_list ap);
 /// Replace a string with formatted varags data adding at most `max_size` characters.
@@ -92,16 +93,17 @@ int lustr_append(struct lulog *log, lustr *str, const char *text);
 int lustr_nappend(struct lulog *log, lustr *str, int max_size, int *all_chars, const char *text);
 /// Append formatted data array to a string.
 int lustr_appendf(struct lulog *log, lustr *str, const char *format, ...);
+
 /// Append formatted data array to a string, adding at most `max_size` characters.
-/**
- * @param[in] log Destination for error messages.
- * @param[in,out] str The string to modify.
- * @param[in] max_size The maximum number of characters to add (the string is always null-terminated), or -1 for no limit.
- * @param[out] all_chars The maximum number of characters that would be written if max_size had no effect (so output is truncated if this is larger than max_size), or `NULL`.
- * @param[in] format The format to use.
- * @param[in] ... The data to format.
- */
-int lustr_nappendf(struct lulog *log, lustr *str, int max_size, int *all_chars, const char *format, ...);
+int lustr_nappendf(
+		struct lulog *log,  ///< [in] Destination for error messages.
+		lustr *str,  ///< [in,out] The string to modify.
+		int max_size,  ///< [in] The maximum number of characters to add (the string is always null-terminated), or -1 for no limit.
+		int *all_chars,  ///< [out] The maximum number of characters that would be written if max_size had no effect (so output is truncated if this is larger than max_size), or `NULL`.
+		const char *format,  ///< [in] The format to use.
+		...  ///< [in] The data to format.
+		);
+
 /// Append formatted varargs data array to a string.
 int lustr_vappendf(struct lulog *log, lustr *str, const char *format, va_list ap);
 /// Append formatted varargs data array to a string, adding at most `max_size` characters.
